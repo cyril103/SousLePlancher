@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bnk2diof0nhrq"]
+
+[ext_resource type="Script" uid="uid://cy53fuqq0sqns" path="res://scripts/game.gd" id="1"]
+
+[node name="SousLePlancher" type="Node3D" unique_id=1620790543]
+script = ExtResource("1")
