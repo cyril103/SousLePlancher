@@ -28,7 +28,8 @@ static func decorate(root: Node3D) -> void:
 
 static func building(root: Node3D, pos: Vector3, kind: String) -> Node3D:
 	var node := model(root, "workshop" if kind == "workshop" else "shelter", pos)
-	caption(node, "LE REFUGE" if kind == "heart" else ("ABRI" if kind == "shelter" else "ATELIER"), Vector3(0, 1.9, 0))
+	var building_label := caption(node, "Refuge" if kind == "heart" else ("Abri" if kind == "shelter" else "Atelier"), Vector3(0, 1.9, 0))
+	building_label.pixel_size = 0.0055
 	var atmosphere := root.get_node_or_null("Atmosphere")
 	if atmosphere != null:
 		atmosphere.add_torch(pos + Vector3(1.05, 0, 0.65))

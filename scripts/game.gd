@@ -27,7 +27,7 @@ var shelters := 0
 var workshops := 0
 var ended := false
 var event_index := -1
-var stock_label: Label
+var hud: Control
 var time_label: Label
 var detail_label: Label
 var objective_label: Label
@@ -85,7 +85,7 @@ func _ready() -> void:
 func _add_patch(kind: String, pos: Vector3, amount: int) -> void:
 	var node := Art.model(self, kind, pos)
 	var label := Art.caption(node, NAMES[kind], Vector3(0, 1.0, 0), Color("eac37e"))
-	label.pixel_size = 0.008
+	label.pixel_size = 0.0055
 	patches.append({"kind": kind, "pos": pos, "amount": amount, "reserved": 0, "node": node, "label": label})
 
 func _exit_tree() -> void:
@@ -114,7 +114,7 @@ func _make_loading_stations() -> void:
 		stand.position = Vector3(top.x, 0, top.z)
 		stand.scale = Vector3(0.70, top.y / 0.49, 0.70)
 	var depot_label := Art.caption(self, "DÉPÔT", controller.destination_position + Vector3(0, 0.95, 0.9), Color("eac37e"))
-	depot_label.pixel_size = 0.0065
+	depot_label.pixel_size = 0.005
 
 func _update_camera() -> void:
 	camera.size = zoom
@@ -134,6 +134,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_B: _toggle_tray("build")
 			KEY_C: _toggle_tray("people")
 			KEY_O: _toggle_tray("goals")
+			KEY_T: _toggle_tray("work")
+			KEY_I: _toggle_tray("stocks")
+			KEY_F1: _toggle_tray("help")
 			KEY_1: _choose_build("shelter")
 			KEY_2: _choose_build("workshop")
 			KEY_R: _restart()
@@ -147,7 +150,13 @@ func _unhandled_input(event: InputEvent) -> void:
 				if build_mode != "":
 					_place_build(point)
 				else:
+					for i in range(workers.size()):
+						var head: Vector2 = camera.unproject_position(workers[i].node.position + Vector3(0, 0.5, 0))
+						if event.position.distance_to(head) < 24:
+							hud.select_resident(i)
+							return
 					selected = -1
+					hud.assignment_target = -1
 					for i in range(patches.size()):
 						if point.distance_to(patches[i].pos) < 1.1:
 							selected = i
@@ -216,9 +225,11 @@ func simulate(dt: float) -> void:
 	elif shelters >= 2 and workshops >= 1 and stock.food >= 35 and elapsed >= 100:
 		_end(true, "Deux abris, un atelier et des réserves !\nVotre colonie a trouvé sa place sous le plancher.")
 
-func assign_worker() -> bool:
+func assign_worker(worker_index: int = -1) -> bool:
 	if selected < 0 or ended or patches[selected].amount <= 0: return false
-	for worker in workers:
+	for i in range(workers.size()):
+		if worker_index >= 0 and i != worker_index: continue
+		var worker := workers[i]
 		if worker.patch < 0 and worker.carrying == 0 and worker.delivery.state == "idle":
 			worker.patch = selected
 			_news("Un habitant est affecté à la récolte de %s." % NAMES[patches[selected].kind].to_lower())
@@ -318,283 +329,27 @@ func _end(won: bool, message: String) -> void:
 	end_label.text = ("LA MAISON DES PETITS" if won else "UNE COLONIE À RECONSTRUIRE") + "\n\n" + message
 	end_panel.show()
 
-func _style(bg: Color, border: Color = Color("38544e")) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = bg
-	style.border_color = border
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(12)
-	style.content_margin_left = 18
-	style.content_margin_right = 18
-	style.content_margin_top = 14
-	style.content_margin_bottom = 14
-	return style
-
-func _panel(parent: Node, pos: Vector2, size: Vector2) -> PanelContainer:
-	var panel := PanelContainer.new()
-	parent.add_child(panel)
-	panel.position = pos
-	panel.custom_minimum_size = size
-	panel.add_theme_stylebox_override("panel", _style(Color("182c2bf2")))
-	return panel
-
-func _label(parent: Node, text: String, font_size: int = 18, color: Color = Color("e7e4d4")) -> Label:
-	var label := Label.new()
-	label.text = text
-	label.add_theme_font_size_override("font_size", font_size)
-	label.add_theme_color_override("font_color", color)
-	parent.add_child(label)
-	return label
-
-func _button(parent: Node, text: String, action: Callable) -> Button:
-	var button := Button.new()
-	button.text = text
-	button.focus_mode = Control.FOCUS_NONE
-	button.custom_minimum_size.y = 42
-	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	button.add_theme_stylebox_override("normal", _style(Color("29453f")))
-	button.add_theme_stylebox_override("hover", _style(Color("3c6659"), Color("99c7a5")))
-	button.add_theme_stylebox_override("pressed", _style(Color("507864")))
-	button.pressed.connect(action)
-	parent.add_child(button)
-	return button
-
-func _show_tray(key: String) -> void:
-	active_tray = key
-	for name in trays:
-		trays[name].visible = name == key
-	for name in ["build", "people", "goals", "help"]:
-		if dock_buttons.has(name): dock_buttons[name].button_pressed = name == key
-
-func _toggle_tray(key: String) -> void:
-	if ended or start_panel.visible: return
-	_cancel_build()
-	_show_tray("" if active_tray == key else key)
-
-func _dock_button(parent: Node, key: String, title: String, hint: String, action: Callable) -> Button:
-	var button := _button(parent, title, action)
-	button.custom_minimum_size = Vector2(88, 60)
-	button.icon = load("res://assets/icons/%s.svg" % key)
-	button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	button.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
-	button.add_theme_font_size_override("font_size", 13)
-	button.tooltip_text = hint
-	var normal := _style(Color("22332ff2"))
-	normal.content_margin_left = 10
-	normal.content_margin_right = 10
-	normal.content_margin_top = 6
-	normal.content_margin_bottom = 6
-	button.add_theme_stylebox_override("normal", normal)
-	var hover := normal.duplicate() as StyleBoxFlat
-	hover.bg_color = Color("3c6659")
-	hover.border_color = Color("99c7a5")
-	button.add_theme_stylebox_override("hover", hover)
-	var pressed := normal.duplicate() as StyleBoxFlat
-	pressed.bg_color = Color("507864")
-	pressed.border_color = Color("e9c582")
-	button.add_theme_stylebox_override("pressed", pressed)
-	button.toggle_mode = key in ["build", "people", "goals", "help", "refuge"]
-	dock_buttons[key] = button
-	return button
-
-func _tray(ui: Control, key: String, title: String) -> VBoxContainer:
-	var panel := _panel(ui, Vector2.ZERO, Vector2(480, 0))
-	panel.anchor_left = 0.5
-	panel.anchor_right = 0.5
-	panel.anchor_top = 1
-	panel.anchor_bottom = 1
-	panel.offset_left = -240
-	panel.offset_right = 240
-	panel.offset_top = -110
-	panel.offset_bottom = -110
-	panel.grow_vertical = Control.GROW_DIRECTION_BEGIN
-	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 12)
-	panel.add_child(column)
-	var heading := HBoxContainer.new()
-	column.add_child(heading)
-	var label := _label(heading, title, 19, Color("e9c582"))
-	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var close := _button(heading, "×", func(): _show_tray(""))
-	close.tooltip_text = "Fermer ce panneau (Échap)"
-	panel.hide()
-	trays[key] = panel
-	return column
-
 func _make_ui() -> void:
 	var layer := CanvasLayer.new()
 	add_child(layer)
-	var ui := Control.new()
-	layer.add_child(ui)
-	ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var theme := Theme.new()
-	theme.default_font_size = 16
-	ui.theme = theme
-	var header := _panel(ui, Vector2(16, 12), Vector2(0, 52))
-	header.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	header.offset_right = -16
-	var skin := _style(Color("172724ef"))
-	skin.content_margin_top = 8
-	skin.content_margin_bottom = 8
-	header.add_theme_stylebox_override("panel", skin)
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 24)
-	header.add_child(row)
-	_label(row, "SOUS LE PLANCHER", 17, Color("e9c582"))
-	stock_label = _label(row, "", 17)
-	stock_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	time_label = _label(row, "", 15)
-	alert_bar = ProgressBar.new()
-	alert_bar.custom_minimum_size = Vector2(80, 12)
-	alert_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	alert_bar.show_percentage = false
-	alert_bar.tooltip_text = "Soupçons des humains : à 100 %, la colonie est découverte."
-	var fill := StyleBoxFlat.new()
-	fill.bg_color = Color("d6a566")
-	fill.set_corner_radius_all(4)
-	alert_bar.add_theme_stylebox_override("fill", fill)
-	row.add_child(alert_bar)
+	hud = preload("res://scripts/atelier_ui.gd").new()
+	layer.add_child(hud)
+	hud.setup(self)
 
-	var build := _tray(ui, "build", "CONSTRUIRE")
-	var abri := _button(build, "Abri   ·   8 bois / 4 fibres   [1]", func(): _choose_build("shelter"))
-	abri.tooltip_text = "Accueille un habitant supplémentaire. Cliquez ensuite sur le terrain."
-	var atelier := _button(build, "Atelier   ·   10 bois / 6 fibres   [2]", func(): _choose_build("workshop"))
-	atelier.tooltip_text = "Améliore la vitesse et la capacité de transport de tous les habitants."
-	_label(build, "Choisissez un bâtiment, puis son emplacement.", 14, Color("a7bdb2"))
+func _show_tray(key: String) -> void:
+	active_tray = key
+	for tray_key in trays:
+		trays[tray_key].visible = tray_key == key
+	_refresh_ui()
 
-	var people := _tray(ui, "people", "AFFECTATIONS")
-	patch_picker = OptionButton.new()
-	patch_picker.focus_mode = Control.FOCUS_NONE
-	patch_picker.custom_minimum_size.y = 38
-	patch_picker.add_item("Choisir un gisement…")
-	for i in range(patches.size()):
-		patch_picker.add_item("%s · gisement %d" % [NAMES[patches[i].kind], i + 1])
-	patch_picker.item_selected.connect(func(index: int): selected = index - 1; _refresh_ui())
-	people.add_child(patch_picker)
-	var people_scroll := ScrollContainer.new()
-	people_scroll.custom_minimum_size = Vector2(0, 250)
-	people_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	people.add_child(people_scroll)
-	detail_label = _label(people_scroll, "", 17)
-	detail_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var actions := HBoxContainer.new()
-	people.add_child(actions)
-	assign_button = _button(actions, "+ Affecter", assign_worker)
-	release_button = _button(actions, "− Libérer", release_worker)
-	assign_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	release_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_label(people, "Libérer annule avant la prise ; une charge déjà prise\nest rapportée au dépôt. H rappelle tous les habitants.", 14, Color("a7bdb2"))
-
-	var goals := _tray(ui, "goals", "VOTRE PREMIER FOYER")
-	objective_label = _label(goals, "", 17)
-	var help := _tray(ui, "help", "COMMANDES")
-	_label(help, "Flèches / ZQSD : déplacer la caméra\nMolette : zoom · Molette maintenue : rotation\nB : construire · C : affectations · O : objectifs\nH : rappel au refuge · Espace : pause\n1 / 2 : abri / atelier · F11 : plein écran\nÉchap : fermer / annuler · R : recommencer", 16)
-
-	var dock := _panel(ui, Vector2.ZERO, Vector2(0, 0))
-	dock.anchor_left = 0.5
-	dock.anchor_right = 0.5
-	dock.anchor_top = 1
-	dock.anchor_bottom = 1
-	dock.offset_left = -466
-	dock.offset_right = 466
-	dock.offset_top = -104
-	dock.offset_bottom = -12
-	dock.grow_vertical = Control.GROW_DIRECTION_BEGIN
-	var dock_skin := _style(Color("172724f5"))
-	dock_skin.content_margin_top = 8
-	dock_skin.content_margin_bottom = 8
-	dock.add_theme_stylebox_override("panel", dock_skin)
-	var tools := HBoxContainer.new()
-	tools.alignment = BoxContainer.ALIGNMENT_CENTER
-	tools.add_theme_constant_override("separation", 8)
-	dock.add_child(tools)
-	_dock_button(tools, "build", "Construire", "Construire un abri ou un atelier [B]", func(): _toggle_tray("build"))
-	_dock_button(tools, "people", "Affectations", "Répartir les habitants entre les gisements [C]", func(): _toggle_tray("people"))
-	_dock_button(tools, "goals", "Objectifs", "Voir la progression de la colonie [O]", func(): _toggle_tray("goals"))
-	tools.add_child(VSeparator.new())
-	hide_button = _dock_button(tools, "refuge", "Au refuge", "Rappeler tous les habitants / reprendre les tâches [H]", _toggle_hide)
-	pause_button = _dock_button(tools, "pause", "Pause", "Mettre en pause / reprendre [Espace]", _toggle_pause)
-	speed_button = _dock_button(tools, "speed", "Vitesse ×1", "Changer la vitesse de simulation", func(): speed = 2.0 if speed == 1.0 else 1.0)
-	tools.add_child(VSeparator.new())
-	_dock_button(tools, "help", "Aide", "Afficher les commandes", func(): _toggle_tray("help"))
-	_dock_button(tools, "screen", "Plein écran", "Basculer entre fenêtre et plein écran [F11]", _toggle_fullscreen)
-
-	news_label = _label(ui, "Cliquez sur une ressource ou ouvrez les affectations dans la barre du bas.", 17, Color("e9c582"))
-	news_label.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	news_label.offset_left = 24
-	news_label.offset_right = -24
-	news_label.offset_top = 76
-	news_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	news_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	news_label.add_theme_color_override("font_shadow_color", Color("10201c"))
-	news_label.add_theme_constant_override("shadow_offset_x", 1)
-	news_label.add_theme_constant_override("shadow_offset_y", 2)
-	notice_timer = 10
-	start_panel = _panel(ui, Vector2(420, 240), Vector2(600, 400))
-	var intro := VBoxContainer.new()
-	intro.add_theme_constant_override("separation", 18)
-	start_panel.add_child(intro)
-	_label(intro, "BIENVENUE SOUS LE PLANCHER", 26, Color("e9c582"))
-	_label(intro, "Quatre habitants. Quelques miettes. Tout à construire.\n\n1. Cliquez sur les miettes, le bois ou les fibres,\n    puis affectez-y vos habitants.\n2. Construisez deux abris et un atelier.\n3. Gardez 35 miettes et survivez au premier passage.\n\nLes humains passent entre 68 et 88 secondes de chaque\ncycle. Rappelez tout le monde avec H avant leur arrivée !", 18)
-	_button(intro, "Fonder la colonie", func(): start_panel.hide(); paused = false)
-	start_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	end_panel = _panel(ui, Vector2(420, 300), Vector2(610, 260))
-	var end_content := VBoxContainer.new()
-	end_content.add_theme_constant_override("separation", 24)
-	end_panel.add_child(end_content)
-	end_label = _label(end_content, "", 22, Color("e9c582"))
-	_button(end_content, "Recommencer", _restart)
-	end_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	end_panel.hide()
+func _toggle_tray(key: String) -> void:
+	if ended or start_panel.visible: return
+	if key == "people": hud.assignment_target = -1
+	_cancel_build()
+	_show_tray("" if active_tray == key else key)
 
 func _refresh_ui() -> void:
-	if stock_label == null: return
-	stock_label.text = "Miettes  %d     Bois  %d     Fibres  %d     Habitants  %d" % [stock.food, stock.wood, stock.fiber, workers.size()]
-	pause_button.text = "Reprendre" if paused else "Pause"
-	pause_button.icon = load("res://assets/icons/play.svg" if paused else "res://assets/icons/pause.svg")
-	speed_button.text = "Vitesse ×%d" % int(speed)
-	hide_button.text = "Ressortir" if hiding else "Au refuge"
-	hide_button.set_pressed_no_signal(hiding)
-	var phase := fmod(elapsed, 100.0)
-	if phase < 68:
-		time_label.text = "Cycle %d · Passage dans %d s" % [int(elapsed / 100) + 1, ceili(68 - phase)]
-	elif phase < 88:
-		time_label.text = "Cachez-vous ! Encore %d s" % ceili(88 - phase)
-	else: time_label.text = "Calme · Vous pouvez ressortir"
-	if hunger > 0: time_label.text = "FAMINE · Récoltez des miettes !"
-	time_label.modulate = Color("ffb078") if phase >= 58 and phase < 88 else Color.WHITE
-	alert_bar.value = suspicion
-	objective_label.text = "%s  Deux abris (%d/2)\n%s  Un atelier (%d/1)\n%s  35 miettes en réserve\n%s  Premier passage traversé" % ["✓" if shelters >= 2 else "○", shelters, "✓" if workshops > 0 else "○", workshops, "✓" if stock.food >= 35 else "○", "✓" if elapsed >= 100 else "○"]
-	var idle := 0
-	for worker in workers:
-		if worker.patch < 0 and worker.delivery.state == "idle": idle += 1
-	dock_buttons.people.text = "Habitants · %d" % idle
-	dock_buttons.people.tooltip_text = "%d habitant(s) sans tâche. Gérer les affectations [C]" % idle
-	patch_picker.select(selected + 1)
-	assign_button.disabled = selected < 0 or ended
-	release_button.disabled = true
-	detail_label.text = "%d habitant(s) sans tâche\n\n" % idle
-	if selected >= 0:
-		var assigned := 0
-		for worker in workers:
-			if worker.patch == selected: assigned += 1
-		detail_label.text += "%s · %d restant(s), dont %d réservé(s)\n%d habitant(s) affecté(s)" % [NAMES[patches[selected].kind], patches[selected].amount, patches[selected].reserved, assigned]
-		release_button.disabled = assigned == 0 or ended
-		var available := false
-		for worker in workers:
-			if worker.patch < 0 and worker.carrying == 0 and worker.delivery.state == "idle": available = true
-		assign_button.disabled = not available or patches[selected].amount <= 0 or ended
-	else: detail_label.text += "Cliquez sur un gisement\npour organiser la récolte."
-	detail_label.text += "\n"
-	for i in range(workers.size()):
-		var worker := workers[i]
-		detail_label.text += "\nHabitant %d · %s%s" % [i + 1, worker.delivery.description(), " (%d)" % worker.carrying if worker.carrying > 0 else ""]
-	if hunger > 0: detail_label.text += "\n\nFAMINE : récoltez des miettes !"
-	for i in range(patches.size()):
-		var p := patches[i]
-		p.label.text = ("▸ " if i == selected else "") + NAMES[p.kind] + " · %d" % p.amount
-		p.label.modulate = Color("a4efcd") if i == selected else Color("eac37e")
+	if is_instance_valid(hud): hud.refresh()
 
 func _capture() -> void:
 	start_panel.hide()
