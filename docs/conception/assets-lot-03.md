@@ -54,6 +54,8 @@ Les captures sont écrites dans `artifacts/animations_03/`, ignoré par Git. Le 
 
 ## Limites et prochaine intégration
 
+**Mise à jour :** le lot 04 ajoute une première passe de prise/dépose et d'entrée/sortie d'échelle, à examiner dans `interaction_review.tscn`. Voir `assets-lot-04.md`. Le paragraphe suivant décrit le périmètre initial validé du lot 03.
+
 Cette passe donne les cinq cycles et leur banc de revue. Elle n'inclut pas encore la prise et la dépose de caisse, les entrées/sorties d'échelle, les demi-tours, les départs et arrêts dédiés, ni les transitions contextuelles entre ces actions. La descente est une lecture inversée de la montée. Les doigts ne sont pas articulés ; la prise reste stylisée. Les vêtements conservent une géométrie de référence composée de pièces : une retopologie sera utile pour les flexions extrêmes et les gros plans.
 
 L'échelle demande encore un alignement contextuel des mains/pieds sur les barreaux au raccordement à la navigation. Les contacts ont été construits pour ce kit ; aucune adaptation automatique aux terrains, aux hauteurs d'établis ou aux autres échelles. Le test d'appui ne constitue pas une validation de tous les contacts sur tout le cycle. Les collisions, réservations d'échelle et interactions avec les autres habitants ne sont pas implémentées ici.

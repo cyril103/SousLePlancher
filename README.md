@@ -23,6 +23,8 @@ Caméra : flèches ou ZQSD sur clavier français (WASD physique), molette pour z
 
 ## Assets Blender
 
+Les **interactions du lot 04** se testent dans `scenes/interaction_review.tscn` (**F6**) : **1** pour saisir, transporter et déposer une caisse ; **2** pour entrer sur l'échelle, monter et rejoindre le palier ; **R** pour recommencer. Détails et limites dans `docs/conception/assets-lot-04.md`.
+
 Le **lot d'animations** se teste dans `scenes/animation_review.tscn` (**F6**) : repos, marche, portage de caisse, travail au marteau et échelle. Touches **1–5** pour choisir, **Espace** pour suspendre, **−/+** pour ralentir/accélérer, **D** pour activer le déplacement. Sources Blender, vitesses et limites : `docs/conception/assets-lot-03.md`. Ces animations sont encore indépendantes de l'IA du prototype.
 
 Le **kit de refuge** se visite dans `scenes/refuge_review.tscn` (**F6**) : murs, fenêtre, porte ouvrante, échelle, passerelle et établi assemblés avec le mobilier et l'habitant de référence. **Espace** actionne la porte, **M** masque les murs et **L** change l'éclairage. Sources et limites dans `docs/conception/assets-lot-02.md`.

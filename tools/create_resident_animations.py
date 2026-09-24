@@ -174,12 +174,69 @@ def pose(clip,t):
     update()
 
 
+def snapshot():return {b.name:b.matrix_basis.copy() for b in rig.pose.bones}
+
+
+def transition_pose(clip,t):
+    if clip in ['pick_up','put_down']:
+        if clip=='put_down':t=1-t
+        pose('idle',0);start=snapshot()
+        pose('carry_walk',0)
+        # Stable carrying stance, independent of the walking phase.
+        for s,side in [(-1,'L'),(1,'R')]:
+            solve_limb(side+'_thigh',side+'_shin',(s*.11,0,.13),(s*.12,-1,.42),clip)
+            orient_bone(side+'_foot',REST[side+'_foot'].to_quaternion())
+        hold=snapshot()
+        rig.pose.bones['root'].matrix=Matrix.Translation((0,0,-.30)) @ rig.pose.bones['root'].matrix
+        update()
+        for s,side in [(-1,'L'),(1,'R')]:
+            solve_limb(side+'_thigh',side+'_shin',(s*.11,0,.13),(s*.12,-1,.42),clip)
+            orient_bone(side+'_foot',REST[side+'_foot'].to_quaternion())
+        contact=snapshot()
+        if t<.4:a,b,u=start,contact,smooth(t/.4)
+        else:a,b,u=contact,hold,smooth((t-.4)/.6)
+    else:
+        pose('climb',0);climb=snapshot()
+        pose('idle',0)
+        if clip=='climb_exit':
+            # Authored root displacement onto the landing, consumed by caller.
+            rig.pose.bones['root'].matrix=Matrix.Translation((0,-.45,.51)) @ REST['root']
+            update()
+        standing=snapshot()
+        a,b=(standing,climb) if clip=='climb_enter' else (climb,standing)
+        u=smooth(t)
+    for bone in rig.pose.bones:
+        la,ra,sa=a[bone.name].decompose();lb,rb,sb=b[bone.name].decompose()
+        scale=sa.lerp(sb,u)
+        bone.matrix_basis=Matrix.Translation(la.lerp(lb,u)) @ ra.slerp(rb,u).to_matrix().to_4x4() @ Matrix.Diagonal((*scale,1))
+    update()
+    if clip in ['climb_enter','climb_exit']:
+        # Stagger the two foot transfers instead of sliding both feet together.
+        for s,side,p in [(-1,'L',0),(1,'R',.5)]:
+            z,_=climb_contact(p,.585)
+            y=.03-.19*(z-.13)
+            rung=Vector((s*.11,y,z))
+            standing=Vector((s*.11,0,.13)) if clip=='climb_enter' else Vector((s*.11,-.45,.64))
+            begin,end=(standing,rung) if clip=='climb_enter' else (rung,standing)
+            start,stop=(.12,.72) if side=='L' else (.25,.90)
+            fraction=max(0,min(1,(t-start)/(stop-start)))
+            target=begin.lerp(end,smooth(fraction))
+            target.z+=.07*math.sin(math.pi*fraction)
+            solve_limb(side+'_thigh',side+'_shin',target,(s*.12,-1,.42),clip)
+            orient_bone(side+'_foot',REST[side+'_foot'].to_quaternion())
+        update()
+
+
 CLIPS={
     'idle':{'frames':120,'loop':True,'speed':0},
     'walk':{'frames':36,'loop':True,'speed':.4/(.60*1.2),'stance':.60,'distance_per_cycle':.4/.60},
     'carry_walk':{'frames':42,'loop':True,'speed':.34/(.66*1.4),'stance':.66,'distance_per_cycle':.34/.66},
     'work':{'frames':36,'loop':True,'speed':0,'impact_seconds':.28*1.2},
     'climb':{'frames':48,'loop':True,'speed':.51/1.6,'rise_per_cycle':.51,'rung_spacing':.255},
+    'pick_up':{'frames':54,'loop':False,'speed':0,'contact_seconds':.72},
+    'put_down':{'frames':54,'loop':False,'speed':0,'contact_seconds':1.08},
+    'climb_enter':{'frames':36,'loop':False,'speed':0},
+    'climb_exit':{'frames':42,'loop':False,'speed':0,'root_displacement_godot':[0,.51,.45]},
 }
 for clip,info in CLIPS.items():
     action=bpy.data.actions.new(clip);action.use_fake_user=True
@@ -187,7 +244,9 @@ for clip,info in CLIPS.items():
     for frame in range(info['frames']+1):
         rig.animation_data.action=None
         scene.frame_set(frame)
-        pose(clip,frame/info['frames'])
+        if clip in ['pick_up','put_down','climb_enter','climb_exit']:
+            transition_pose(clip,frame/info['frames'])
+        else:pose(clip,frame/info['frames'])
         rig.animation_data.action=action
         for bone in rig.pose.bones:
             for channel in ['location','rotation_quaternion','scale']:
@@ -226,8 +285,8 @@ def save(path):
 
 save(SOURCE/'resident_animated.blend')
 report={'source':'art_source/reference_01/resident_reference.blend','fps':30,'clips':CLIPS,
-    'rig_bones':len(rig.data.bones),'motion':'in place; actor translation uses documented speed',
-    'attachments':['socket_carry','socket_tool'],'limits':['No finger rig','No navigation integration','Climb entry/exit transitions not authored']}
+    'rig_bones':len(rig.data.bones),'motion':'cycles in place; climb_exit includes documented local root displacement',
+    'attachments':['socket_carry','socket_tool'],'limits':['No finger rig','No navigation integration','Transitions authored for fixed staging geometry']}
 (SOURCE/'manifest.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
 
 # Hand-held hammer: origin at grip, shaft along local +Y after glTF export.

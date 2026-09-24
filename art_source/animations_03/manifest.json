@@ -43,10 +43,45 @@
       "rung_spacing": 0.255,
       "duration": 1.6,
       "maximum_reach_clamp": 0
+    },
+    "pick_up": {
+      "frames": 54,
+      "loop": false,
+      "speed": 0,
+      "contact_seconds": 0.72,
+      "duration": 1.8,
+      "maximum_reach_clamp": 0
+    },
+    "put_down": {
+      "frames": 54,
+      "loop": false,
+      "speed": 0,
+      "contact_seconds": 1.08,
+      "duration": 1.8,
+      "maximum_reach_clamp": 0
+    },
+    "climb_enter": {
+      "frames": 36,
+      "loop": false,
+      "speed": 0,
+      "duration": 1.2,
+      "maximum_reach_clamp": 0.000917
+    },
+    "climb_exit": {
+      "frames": 42,
+      "loop": false,
+      "speed": 0,
+      "root_displacement_godot": [
+        0,
+        0.51,
+        0.45
+      ],
+      "duration": 1.4,
+      "maximum_reach_clamp": 0.000917
     }
   },
   "rig_bones": 21,
-  "motion": "in place; actor translation uses documented speed",
+  "motion": "cycles in place; climb_exit includes documented local root displacement",
   "attachments": [
     "socket_carry",
     "socket_tool"
@@ -54,6 +89,6 @@
   "limits": [
     "No finger rig",
     "No navigation integration",
-    "Climb entry/exit transitions not authored"
+    "Transitions authored for fixed staging geometry"
   ]
 }
