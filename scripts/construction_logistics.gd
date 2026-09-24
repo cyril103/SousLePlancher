@@ -6,17 +6,20 @@ var recovery: Array[Dictionary] = []
 var next_id := 1
 
 func cost(bed: Dictionary) -> Dictionary:
+	if bed.get("fissure_site", false): return game.fissure.COST
 	if bed.get("torch_site", false): return game.torches.RECIPES[bed.get("kind", "torch")]
 	return game.COSTS["private_bed" if bed.private else "bed"]
 
 func sites() -> Array:
-	return game.sleeping.beds + game.torches.orders
+	return game.sleeping.beds + game.torches.orders + game.fissure.sites()
 
 func entrance(site: Dictionary) -> Vector3:
+	if site.get("fissure_site", false): return game.fissure.entrance(site)
 	return game.torches.entrance(site) if site.get("torch_site", false) else game.sleeping.entrance(site)
 
 func visual(site: Dictionary) -> void:
-	if site.get("torch_site", false): game.torches.refresh_site(site)
+	if site.get("fissure_site", false): game.fissure.refresh()
+	elif site.get("torch_site", false): game.torches.refresh_site(site)
 	else: game.sleeping.visual(game.sleeping.beds.find(site))
 
 func supplied(bed: Dictionary) -> bool:
@@ -205,7 +208,7 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 func cancel_site(bed: Dictionary) -> void:
 	# Keep the already-delivered material in the world; pickup is a normal task.
 	if bed.materials.wood + bed.materials.fiber > 0:
-		add_recovery(game.sleeping.entrance(bed), bed.materials.duplicate())
+		add_recovery(entrance(bed), bed.materials.duplicate())
 	for cdata in game.workers:
 		var c: WorkerDelivery = cdata.delivery
 		if c.supply_job >= 0 and jobs[c.supply_job].target == bed:

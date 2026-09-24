@@ -121,3 +121,6 @@ La version 0.2 devra harmoniser les chapitres, les statistiques provisoires, les
 
 
 **Lot 17 — lanterne de ceinture validée.** Le joueur engage la suite par « ok passe à la suite ». Source Blender, éclairage porté, reconnaissance à l’étage et récolte d’une caisse avec mains libres. Recette proposée : 4 bois + 3 fibres, 16 s d’assemblage, 180 s d’autonomie. Sauvegarde v7 compatible avec les anciennes torches. Après la démonstration, le joueur confirme « je valide ». Commit et push autorisés selon le fonctionnement convenu. Voir `gameplay-lot-17.md`.
+
+
+**Lot 18 — fissure et passage validé.** Après publication du lot 17 (`23c5eac`), le joueur demande « passe à la suite ». L’étape 5 réalise une inspection, un chantier physiquement approvisionné et une traversée étroite vers une alcôve adjacente. Après essai de la démonstration, le joueur confirme « je valide ». Commit et push autorisés selon le fonctionnement convenu. Voir `gameplay-lot-18.md`.

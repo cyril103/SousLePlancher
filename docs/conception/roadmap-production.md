@@ -4,7 +4,7 @@ Révision du 24 septembre 2026. Base publiée : `3d1c9a3`, lots 12–13. **Étap
 
 Ce plan complète le [cahier des charges](cahier-des-charges.md) et applique les [décisions de l'entretien](retours-et-decisions.md). Les jalons J0–J7 désignent des objectifs de produit ; les étapes ci-dessous sont les livraisons successives, plus petites. Les nombres proposés restent ajustables après essai.
 
-**Suivi :** étape 1 publiée dans `058345b`. Étape 2 validée et publiée dans `de71c70` ([lot 14](gameplay-lot-14.md)). Étape 3 validée et publiée dans `930dfb3` ([lot 15](gameplay-lot-15.md)). Étape 4 validée et publiée dans `7c81e89` ([lot 16](gameplay-lot-16.md)). Étape 4 bis validée par le joueur dans le [lot 17](gameplay-lot-17.md), publication autorisée. Les étapes 5 et suivantes ne sont pas commencées.
+**Suivi :** étape 1 publiée dans `058345b`. Étape 2 validée et publiée dans `de71c70` ([lot 14](gameplay-lot-14.md)). Étape 3 validée et publiée dans `930dfb3` ([lot 15](gameplay-lot-15.md)). Étape 4 validée et publiée dans `7c81e89` ([lot 16](gameplay-lot-16.md)). Étape 4 bis validée et publiée dans `23c5eac` ([lot 17](gameplay-lot-17.md)). Étape 5 validée par le joueur dans le [lot 18](gameplay-lot-18.md), publication autorisée. Les étapes 6 et suivantes ne sont pas commencées.
 
 ## Notre fonctionnement
 
@@ -89,6 +89,8 @@ Les torches et la première liaison arrivent avant l'extension de l'habitat : el
 **Démonstration suivante.** Fabriquer et équiper une lanterne, cliquer la réserve à l’étage, monter l’échelle, traverser la passerelle puis rentrer. Vérifier ensuite le port d’une caisse avec la lanterne, les besoins, le rappel et la sauvegarde. Contrôler dans Blender et Godot les attaches, les barreaux, les vêtements et le sac pendant les animations. L’éclairage fixe construit viendra ensuite pour les trajets réguliers. Cette étape est implémentée et validée par le joueur ; publication autorisée. Proposition : 4 bois + 3 fibres, 16 s de travail, 180 s d’autonomie et 24 s de marge. La démonstration inclut un aller-retour de reconnaissance puis une caisse récoltée et livrée avec lanterne ; les trajets réguliers restent une étape ultérieure.
 
 ## 5 — Une fissure qui devient un passage
+
+**État : implémentée et validée — lot 18.** Fissure sud, inspection physique, 6 bois + 4 fibres livrés et 24 s de travaux. Visite à vide de l’alcôve, passage réservé, rappel et sauvegarde v8 au refuge. Le graphe général des secteurs et l’expédition équipée et chargée restent à réaliser dans l’étape 6.
 
 **Démonstration.** Repérer une fissure depuis le secteur actuel, examiner ses conditions, livrer les matériaux et dégager ou étayer l'accès. Après travaux, un habitant traverse son seuil et rejoint une petite zone d'essai attenante.
 

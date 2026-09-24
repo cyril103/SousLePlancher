@@ -1,6 +1,6 @@
 extends RefCounted
 ## Plain, versioned data only. Transient jobs must settle before capture.
-const VERSION := 7
+const VERSION := 8
 const DEFAULT_PATH := "user://saves/colony_v1.json"
 const KINDS := ["food", "food", "wood", "wood", "fiber", "fiber", "wood", "water"]
 
@@ -27,6 +27,7 @@ static func capture(game: Node) -> Dictionary:
 		"recovery": game.construction.snapshot(),
 		"depots": game.depots.snapshot(),
 		"torches": game.torches.snapshot(),
+		"fissure": game.fissure.snapshot(),
 		"water_source": vector(game.patches[7].pos),
 		"clock": {"elapsed": game.elapsed, "meal_timer": game.meal_timer, "suspicion": game.suspicion, "hunger": game.hunger, "event_index": game.event_index},
 		"view": {"focus": vector(game.focus), "yaw": game.yaw, "zoom": game.zoom, "paths": game.show_paths, "resident": game.hud.resident_index, "cutaway": game.refuge.cutaway}
@@ -162,6 +163,17 @@ static func validate(data: Variant) -> String:
 			for pos in locations:
 				if Vector3(item.pos[0], item.pos[1], item.pos[2]).is_equal_approx(Vector3(pos[0], -.0105, pos[2] + 1.15)): valid_place = true
 			if not valid_place: return "Rangement de torche invalide."
+	if data.version >= 8:
+		if not fields(data, ["fissure"]) or not fields(data.fissure, ["discovered", "visited", "site"]): return "Passage incomplet."
+		var passage: Dictionary = data.fissure
+		if not passage.discovered is bool or not passage.visited is bool or not passage.site is Dictionary: return "Passage invalide."
+		if not passage.site.is_empty():
+			var site: Dictionary = passage.site
+			if not passage.discovered or not fields(site, ["materials", "work", "built"]) or not fields(site.materials, ["wood", "fiber"]): return "Chantier de passage incomplet."
+			if not site.built is bool or not number(site.work, 0, 24) or not number(site.materials.wood, 0, 6, true) or not number(site.materials.fiber, 0, 4, true): return "Chantier de passage invalide."
+			if site.work > 0 and (site.materials.wood != 6 or site.materials.fiber != 4): return "Passage étayé sans matériaux."
+			if site.built != (site.work == 24): return "Ouverture du passage incohérente."
+		if passage.visited and (passage.site.is_empty() or not passage.site.built): return "Alcôve visitée sans passage ouvert."
 	for assignment in data.assignments:
 		if not number(assignment, -1, count - 1, true): return "Affectation invalide."
 		if assignment >= 0 and not data.patches[int(assignment)].discovered: return "Affectation dans une zone inconnue."

@@ -51,6 +51,12 @@ var light_kind: OptionButton
 var light_recipe: Label
 var lantern_east: Button
 var lantern_haul: Button
+var fissure_summary: Label
+var fissure_picker: OptionButton
+var fissure_inspect: Button
+var fissure_build: Button
+var fissure_visit: Button
+var fissure_cancel: Button
 var depot_picker: OptionButton
 var depot_summary: Label
 var depot_filters: Dictionary = {}
@@ -344,6 +350,8 @@ func _make_trays() -> void:
 	button(work, "Chantiers et attribution des lits", func(): game._show_tray("beds"))
 	button(work, "Éclairage et éclaireurs", func(): game._show_tray("torches"))
 	_make_torches()
+	button(work, "Fissure et passage", func(): game._show_tray("fissure"))
+	_make_fissure()
 	var work_scroll := ScrollContainer.new()
 	work_scroll.custom_minimum_size.y = 225
 	work_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -511,6 +519,7 @@ func _update_roster() -> void:
 
 func refresh() -> void:
 	_refresh_torches()
+	_refresh_fissure()
 	if not is_instance_valid(game.start_panel): return
 	save_button.disabled = game.ended or game.start_panel.visible
 	save_button.text = "Annuler la sauvegarde en attente" if game.pending_save else "Sauvegarder au refuge [F5]"
@@ -528,7 +537,7 @@ func refresh() -> void:
 	var carrying := {"food": 0, "wood": 0, "fiber": 0, "water": 0}
 	for i in range(game.workers.size()):
 		var worker: Dictionary = game.workers[i]
-		if worker.patch < 0 and worker.carrying == 0 and worker.delivery.state == "idle" and not game.torches.occupied(i): idle += 1
+		if worker.patch < 0 and worker.carrying == 0 and worker.delivery.state == "idle" and not game.torches.occupied(i) and not game.fissure.occupied(i): idle += 1
 		carrying[worker.kind] += worker.carrying
 		worker_rows[i].text = "H%d · Énergie %d · %s%s" % [i + 1, roundi(worker.energy), worker.delivery.description(), " (%d)" % worker.carrying if worker.carrying > 0 else ""]
 	for key in resource_values:
@@ -573,7 +582,7 @@ func refresh() -> void:
 	if assignment_target >= 0:
 		var target: Dictionary = game.workers[assignment_target]
 		game.assign_button.text = "Affecter n° %d" % (assignment_target + 1)
-		can_assign = game.selected >= 0 and game.patches[game.selected].discovered and game.patches[game.selected].amount > 0 and not game.ended and not game.hiding and target.patch < 0 and target.carrying == 0 and target.delivery.state == "idle" and (not game.torches.occupied(assignment_target) or game.torches.can_haul(assignment_target))
+		can_assign = not game.fissure.occupied(assignment_target) and game.selected >= 0 and game.patches[game.selected].discovered and game.patches[game.selected].amount > 0 and not game.ended and not game.hiding and target.patch < 0 and target.carrying == 0 and target.delivery.state == "idle" and (not game.torches.occupied(assignment_target) or game.torches.can_haul(assignment_target))
 	else:
 		game.assign_button.text = "+ Affecter"
 	game.assign_button.disabled = not can_assign
@@ -629,7 +638,7 @@ func refresh() -> void:
 
 	resident_cargo.text = "Charge : %d · %s" % [resident.carrying, game.NAMES[resident.kind]] if resident.carrying > 0 else (game.NAMES[game.patches[resident.patch].kind] if resident.patch >= 0 else "Sans affectation")
 	resident_recall.disabled = game.ended or (resident.patch < 0 and resident.carrying == 0 and (resident.delivery.inside_refuge or resident.delivery.state == "return_home"))
-	resident_assign.disabled = game.ended or game.hiding or resident.patch >= 0 or resident.carrying > 0 or resident.delivery.state != "idle" or (game.torches.occupied(resident_index) and not game.torches.can_haul(resident_index))
+	resident_assign.disabled = game.fissure.occupied(resident_index) or game.ended or game.hiding or resident.patch >= 0 or resident.carrying > 0 or resident.delivery.state != "idle" or (game.torches.occupied(resident_index) and not game.torches.can_haul(resident_index))
 	resident_assign.tooltip_text = "Rapporter une seule caisse avec la lanterne, puis rentrer au refuge" if game.torches.can_haul(resident_index) else "Choisir un gisement à récolter"
 	resident_card.visible = game.active_tray == "" and not game.start_panel.visible and not game.ended and game.build_mode == ""
 	modal_shade.visible = game.start_panel.visible or game.end_panel.visible or load_panel.visible
@@ -752,6 +761,43 @@ func _make_torches() -> void:
 
 func selected_light() -> String:
 	return "lantern" if light_kind.selected == 1 else "torch"
+
+func _make_fissure() -> void:
+	var box := tray("fissure", "Fissure du plancher")
+	box.add_theme_constant_override("separation", 8)
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size.y = 110
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	box.add_child(scroll)
+	fissure_summary = wrapped(scroll, "", 16)
+	fissure_summary.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	fissure_picker = OptionButton.new()
+	box.add_child(fissure_picker)
+	fissure_picker.item_selected.connect(func(index: int): resident_index = index; refresh())
+	var visits := row(box)
+	fissure_inspect = button(visits, "Inspecter", func(): game.fissure.start(resident_index, true); refresh())
+	fissure_visit = button(visits, "Visiter l’alcôve", func(): game.fissure.start(resident_index); refresh())
+	fissure_build = button(box, "Dégager et étayer · 6 bois / 4 fibres", func(): game.fissure.request_build(); refresh())
+	var stops := row(box)
+	fissure_cancel = button(stops, "Annuler le chantier", func(): game.fissure.cancel_build(); refresh())
+	button(stops, "Rappeler", func(): game.workers[resident_index].delivery.cancel(); refresh())
+	button(box, "Centrer la caméra sur le passage", func(): game.focus = Vector3(4, .5, 6); game.zoom = 13; game._update_camera())
+	wrapped(box, "Visite avec retour automatique. Le rappel laisse finir la traversée. H rappelle toute la colonie.", 15)
+
+func _refresh_fissure() -> void:
+	if fissure_summary == null: return
+	if fissure_picker.item_count != game.workers.size():
+		fissure_picker.clear()
+		for i in range(game.workers.size()): fissure_picker.add_item("Habitant %d" % (i + 1))
+	fissure_picker.select(resident_index)
+	fissure_summary.text = game.fissure.summary()
+	var unavailable: bool = game.hiding or game.ended or game.pending_save
+	var c: WorkerDelivery = game.workers[resident_index].delivery
+	var busy: bool = not game.torches.available(c) or game.torches.occupied(resident_index)
+	fissure_inspect.disabled = unavailable or busy or game.fissure.discovered
+	fissure_build.disabled = unavailable or not game.fissure.discovered or not game.fissure.site.is_empty()
+	fissure_cancel.disabled = game.fissure.site.is_empty() or game.fissure.opened()
+	fissure_visit.disabled = unavailable or busy or not game.fissure.opened()
 
 func _refresh_torches() -> void:
 	if torch_picker == null: return

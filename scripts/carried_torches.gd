@@ -52,6 +52,7 @@ func refresh_site(site: Dictionary) -> void:
 		prop.scale = Vector3.ONE * .15
 
 func available(c: WorkerDelivery) -> bool:
+	if game.fissure.occupied(c.owner): return false
 	return c.state == "idle" and c.job < 0 and c.supply_job < 0 and c.furniture_order < 0 and not c.exploring and c.worker.patch < 0 and c.worker.carrying == 0 and not c.door_active and not c.climbing and not c.bridge_active and not c.personal_recall
 
 func held(owner: int) -> int:

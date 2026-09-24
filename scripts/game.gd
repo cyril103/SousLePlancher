@@ -11,6 +11,8 @@ const Needs = preload("res://scripts/colony_needs.gd")
 const Construction = preload("res://scripts/construction_logistics.gd")
 const Depots = preload("res://scripts/local_depots.gd")
 const Torches = preload("res://scripts/carried_torches.gd")
+const Fissure = preload("res://scripts/fissure_passage.gd")
+var fissure := Fissure.new()
 const HOME := Vector3(-3, 0, 1)
 const COSTS := {"depot": {}, "bed": {"wood": 4, "fiber": 3}, "private_bed": {"wood": 6, "fiber": 5}, "shelter": {"wood": 8, "fiber": 4}, "workshop": {"wood": 10, "fiber": 6}}
 var sleeping := Sleep.new()
@@ -88,6 +90,7 @@ var route_mesh: MeshInstance3D
 var route_timer := 0.0
 
 func _ready() -> void:
+	fissure.game = self
 	torches.game = self
 	depots.game = self
 	depots.setup()
@@ -139,6 +142,7 @@ func _ready() -> void:
 	for i in range(4):
 		_add_worker()
 	_make_loading_stations()
+	fissure.setup()
 	_refresh_save_state()
 	_make_ui()
 	_refresh_ui()
@@ -195,6 +199,7 @@ func _ready() -> void:
 	if "--demo-depots" in OS.get_cmdline_user_args(): prepare_depots_demo()
 	if "--demo-torches" in OS.get_cmdline_user_args(): prepare_torches_demo()
 	if "--demo-lanterns" in OS.get_cmdline_user_args(): prepare_lanterns_demo()
+	if "--demo-fissure" in OS.get_cmdline_user_args(): prepare_fissure_demo()
 	if "--demo-needs" in OS.get_cmdline_user_args(): prepare_needs_demo()
 
 func prepare_needs_demo() -> void:
@@ -300,6 +305,7 @@ func _add_patch(kind: String, pos: Vector3, amount: int) -> void:
 	patches.append({"kind": kind, "pos": pos, "amount": amount, "reserved": 0, "node": node, "label": label, "discovered": true})
 
 func _exit_tree() -> void:
+	fissure.game = null
 	torches.game = null
 	depots.game = null
 	sleeping.game = null
@@ -350,6 +356,8 @@ func _make_loading_stations() -> void:
 
 func _setup_navigation() -> void:
 	navigation_obstacles = [refuge_footprint()]
+	# Only the reserved passage controller may cross the southern partition.
+	navigation_obstacles.append(Rect2(1.5, 6.0, 5, .4))
 	# Blender floor props (coordinates converted from Z-up to Godot Y-up).
 	navigation_obstacles.append(Navigation.footprint(Vector3(9, 0, 5.7), Vector2(0.94, 0.94)))
 	navigation_obstacles.append(Rect2(-9.92, 5.38, 2.54, 0.84))
@@ -483,6 +491,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				if build_mode != "":
 					_place_build(point)
 				else:
+					var fissure_hit := camera.unproject_position(Vector3(4, 1, 6.2))
+					if event.position.distance_to(fissure_hit) < 45:
+						_show_tray("fissure")
+						return
 					for i in range(workers.size()):
 						var head: Vector2 = camera.unproject_position(workers[i].node.position + Vector3(0, 0.5, 0))
 						if event.position.distance_to(head) < 24:
@@ -554,7 +566,7 @@ func _process(delta: float) -> void:
 	if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN): direction.z += 1
 	focus += direction.rotated(Vector3.UP, yaw) * delta * 9
 	focus.x = clampf(focus.x, -7, 7)
-	focus.z = clampf(focus.z, -5, 5)
+	focus.z = clampf(focus.z, -5, 9 if fissure.opened() else 6)
 	_update_camera()
 	if is_instance_valid(ghost):
 		var point = ground_point(get_viewport().get_mouse_position())
@@ -597,6 +609,7 @@ func assign_worker(worker_index: int = -1) -> bool:
 	if selected < 0 or ended or not patches[selected].discovered or patches[selected].amount <= 0: return false
 	for i in range(workers.size()):
 		if worker_index >= 0 and i != worker_index: continue
+		if fissure.occupied(i): continue
 		if torches.occupied(i):
 			if worker_index >= 0 and torches.can_haul(i): return torches.start_haul(i, selected)
 			if worker_index >= 0:
@@ -620,6 +633,7 @@ func release_worker() -> void:
 			return
 
 func _valid_site(pos: Vector3) -> bool:
+	if not get_meta("restore_mode", false) and Navigation.building(pos, build_mode).grow(.3).intersects(Rect2(2.8, 4.4, 2.4, 2.1)): return false
 	if absf(pos.x) > 9.5 or absf(pos.z) > 6: return false
 	if pos.distance_to(HOME + Vector3(1.6, 0, 0.25)) < 1.6: return false
 	for b in buildings:
@@ -833,7 +847,7 @@ func start_exploration() -> bool:
 			return false
 	for worker in workers:
 		var controller: WorkerDelivery = worker.delivery
-		if torches.occupied(controller.owner): continue
+		if torches.occupied(controller.owner) or fissure.occupied(controller.owner): continue
 		if worker.patch < 0 and worker.carrying == 0 and controller.state == "idle":
 			controller.exploring = true
 			controller.change("leave_home" if controller.inside_refuge else "explore")
@@ -874,6 +888,8 @@ func cancel_checkpoint() -> void:
 	_news(save_status)
 
 func checkpoint_ready() -> bool:
+	if not fissure.missions.is_empty() or fissure.owner != -1 or not fissure.queue.is_empty(): return false
+	if not fissure.site.is_empty() and fissure.site.builder >= 0: return false
 	if not torches.missions.is_empty() or not torches.crafting.is_empty(): return false
 	if not depots.settled(): return false
 	if not construction.jobs.is_empty(): return false
@@ -941,6 +957,7 @@ func apply_checkpoint(data: Dictionary) -> bool:
 			construction.add_recovery(Vector3(pile.pos[0], pile.pos[1], pile.pos[2]), {"wood": int(pile.materials.wood), "fiber": int(pile.materials.fiber)})
 	if data.patches[6].discovered: discover_east()
 	if data.version >= 6: torches.restore(data.torches)
+	if data.version >= 8: fissure.restore(data.fissure)
 	for i in range(workers.size()):
 		var controller: WorkerDelivery = workers[i].delivery
 		workers[i].patch = int(data.assignments[i])
@@ -1051,3 +1068,19 @@ func prepare_lanterns_demo() -> void:
 	_update_camera()
 	_refresh_ui()
 	_news("Espace : H1 explore l’étage. Après son retour, Équiper puis Rapporter du bois teste la caisse avec lanterne.")
+
+func prepare_fissure_demo() -> void:
+	get_window().title = "Sous le plancher — Fissure et passage (démo)"
+	start_panel.hide()
+	stock.wood = 20
+	stock.fiber = 12
+	focus = Vector3(3, .5, 4.8)
+	zoom = 18
+	yaw = 2.7
+	paused = true
+	hud.resident_index = 0
+	_show_tray("fissure")
+	fissure.start(0, true)
+	_update_camera()
+	_refresh_ui()
+	_news("Espace : H1 inspecte la fissure. Lancez ensuite les travaux, puis choisissez Visiter l’alcôve.")

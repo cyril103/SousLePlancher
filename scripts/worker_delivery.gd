@@ -98,6 +98,9 @@ func change(next: String) -> void:
 	retry_time = 0.0
 
 func cancel(skip_light: bool = false) -> void:
+	if game.fissure.cancel(self):
+		if door_active: recall_after_door = true
+		return
 	if not skip_light and game.torches.recall(self):
 		if door_active: recall_after_door = true
 		return
@@ -268,9 +271,11 @@ func tick(dt: float) -> void:
 	timer += dt
 	retry_time = maxf(0, retry_time - dt)
 	if game.torches.tick(self, dt): return
+	if game.fissure.tick(self, dt): return
 	if game.construction.tick(self, dt): return
 	if game.torches.held(owner) < 0 and game.needs.tick(self, dt): return
 	if game.torches.start_work(self): return
+	if game.fissure.start_work(self): return
 	if game.torches.held(owner) < 0 and needs_supply < 0 and not (need_interrupt and state == "return_home"):
 		if game.sleeping.tick(self, dt): return
 	match state:
@@ -393,6 +398,8 @@ func tick(dt: float) -> void:
 					change("return_home")
 
 func description() -> String:
+	var fissure_description: String = game.fissure.description(self)
+	if not fissure_description.is_empty(): return fissure_description
 	var torch_description: String = game.torches.description(self)
 	if not torch_description.is_empty(): return torch_description
 	var supply_description: String = game.construction.description(self)
