@@ -115,3 +115,6 @@ La version 0.2 devra harmoniser les chapitres, les statistiques provisoires, les
 - [ ] Le contenu de J0-J3 est accepté ou amendé.
 - [ ] La version 0.2 du dossier intègre les retours.
 - [x] Un premier lot d'assets est lancé à la demande du joueur (« on va passer aux assets ») : habitant de référence et mobilier de refuge, détaillés dans `assets-lot-01.md`. Cela ne valide pas automatiquement les autres lots ni la version 0.2 du dossier.
+
+
+**Lot 16 — torches individuelles validé.** Le joueur autorise cette étape par « ok c’est parti », après publication du lot 15 (`930dfb3`). Fabrication avec livraisons à l’atelier, équipement, autonomie, sortie au sol, rappel et assistance à un éclaireur en panne, sauvegarde v6. Voir `gameplay-lot-16.md`. Après essai et correction du clic à l’étage, le joueur confirme « ok je valide ». Publication du lot autorisée selon le fonctionnement convenu. Il approuve aussi la progression torche à main → lanterne de ceinture → éclairage fixe. La lanterne constitue la prochaine étape 4 bis, à réaliser et à présenter séparément.

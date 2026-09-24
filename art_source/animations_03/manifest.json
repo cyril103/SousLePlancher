@@ -2,6 +2,20 @@
   "source": "art_source/reference_01/resident_reference.blend",
   "fps": 30,
   "clips": {
+    "torch_walk": {
+      "frames": 36,
+      "loop": true,
+      "speed": 0.5555555555555556,
+      "duration": 1.2,
+      "maximum_reach_clamp": 0
+    },
+    "torch_idle": {
+      "frames": 120,
+      "loop": true,
+      "speed": 0,
+      "duration": 4.0,
+      "maximum_reach_clamp": 0
+    },
     "eat": {
       "frames": 60,
       "loop": true,

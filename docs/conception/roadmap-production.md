@@ -4,7 +4,7 @@ Révision du 24 septembre 2026. Base publiée : `3d1c9a3`, lots 12–13. **Étap
 
 Ce plan complète le [cahier des charges](cahier-des-charges.md) et applique les [décisions de l'entretien](retours-et-decisions.md). Les jalons J0–J7 désignent des objectifs de produit ; les étapes ci-dessous sont les livraisons successives, plus petites. Les nombres proposés restent ajustables après essai.
 
-**Suivi :** étape 1 publiée dans `058345b`. Étape 2 validée et publiée dans `de71c70` ([lot 14](gameplay-lot-14.md)). Étape 3 réalisée et validée dans le [lot 15](gameplay-lot-15.md), publication autorisée. Les étapes 4 et suivantes ne sont pas commencées.
+**Suivi :** étape 1 publiée dans `058345b`. Étape 2 validée et publiée dans `de71c70` ([lot 14](gameplay-lot-14.md)). Étape 3 validée et publiée dans `930dfb3` ([lot 15](gameplay-lot-15.md)). Étape 4 validée dans le [lot 16](gameplay-lot-16.md), publication autorisée. La lanterne de ceinture est approuvée comme prochaine démonstration (4 bis). Les étapes 4 bis et 5 et suivantes ne sont pas commencées.
 
 ## Notre fonctionnement
 
@@ -35,6 +35,7 @@ Le jeu reste un prototype intégré. Les 30–50 habitants sont une cible, pas u
 | 2 — chantier approvisionné | Un lit reçoit physiquement ses matériaux avant fabrication | Livraisons et lits existants | J1–J2 |
 | 3 — réserves locales | Un petit dépôt alimente les travaux et les besoins proches | Étape 2 | J1–J2 |
 | 4 — torche individuelle | Fabriquer, équiper et utiliser une torche dans l'obscurité | Tâches, matériaux et équipement | J2–J3 |
+| 4 bis — lanterne de ceinture | Explorer la réserve à l’étage avec les mains libres et une autonomie surveillée | Étape 4, échelle et portage | J2–J3 |
 | 5 — passage aménageable | Découvrir puis ouvrir une fissure réellement traversable | Chantier, navigation, torche | J2–J3 |
 | 6 — premier secteur relié | Partir, récolter ailleurs, revenir et retrouver ses découvertes | Étape 5 et persistance des voyages | J1–J3 |
 | 7 — route d'exploitation | Dépôt distant, ravitaillement, éclairage fixe construit | Étapes 3–6 | J3 |
@@ -80,6 +81,12 @@ Les torches et la première liaison arrivent avant l'extension de l'habitat : el
 **Assets.** Torche miniature faite d'écharde et de fibre, embout consumé, attaches main/rangement, poses de marche et d'observation, flamme, braises discrètes et icône d'autonomie. Contrôler sac, vêtements et intersections. Réutiliser les effets existants s'ils tiennent le budget.
 
 **Validation.** Caméra normale et rapprochée ; pause/vitesse ; épuisement ; recharge ou remplacement à l'atelier ; incompatibilité de charge ; rappel ; sauvegarde ; comparaison des performances avec une puis plusieurs torches visibles. Limiter les lumières avec ombres selon les mesures, sans changer les règles de combustible hors écran.
+
+## 4 bis — Une lanterne pour accéder à l’étage
+
+**Décision validée après essai du lot 16.** La torche reste réservée aux parcours sans échelle. Une lanterne fermée fixée à la ceinture permettra de garder les deux mains libres. Elle se fabrique à l’atelier et conserve une autonomie surveillée, avec refus de départ impossible et retour anticipé. Coût et durée seront proposés avec la démonstration.
+
+**Démonstration suivante.** Fabriquer et équiper une lanterne, cliquer la réserve à l’étage, monter l’échelle, traverser la passerelle puis rentrer. Vérifier ensuite le port d’une caisse avec la lanterne, les besoins, le rappel et la sauvegarde. Contrôler dans Blender et Godot les attaches, les barreaux, les vêtements et le sac pendant les animations. L’éclairage fixe construit viendra ensuite pour les trajets réguliers. Cette étape n’est pas encore implémentée et demandera sa propre validation avant publication.
 
 ## 5 — Une fissure qui devient un passage
 

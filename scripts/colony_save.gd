@@ -1,6 +1,6 @@
 extends RefCounted
 ## Plain, versioned data only. Transient jobs must settle before capture.
-const VERSION := 5
+const VERSION := 6
 const DEFAULT_PATH := "user://saves/colony_v1.json"
 const KINDS := ["food", "food", "wood", "wood", "fiber", "fiber", "wood", "water"]
 
@@ -26,6 +26,7 @@ static func capture(game: Node) -> Dictionary:
 		"needs": needs, "furnishings": game.sleeping.snapshot(),
 		"recovery": game.construction.snapshot(),
 		"depots": game.depots.snapshot(),
+		"torches": game.torches.snapshot(),
 		"water_source": vector(game.patches[7].pos),
 		"clock": {"elapsed": game.elapsed, "meal_timer": game.meal_timer, "suspicion": game.suspicion, "hunger": game.hunger, "event_index": game.event_index},
 		"view": {"focus": vector(game.focus), "yaw": game.yaw, "zoom": game.zoom, "paths": game.show_paths, "resident": game.hud.resident_index, "cutaway": game.refuge.cutaway}
@@ -133,6 +134,24 @@ static func validate(data: Variant) -> String:
 				if not kind in ["food", "wood", "fiber", "water"] or kind in seen: return "Filtre inconnu ou dupliqué."
 				seen.append(kind)
 		if data.depots[0].stock != data.stock: return "Stock du refuge incohérent."
+	if data.version >= 6:
+		if not fields(data, ["torches"]) or not fields(data.torches, ["items", "orders"]): return "Équipement manquant."
+		if not data.torches.items is Array or data.torches.items.size() > 4096 or not data.torches.orders is Array or data.torches.orders.size() > 64: return "Équipement invalide."
+		var locations: Array = []
+		for building in data.buildings:
+			if building.kind == "workshop": locations.append(building.pos)
+		var active_orders: Array = []
+		for site in data.torches.orders:
+			if not fields(site, ["pos", "materials", "work"]) or not valid_vector(site.pos) or not site.pos in locations or site.pos in active_orders: return "Atelier de torche invalide."
+			active_orders.append(site.pos)
+			if not fields(site.materials, ["wood", "fiber"]) or not number(site.materials.wood, 0, 2, true) or not number(site.materials.fiber, 0, 1, true) or not number(site.work, 0, 7.999999): return "Fabrication de torche invalide."
+			if site.work > 0 and (site.materials.wood != 2 or site.materials.fiber != 1): return "Torche fabriquée sans matériaux."
+		for item in data.torches.items:
+			if not fields(item, ["pos", "fuel"]) or not valid_vector(item.pos) or not number(item.fuel, 0, 90): return "Combustible invalide."
+			var valid_place := Vector3(item.pos[0], item.pos[1], item.pos[2]).is_equal_approx(Vector3(-1.4, -.0105, 1.25))
+			for pos in locations:
+				if Vector3(item.pos[0], item.pos[1], item.pos[2]).is_equal_approx(Vector3(pos[0], -.0105, pos[2] + 1.15)): valid_place = true
+			if not valid_place: return "Rangement de torche invalide."
 	for assignment in data.assignments:
 		if not number(assignment, -1, count - 1, true): return "Affectation invalide."
 		if assignment >= 0 and not data.patches[int(assignment)].discovered: return "Affectation dans une zone inconnue."

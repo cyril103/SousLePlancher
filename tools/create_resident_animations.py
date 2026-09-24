@@ -293,7 +293,16 @@ def consume_pose(clip,t):
     update()
 
 
+def torch_pose(clip,t):
+    pose('walk' if clip=='torch_walk' else 'idle',t)
+    wrist=(.34,-.25,1.17+.006*math.sin(2*math.pi*t))
+    solve_limb('R_upper_arm','R_forearm',wrist,(.65,.12,1.03),clip)
+    orient_bone('R_hand',REST['R_hand'].to_quaternion())
+    update()
+
 CLIPS={
+    'torch_walk':{'frames':36,'loop':True,'speed':.4/(.60*1.2)},
+    'torch_idle':{'frames':120,'loop':True,'speed':0},
     'eat':{'frames':60,'loop':True,'speed':0},
     'drink':{'frames':60,'loop':True,'speed':0},
     'sleep':{'frames':120,'loop':True,'speed':0},
@@ -321,7 +330,9 @@ for clip,info in CLIPS.items():
     for frame in range(info['frames']+1):
         rig.animation_data.action=None
         scene.frame_set(frame)
-        if clip in ['eat','drink']:
+        if clip.startswith('torch_'):
+            torch_pose(clip,frame/info['frames'])
+        elif clip in ['eat','drink']:
             consume_pose(clip,frame/info['frames'])
         elif clip in ['sleep','bed_enter','bed_exit','floor_rest']:
             sleep_pose(clip,frame/info['frames'])

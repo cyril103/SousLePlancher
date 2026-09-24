@@ -27,6 +27,8 @@ Le **lot 13** ajoute les besoins autonomes de faim et de soif au sommeil : trois
 
 ## Suite de production
 
+Le **lot 16**, validé par le joueur, ajoute les torches individuelles : fabrication à l’atelier après livraison de 2 bois et 1 fibre, équipement, destination au sol, combustible et retour anticipé. **Travaux → Torches et éclaireurs** gère ces actions. Démo en pause : `-- --demo-torches`, puis **Espace**. Torche en main : ni caisse ni échelle. Voir [les règles, essais et limites](docs/conception/gameplay-lot-16.md).
+
 Le **lot 15**, validé par le joueur, ajoute les dépôts locaux : 12 places par casier, filtres, réservations de capacité, approvisionnement des lits et repas sur place. Le refuge possède son propre stock et le bandeau affiche le total de la colonie. Démo en pause : `-- --demo-depots`. Cliquer sur le casier pour le gérer ; **Espace** reprend. Le placement du casier reste provisoirement gratuit et instantané. Voir [le détail et les limites](docs/conception/gameplay-lot-15.md).
 
 Le **lot 14**, validé par le joueur, remplace le paiement immédiat des lits par des livraisons physiques de bois et de fibres. Les chantiers incomplets attendent les matériaux ; leur annulation laisse des tas à récupérer. Démo en pause : `-- --demo-construction`. **Espace** reprend, **Construire → Gérer les couchages** montre le suivi. Voir [les règles et vérifications](docs/conception/gameplay-lot-14.md).

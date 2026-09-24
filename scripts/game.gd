@@ -10,12 +10,14 @@ const Sleep = preload("res://scripts/colony_sleep.gd")
 const Needs = preload("res://scripts/colony_needs.gd")
 const Construction = preload("res://scripts/construction_logistics.gd")
 const Depots = preload("res://scripts/local_depots.gd")
+const Torches = preload("res://scripts/carried_torches.gd")
 const HOME := Vector3(-3, 0, 1)
 const COSTS := {"depot": {}, "bed": {"wood": 4, "fiber": 3}, "private_bed": {"wood": 6, "fiber": 5}, "shelter": {"wood": 8, "fiber": 4}, "workshop": {"wood": 10, "fiber": 6}}
 var sleeping := Sleep.new()
 var needs := Needs.new()
 var construction := Construction.new()
 var depots := Depots.new()
+var torches := Torches.new()
 const NAMES := {"food": "Miettes", "wood": "Bois", "fiber": "Fibres", "water": "Eau"}
 var stock := {"food": 24, "wood": 12, "fiber": 6, "water": 16}
 var patches: Array[Dictionary] = []
@@ -86,6 +88,7 @@ var route_mesh: MeshInstance3D
 var route_timer := 0.0
 
 func _ready() -> void:
+	torches.game = self
 	depots.game = self
 	depots.setup()
 	sleeping.game = self
@@ -190,6 +193,7 @@ func _ready() -> void:
 	if "--demo-sleep" in OS.get_cmdline_user_args(): prepare_sleep_demo()
 	if "--demo-construction" in OS.get_cmdline_user_args(): prepare_construction_demo()
 	if "--demo-depots" in OS.get_cmdline_user_args(): prepare_depots_demo()
+	if "--demo-torches" in OS.get_cmdline_user_args(): prepare_torches_demo()
 	if "--demo-needs" in OS.get_cmdline_user_args(): prepare_needs_demo()
 
 func prepare_needs_demo() -> void:
@@ -295,6 +299,7 @@ func _add_patch(kind: String, pos: Vector3, amount: int) -> void:
 	patches.append({"kind": kind, "pos": pos, "amount": amount, "reserved": 0, "node": node, "label": label, "discovered": true})
 
 func _exit_tree() -> void:
+	torches.game = null
 	depots.game = null
 	sleeping.game = null
 	construction.game = null
@@ -384,6 +389,11 @@ func _navigation_allows_build(pos: Vector3, kind: String) -> bool:
 	destinations.append(HOME + Refuge.OUTSIDE)
 	destinations.append_array(depot_slots)
 	for bed in sleeping.beds: destinations.append(sleeping.entrance(bed))
+	for building in buildings:
+		if building.kind == "workshop": destinations.append(torches.entrance(building))
+	if kind == "workshop": destinations.append(pos + Vector3(0, -.0105, 1.15))
+	for item in torches.items:
+		if item.owner < 0: destinations.append(item.pos)
 	for id in range(1, depots.sites.size()): destinations.append(depots.entry(id))
 	if kind == "depot": destinations.append(pos + Depots.ENTRY)
 	for pile in construction.recovery: destinations.append(pile.pos)
@@ -415,6 +425,23 @@ func _update_camera() -> void:
 func ground_point(screen: Vector2) -> Variant:
 	return Plane(Vector3.UP, 0).intersects_ray(camera.project_ray_origin(screen), camera.project_ray_normal(screen))
 
+func destination_point(screen: Vector2) -> Variant:
+	# Navigation has explicit decks rather than physics colliders. Pick the visible
+	# upper surface first; projecting every click to y=0 targets beneath the bridge.
+	if east_label.is_visible_in_tree() and not camera.is_position_behind(east_label.global_position):
+		var font: Font = east_label.font if east_label.font != null else ThemeDB.fallback_font
+		var text_size := font.get_string_size(east_label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, east_label.font_size)
+		var center := camera.unproject_position(east_label.global_position)
+		var unit := camera.unproject_position(east_label.global_position + camera.global_basis.x).distance_to(center)
+		var size := (text_size + Vector2.ONE * east_label.outline_size * 2) * east_label.pixel_size * unit
+		if Rect2(center - size * .5, size).grow(4).has_point(screen): return Bridge.SCOUT_POINT
+	var upper_hit = Plane(Vector3.UP, 2.04).intersects_ray(camera.project_ray_origin(screen), camera.project_ray_normal(screen))
+	if upper_hit != null:
+		var horizontal := Vector2(upper_hit.x, upper_hit.z)
+		if upper_navigation.area.has_point(horizontal) or east_navigation.area.has_point(horizontal) or Rect2(7, -4.5, 2, 1).has_point(horizontal):
+			return Vector3(upper_hit.x, Bridge.NEAR.y, upper_hit.z)
+	return ground_point(screen)
+
 func _unhandled_input(event: InputEvent) -> void:
 	if hud.load_panel.visible:
 		if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE: hud.cancel_load()
@@ -426,7 +453,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_F9: hud.ask_load()
 			KEY_SPACE: _toggle_pause()
 			KEY_H: _toggle_hide()
-			KEY_ESCAPE: _cancel_build(); _show_tray("")
+			KEY_ESCAPE: torches.picking = -1; _cancel_build(); _show_tray("")
 			KEY_B: _toggle_tray("build")
 			KEY_C: _toggle_tray("people")
 			KEY_O: _toggle_tray("goals")
@@ -442,8 +469,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP: zoom = maxf(15, zoom - 1)
 		if event.button_index == MOUSE_BUTTON_WHEEL_DOWN: zoom = minf(34, zoom + 1)
-		if event.button_index == MOUSE_BUTTON_RIGHT: _cancel_build()
+		if event.button_index == MOUSE_BUTTON_RIGHT: torches.picking = -1; _cancel_build()
 		if event.button_index == MOUSE_BUTTON_LEFT and not ended and not start_panel.visible:
+			if torches.picking >= 0:
+				var destination = destination_point(event.position)
+				if destination != null:
+					torches.depart(torches.picking, destination)
+					_show_tray("torches")
+				return
 			var point = ground_point(event.position)
 			if point != null:
 				if build_mode != "":
@@ -563,6 +596,11 @@ func assign_worker(worker_index: int = -1) -> bool:
 	if selected < 0 or ended or not patches[selected].discovered or patches[selected].amount <= 0: return false
 	for i in range(workers.size()):
 		if worker_index >= 0 and i != worker_index: continue
+		if torches.occupied(i):
+			if worker_index >= 0:
+				_news("Torche en main : rentrez la ranger avant de porter une caisse.")
+				return false
+			continue
 		var worker := workers[i]
 		if worker.patch < 0 and worker.carrying == 0 and worker.delivery.state == "idle":
 			worker.patch = selected
@@ -793,6 +831,7 @@ func start_exploration() -> bool:
 			return false
 	for worker in workers:
 		var controller: WorkerDelivery = worker.delivery
+		if torches.occupied(controller.owner): continue
 		if worker.patch < 0 and worker.carrying == 0 and controller.state == "idle":
 			controller.exploring = true
 			controller.change("leave_home" if controller.inside_refuge else "explore")
@@ -833,6 +872,7 @@ func cancel_checkpoint() -> void:
 	_news(save_status)
 
 func checkpoint_ready() -> bool:
+	if not torches.missions.is_empty() or not torches.crafting.is_empty(): return false
 	if not depots.settled(): return false
 	if not construction.jobs.is_empty(): return false
 	if ended or not hiding or not delivery_ledger.jobs.is_empty() or delivery_ledger.destination_owner != -1: return false
@@ -898,6 +938,7 @@ func apply_checkpoint(data: Dictionary) -> bool:
 		for pile in data.recovery:
 			construction.add_recovery(Vector3(pile.pos[0], pile.pos[1], pile.pos[2]), {"wood": int(pile.materials.wood), "fiber": int(pile.materials.fiber)})
 	if data.patches[6].discovered: discover_east()
+	if data.version >= 6: torches.restore(data.torches)
 	for i in range(workers.size()):
 		var controller: WorkerDelivery = workers[i].delivery
 		workers[i].patch = int(data.assignments[i])
@@ -944,3 +985,34 @@ func load_checkpoint() -> Node3D:
 	set_process(false)
 	queue_free()
 	return candidate
+
+func prepare_torches_demo() -> void:
+	get_window().title = "Sous le plancher — Torches individuelles (démo)"
+	start_panel.hide()
+	stock.wood = 24
+	stock.fiber = 12
+	depots.sites[0].capacity = 128
+	build_mode = "workshop"
+	_place_build(Vector3(0, 0, -3))
+	torches.request_craft()
+	for step in range(1800):
+		simulate(.05)
+		suspicion = 0
+		if not torches.items.is_empty() and construction.jobs.is_empty(): break
+	torches.equip(0)
+	for step in range(800):
+		simulate(.05)
+		suspicion = 0
+		if torches.held(0) >= 0: break
+	torches.depart(0, Vector3(8, -.0105, 3.8))
+	elapsed = 0
+	event_index = -1
+	suspicion = 0
+	focus = Vector3(2, 0, -1)
+	zoom = 19
+	paused = true
+	hud.resident_index = 0
+	_show_tray("torches")
+	_update_camera()
+	_refresh_ui()
+	_news("Démo torches : Espace lance la sortie. H rappelle tout le monde. Travaux → Torches pour fabriquer et équiper.")

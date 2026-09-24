@@ -78,6 +78,7 @@ func setup(world: Node3D, data: Dictionary, index: int, transactions: DeliveryLe
 	destination_position = game.HOME + Vector3(1.6, GROUND_Y, 0.25)
 
 func pose(clip: String, time: float) -> void:
+	if game.torches.held(owner) >= 0 and clip in ["idle", "walk"]: clip = "torch_" + clip
 	if actor.current != clip: actor.set_action(clip, 0.0)
 	actor.player.seek(time, true)
 	actor.player.advance(0)
@@ -97,6 +98,9 @@ func change(next: String) -> void:
 	retry_time = 0.0
 
 func cancel() -> void:
+	if game.torches.recall(self):
+		if door_active: recall_after_door = true
+		return
 	# A ration already withdrawn is consumed once; recall cannot duplicate or discard it.
 	if game.needs.consuming(self): return
 	needs_supply = -1
@@ -206,6 +210,8 @@ func plan_route(target: Vector3) -> bool:
 	route_target = target
 	route_revision = game.travel_revision()
 	route = game.travel_path(actor.position, target, owner)
+	if game.torches.held(owner) >= 0 and is_inf(game.torches.route_length(actor.position, target, owner)):
+		route.clear()
 	route_index = 0
 	retry_time = 1.0
 	if route.is_empty():
@@ -244,6 +250,7 @@ func harvest_destination() -> bool:
 	return true
 
 func tick(dt: float) -> void:
+	game.torches.advance(self, dt)
 	game.sleeping.update_need(self, dt)
 	game.needs.update(self, dt)
 	if bridge_active:
@@ -260,9 +267,11 @@ func tick(dt: float) -> void:
 		ladder_exit = Vector3.INF
 	timer += dt
 	retry_time = maxf(0, retry_time - dt)
+	if game.torches.tick(self, dt): return
 	if game.construction.tick(self, dt): return
-	if game.needs.tick(self, dt): return
-	if needs_supply < 0 and not (need_interrupt and state == "return_home"):
+	if game.torches.held(owner) < 0 and game.needs.tick(self, dt): return
+	if game.torches.start_work(self): return
+	if game.torches.held(owner) < 0 and needs_supply < 0 and not (need_interrupt and state == "return_home"):
 		if game.sleeping.tick(self, dt): return
 	match state:
 		"idle":
@@ -384,6 +393,8 @@ func tick(dt: float) -> void:
 					change("return_home")
 
 func description() -> String:
+	var torch_description: String = game.torches.description(self)
+	if not torch_description.is_empty(): return torch_description
 	var supply_description: String = game.construction.description(self)
 	if not supply_description.is_empty() and not climbing and not bridge_active and not door_active: return supply_description
 	var vital_description: String = game.needs.description(self)

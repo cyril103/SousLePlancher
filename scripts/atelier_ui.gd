@@ -42,6 +42,11 @@ var load_was_paused := true
 var explore_button: Button
 var routes_button: Button
 var stocks_label: Label
+var torch_picker: OptionButton
+var torch_summary: Label
+var torch_fuel: ProgressBar
+var torch_equip: Button
+var torch_depart: Button
 var depot_picker: OptionButton
 var depot_summary: Label
 var depot_filters: Dictionary = {}
@@ -333,6 +338,8 @@ func _make_trays() -> void:
 	wrapped(people, "Cliquez sur un habitant pour l’inspecter. [H] rappelle toute la colonie en conservant ses tâches.", 16, MUTED)
 	var work := tray("work", "Travaux en cours")
 	button(work, "Chantiers et attribution des lits", func(): game._show_tray("beds"))
+	button(work, "Torches et éclaireurs", func(): game._show_tray("torches"))
+	_make_torches()
 	var work_scroll := ScrollContainer.new()
 	work_scroll.custom_minimum_size.y = 225
 	work_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -499,6 +506,7 @@ func _update_roster() -> void:
 		worker_rows.append(control)
 
 func refresh() -> void:
+	_refresh_torches()
 	if not is_instance_valid(game.start_panel): return
 	save_button.disabled = game.ended or game.start_panel.visible
 	save_button.text = "Annuler la sauvegarde en attente" if game.pending_save else "Sauvegarder au refuge [F5]"
@@ -516,7 +524,7 @@ func refresh() -> void:
 	var carrying := {"food": 0, "wood": 0, "fiber": 0, "water": 0}
 	for i in range(game.workers.size()):
 		var worker: Dictionary = game.workers[i]
-		if worker.patch < 0 and worker.carrying == 0 and worker.delivery.state == "idle": idle += 1
+		if worker.patch < 0 and worker.carrying == 0 and worker.delivery.state == "idle" and not game.torches.occupied(i): idle += 1
 		carrying[worker.kind] += worker.carrying
 		worker_rows[i].text = "H%d · Énergie %d · %s%s" % [i + 1, roundi(worker.energy), worker.delivery.description(), " (%d)" % worker.carrying if worker.carrying > 0 else ""]
 	for key in resource_values:
@@ -617,7 +625,7 @@ func refresh() -> void:
 
 	resident_cargo.text = "Charge : %d · %s" % [resident.carrying, game.NAMES[resident.kind]] if resident.carrying > 0 else (game.NAMES[game.patches[resident.patch].kind] if resident.patch >= 0 else "Sans affectation")
 	resident_recall.disabled = game.ended or (resident.patch < 0 and resident.carrying == 0 and (resident.delivery.inside_refuge or resident.delivery.state == "return_home"))
-	resident_assign.disabled = game.ended or game.hiding or resident.patch >= 0 or resident.carrying > 0 or resident.delivery.state != "idle"
+	resident_assign.disabled = game.ended or game.hiding or resident.patch >= 0 or resident.carrying > 0 or resident.delivery.state != "idle" or game.torches.occupied(resident_index)
 	resident_card.visible = game.active_tray == "" and not game.start_panel.visible and not game.ended and game.build_mode == ""
 	modal_shade.visible = game.start_panel.visible or game.end_panel.visible or load_panel.visible
 	for i in range(game.patches.size()):
@@ -691,3 +699,62 @@ func cancel_load() -> void:
 	load_panel.hide()
 	game.paused = load_was_paused
 	refresh()
+
+func _make_torches() -> void:
+	var box := tray("torches", "Torches & éclaireurs")
+	wrapped(box, "2 bois · 1 fibre · 8 s à l’atelier\n90 s d’autonomie · retour avec 12 s de marge", 16)
+	button(box, "Fabriquer une torche", func(): game.torches.request_craft(); refresh())
+	torch_picker = OptionButton.new()
+	box.add_child(torch_picker)
+	torch_picker.item_selected.connect(func(index: int): resident_index = index; refresh())
+	var fuel_row := row(box)
+	picture(fuel_row, preload("res://assets/ui/atelier/torch.svg"), Vector2(28, 28))
+	torch_fuel = ProgressBar.new()
+	torch_fuel.custom_minimum_size.y = 18
+	torch_fuel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	torch_fuel.max_value = game.torches.DURATION
+	torch_fuel.show_percentage = false
+	var fuel_background := StyleBoxFlat.new()
+	fuel_background.bg_color = Color("57472f")
+	fuel_background.set_corner_radius_all(5)
+	torch_fuel.add_theme_stylebox_override("background", fuel_background)
+	var fuel_fill := StyleBoxFlat.new()
+	fuel_fill.bg_color = Color("c78b38")
+	fuel_fill.set_corner_radius_all(5)
+	torch_fuel.add_theme_stylebox_override("fill", fuel_fill)
+	fuel_row.add_child(torch_fuel)
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size.y = 145
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	box.add_child(scroll)
+	torch_summary = wrapped(scroll, "", 16)
+	torch_summary.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var actions := row(box)
+	torch_equip = button(actions, "Équiper", func(): game.torches.equip(resident_index); refresh())
+	torch_depart = button(actions, "Destination…", func(): game.torches.choose_target(resident_index))
+	button(box, "Rappeler / ranger au refuge", func(): game.torches.recall(game.workers[resident_index].delivery); refresh())
+	wrapped(box, "Torche en main : ni caisse, ni échelle. Une torche épuisée se remplace par une nouvelle fabrication. Les besoins interrompent la sortie.", 15)
+
+func _refresh_torches() -> void:
+	if torch_picker == null: return
+	if torch_picker.item_count != game.workers.size():
+		torch_picker.clear()
+		for i in range(game.workers.size()): torch_picker.add_item("Habitant %d" % (i + 1))
+	torch_picker.select(resident_index)
+	var c: WorkerDelivery = game.workers[resident_index].delivery
+	var index: int = game.torches.held(resident_index)
+	var usable := 0
+	var empty := 0
+	for item in game.torches.items:
+		if item.fuel <= 0: empty += 1
+		elif item.owner < 0 and item.reserved < 0: usable += 1
+	torch_fuel.value = game.torches.items[index].fuel if index >= 0 else 0
+	torch_summary.text = "%d torche(s) rangée(s) utilisable(s) · %d épuisée(s)\n%s" % [usable, empty, c.description()]
+	if index >= 0:
+		var item: Dictionary = game.torches.items[index]
+		torch_summary.text += "\n%s · %.1f / 90 s" % ["Allumée" if item.lit else "Équipée, éteinte", item.fuel]
+	for order in game.torches.orders:
+		if order.built: continue
+		torch_summary.text += "\nAtelier : bois %d/2 · fibres %d/1 · %.0f %%" % [order.materials.wood, order.materials.fiber, order.work / order.required * 100]
+	torch_equip.disabled = game.torches.occupied(resident_index) or usable == 0 or game.hiding
+	torch_depart.disabled = not game.torches.missions.has(resident_index) or game.torches.missions[resident_index].phase != "ready"
