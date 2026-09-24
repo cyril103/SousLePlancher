@@ -62,6 +62,11 @@ func run() -> void:
 	game._toggle_hide()
 	game._choose_build("workshop")
 	check(game._place_build(Vector3(-3, 0, -3)), "Build workshop from harvested resources")
+	# Pick-up, unloading and depot queuing now take simulation time. Wait for
+	# actual deliveries instead of relying on the old instantaneous transfer.
+	for i in range(800):
+		if game.stock.wood >= 8 and game.stock.fiber >= 4: break
+		advance(game, 0.05)
 	game._choose_build("shelter")
 	check(game._place_build(Vector3(3, 0, 1)), "Build second shelter")
 	game.selected = 0

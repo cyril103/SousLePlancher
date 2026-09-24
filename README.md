@@ -23,6 +23,8 @@ Caméra : flèches ou ZQSD sur clavier français (WASD physique), molette pour z
 
 ## Assets Blender
 
+Les habitants animés sont maintenant utilisés dans la **partie principale**, avec réservation, prise, transport et dépose des caisses. Les affectations affichent l'état des livraisons. **H** rappelle les porteurs avec leur charge ; **Libérer** annule avant la prise ou termine le retour si la caisse est déjà portée. Voir `docs/conception/gameplay-lot-06.md` pour les tests et limites. Le paramètre `-- --demo-deliveries` lance une partie avec quatre affectations préparées.
+
 Le **lot 05** complète `scenes/interaction_review.tscn` avec les pivots de transport et la descente : **1** livraison, **2** montée, **3** descente. Les appuis et raccords sont vérifiés ; voir `docs/conception/assets-lot-05.md` pour les limites et le contrat d'intégration.
 
 Les **interactions du lot 04** se testent dans `scenes/interaction_review.tscn` (**F6**) : **1** pour saisir, transporter et déposer une caisse ; **2** pour entrer sur l'échelle, monter et rejoindre le palier ; **R** pour recommencer. Détails et limites dans `docs/conception/assets-lot-04.md`.
@@ -70,5 +72,5 @@ Le test couvre récolte/livraison, affectation, coût et placement de constructi
 
 Revue visuelle : lancer Godot avec `--script res://tests/visual_review.gd` pour enregistrer trois vues (ensemble, rotation, détail) et mesurer les intervalles de rendu. Mesure indicative sur la scène initiale : 16,61 ms de moyenne, 16,94 ms au 95e percentile, en 1920 × 1080 sur GTX 1650 avec synchronisation verticale. Cette mesure ne couvre pas une colonie développée.
 
-Première boucle jouable, graphismes stylisés de prototype. Les déplacements sont directs, sans évitement des bâtiments. Pas encore de sauvegarde, d'audio, d'animation squelettique ni d'humains modélisés ; leur présence est simulée par un cycle et une jauge de soupçons. Prochaines étapes possibles : navigation, silhouettes/ombres et bruits humains, progression de la colonie, menus et sauvegardes.
+Première boucle jouable, graphismes stylisés de prototype, habitants avec animation squelettique et livraisons suivies. Les déplacements restent directs, sans évitement des bâtiments. Pas encore de sauvegarde, d'audio ni de grands humains modélisés ; leur présence est simulée par un cycle et une jauge de soupçons. Prochaines étapes : navigation, accès verticaux, silhouettes/ombres et bruits humains, progression de la colonie, menus et sauvegardes.
 

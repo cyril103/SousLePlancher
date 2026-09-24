@@ -35,5 +35,8 @@ static func building(root: Node3D, pos: Vector3, kind: String) -> Node3D:
 	return node
 
 static func worker(root: Node3D, pos: Vector3, _index: int) -> Node3D:
-	return model(root, "worker", pos)
+	var resident := ResidentAnimator.new()
+	root.add_child(resident)
+	resident.position = pos + Vector3(0, WorkerDelivery.GROUND_Y, 0)
+	return resident
 

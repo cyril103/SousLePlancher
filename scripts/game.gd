@@ -7,6 +7,7 @@ const NAMES := {"food": "Miettes", "wood": "Bois", "fiber": "Fibres"}
 var stock := {"food": 24, "wood": 12, "fiber": 6}
 var patches: Array[Dictionary] = []
 var workers: Array[Dictionary] = []
+var delivery_ledger := DeliveryLedger.new()
 var buildings: Array[Dictionary] = []
 var camera: Camera3D
 var focus := Vector3.ZERO
@@ -62,22 +63,58 @@ func _ready() -> void:
 	_add_patch("wood", Vector3(7, 0, 1), 50)
 	_add_patch("fiber", Vector3(-7, 0, 3), 45)
 	_add_patch("fiber", Vector3(4, 0, -5), 40)
+	delivery_ledger.patches = patches
 	for i in range(4):
 		_add_worker()
+	_make_loading_stations()
 	_make_ui()
 	_refresh_ui()
+	if "--demo-deliveries" in OS.get_cmdline_user_args():
+		start_panel.hide()
+		paused = false
+		for patch in [0, 2, 4, 1]:
+			selected = patch
+			assign_worker()
+		selected = 2
+		_show_tray("")
+		_news("Livraisons en cours : C pour les affectations, H pour rappeler les porteurs.")
+		zoom = 18.0
 	if "--capture" in OS.get_cmdline_user_args():
 		_capture.call_deferred()
 
 func _add_patch(kind: String, pos: Vector3, amount: int) -> void:
 	var node := Art.model(self, kind, pos)
 	var label := Art.caption(node, NAMES[kind], Vector3(0, 1.0, 0), Color("eac37e"))
-	patches.append({"kind": kind, "pos": pos, "amount": amount, "node": node, "label": label})
+	label.pixel_size = 0.008
+	patches.append({"kind": kind, "pos": pos, "amount": amount, "reserved": 0, "node": node, "label": label})
+
+func _exit_tree() -> void:
+	# Workers store their controller; detach its dictionary reference on teardown.
+	for worker in workers:
+		worker.delivery.worker = {}
+		worker.delivery.game = null
 
 func _add_worker() -> void:
 	var i := workers.size()
 	var node := Art.worker(self, HOME + Vector3(sin(i * 2.4), 0, cos(i * 2.4)), i)
 	workers.append({"node": node, "patch": -1, "carrying": 0, "kind": "food", "work": 0.0})
+	var controller := WorkerDelivery.new()
+	workers[i].delivery = controller
+	controller.setup(self, workers[i], i, delivery_ledger)
+
+func _make_loading_stations() -> void:
+	var controller: WorkerDelivery = workers[0].delivery
+	var stations: Array[Vector3] = [controller.destination_position]
+	for patch in patches:
+		stations.append(patch.pos + Vector3(0.9, WorkerDelivery.GROUND_Y, 0.2))
+	for station in stations:
+		var stand := preload("res://assets/models/reference_01/salvage_crate.glb").instantiate() as Node3D
+		add_child(stand)
+		var top := station + controller.contact.origin
+		stand.position = Vector3(top.x, 0, top.z)
+		stand.scale = Vector3(0.70, top.y / 0.49, 0.70)
+	var depot_label := Art.caption(self, "DÉPÔT", controller.destination_position + Vector3(0, 0.95, 0.9), Color("eac37e"))
+	depot_label.pixel_size = 0.0065
 
 func _update_camera() -> void:
 	camera.size = zoom
@@ -162,28 +199,7 @@ func simulate(dt: float) -> void:
 	var exposed := 0
 	for worker in workers:
 		var node: Node3D = worker.node
-		var target := HOME
-		var idx: int = worker.patch
-		if not hiding and worker.carrying == 0 and idx >= 0 and patches[idx].amount > 0:
-			target = patches[idx].pos
-		var distance := node.position.distance_to(target)
-		if distance > 0.25:
-			var movement: Vector3 = target - node.position
-			node.rotation.y = atan2(-movement.x, -movement.z)
-			node.position = node.position.move_toward(target, dt * (1.7 + workshops * 0.35))
-			node.position.y = absf(sin(elapsed * 12 + workers.find(worker))) * 0.055
-		else:
-			node.position.y = 0
-			if worker.carrying > 0:
-				stock[worker.kind] += worker.carrying
-				worker.carrying = 0
-			elif not hiding and idx >= 0 and patches[idx].amount > 0:
-				worker.work += dt
-				if worker.work >= 2.0:
-					worker.work = 0
-					worker.kind = patches[idx].kind
-					worker.carrying = mini(3 + workshops, patches[idx].amount)
-					patches[idx].amount -= worker.carrying
+		worker.delivery.update(dt)
 		if node.position.distance_to(HOME) > 1.8: exposed += 1
 	if active:
 		suspicion += dt * exposed * 0.8
@@ -203,7 +219,7 @@ func simulate(dt: float) -> void:
 func assign_worker() -> bool:
 	if selected < 0 or ended or patches[selected].amount <= 0: return false
 	for worker in workers:
-		if worker.patch < 0 and worker.carrying == 0:
+		if worker.patch < 0 and worker.carrying == 0 and worker.delivery.state == "idle":
 			worker.patch = selected
 			_news("Un habitant est affecté à la récolte de %s." % NAMES[patches[selected].kind].to_lower())
 			return true
@@ -215,14 +231,17 @@ func release_worker() -> void:
 		if worker.patch == selected and selected >= 0:
 			worker.patch = -1
 			worker.work = 0.0
+			worker.delivery.cancel()
 			return
 
 func _valid_site(pos: Vector3) -> bool:
 	if absf(pos.x) > 9.5 or absf(pos.z) > 6: return false
+	if pos.distance_to(HOME + Vector3(1.6, 0, 0.25)) < 1.6: return false
 	for b in buildings:
 		if pos.distance_to(b.pos) < 2.2: return false
 	for p in patches:
 		if pos.distance_to(p.pos) < 1.8: return false
+		if pos.distance_to(p.pos + Vector3(0.9, 0, 0.5)) < 1.4: return false
 	if pos.distance_to(Vector3(9, 0, 5.7)) < 2: return false
 	if pos.distance_to(Vector3(-8.7, 0, 5.8)) < 2: return false
 	return true
@@ -275,6 +294,11 @@ func _cancel_build() -> void:
 func _toggle_hide() -> void:
 	if ended or start_panel.visible: return
 	hiding = not hiding
+	if hiding:
+		for worker in workers:
+			worker.delivery.cancel()
+			if worker.delivery.job < 0 and worker.delivery.state == "idle":
+				worker.delivery.change("return_home")
 	_news("Tout le monde rentre au refuge. Les tâches seront conservées." if hiding else "Les habitants reprennent leurs tâches.")
 
 func _toggle_pause() -> void:
@@ -448,14 +472,19 @@ func _make_ui() -> void:
 		patch_picker.add_item("%s · gisement %d" % [NAMES[patches[i].kind], i + 1])
 	patch_picker.item_selected.connect(func(index: int): selected = index - 1; _refresh_ui())
 	people.add_child(patch_picker)
-	detail_label = _label(people, "", 17)
+	var people_scroll := ScrollContainer.new()
+	people_scroll.custom_minimum_size = Vector2(0, 250)
+	people_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	people.add_child(people_scroll)
+	detail_label = _label(people_scroll, "", 17)
+	detail_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var actions := HBoxContainer.new()
 	people.add_child(actions)
 	assign_button = _button(actions, "+ Affecter", assign_worker)
 	release_button = _button(actions, "− Libérer", release_worker)
 	assign_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	release_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_label(people, "Un clic sur une ressource ouvre aussi ce panneau.", 14, Color("a7bdb2"))
+	_label(people, "Libérer annule avant la prise ; une charge déjà prise\nest rapportée au dépôt. H rappelle tous les habitants.", 14, Color("a7bdb2"))
 
 	var goals := _tray(ui, "goals", "VOTRE PREMIER FOYER")
 	objective_label = _label(goals, "", 17)
@@ -539,7 +568,7 @@ func _refresh_ui() -> void:
 	objective_label.text = "%s  Deux abris (%d/2)\n%s  Un atelier (%d/1)\n%s  35 miettes en réserve\n%s  Premier passage traversé" % ["✓" if shelters >= 2 else "○", shelters, "✓" if workshops > 0 else "○", workshops, "✓" if stock.food >= 35 else "○", "✓" if elapsed >= 100 else "○"]
 	var idle := 0
 	for worker in workers:
-		if worker.patch < 0: idle += 1
+		if worker.patch < 0 and worker.delivery.state == "idle": idle += 1
 	dock_buttons.people.text = "Habitants · %d" % idle
 	dock_buttons.people.tooltip_text = "%d habitant(s) sans tâche. Gérer les affectations [C]" % idle
 	patch_picker.select(selected + 1)
@@ -550,13 +579,17 @@ func _refresh_ui() -> void:
 		var assigned := 0
 		for worker in workers:
 			if worker.patch == selected: assigned += 1
-		detail_label.text += "%s · %d restant(s)\n%d habitant(s) affecté(s)" % [NAMES[patches[selected].kind], patches[selected].amount, assigned]
+		detail_label.text += "%s · %d restant(s), dont %d réservé(s)\n%d habitant(s) affecté(s)" % [NAMES[patches[selected].kind], patches[selected].amount, patches[selected].reserved, assigned]
 		release_button.disabled = assigned == 0 or ended
 		var available := false
 		for worker in workers:
-			if worker.patch < 0 and worker.carrying == 0: available = true
+			if worker.patch < 0 and worker.carrying == 0 and worker.delivery.state == "idle": available = true
 		assign_button.disabled = not available or patches[selected].amount <= 0 or ended
 	else: detail_label.text += "Cliquez sur un gisement\npour organiser la récolte."
+	detail_label.text += "\n"
+	for i in range(workers.size()):
+		var worker := workers[i]
+		detail_label.text += "\nHabitant %d · %s%s" % [i + 1, worker.delivery.description(), " (%d)" % worker.carrying if worker.carrying > 0 else ""]
 	if hunger > 0: detail_label.text += "\n\nFAMINE : récoltez des miettes !"
 	for i in range(patches.size()):
 		var p := patches[i]
