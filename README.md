@@ -27,6 +27,8 @@ Le **lot 13** ajoute les besoins autonomes de faim et de soif au sommeil : trois
 
 ## Suite de production
 
+**Priorité proposée après le catalogue : terminer l’expédition vers le secteur adjacent.** La [roadmap actualisée](docs/conception/roadmap-production.md) sépare reconnaissance avec lanterne (6A), récolte et retour chargé (6B), puis sauvegarde en expédition (6C). Les assets fonctionnels sont réutilisés ; la fourmi et la refonte visuelle ne sont pas les prochains lots. Cette révision documentaire est validée par le joueur ; les lots futurs gardent leur validation séparée.
+
 Le **lot 18**, validé par le joueur, ajoute une fissure à inspecter, dégager et étayer : livraison de 6 bois et 4 fibres, puis 24 secondes de travaux. Une fois ouverte, elle permet une visite à vide de l’alcôve attenante, avec file d’attente et retour autonome. **Travaux → Fissure et passage** ; démo `-- --demo-fissure`, puis **Espace**. Voir [les règles et limites](docs/conception/gameplay-lot-18.md).
 
 Le **lot 17**, validé par le joueur, ajoute la lanterne de ceinture : 4 bois, 3 fibres, 16 secondes de fabrication et 180 secondes d’autonomie. Elle libère les mains pour l’échelle et les caisses. Démo : `-- --demo-lanterns`, puis **Espace** pour explorer la réserve. Après le retour, **Équiper**, puis **Rapporter du bois** teste une livraison éclairée avec la seconde lanterne. Voir [les règles et limites](docs/conception/gameplay-lot-17.md).

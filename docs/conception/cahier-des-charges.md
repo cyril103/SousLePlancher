@@ -585,9 +585,9 @@ Les choix ci-dessous sont issus de l’entretien, pas de nouvelles propositions.
 ## 33. Méthode de retour et ordre de reprise
 Le joueur demande une livraison à la fois : résultat présenté, validation, puis commit et push. Une correction demandée fait partie de l’étape en cours. Aucune publication de cette révision ou d’un nouveau lot avant son accord.
 
-**Étape actuelle.** Révision documentaire : bilan, décisions, assets et [roadmap détaillée](roadmap-production.md). Le PDF v0.1 demeure historique ; il ne doit pas servir de liste des fonctionnalités actuelles.
+**Étape actuelle — bilan du 24 septembre 2026.** Gameplay publié jusqu’au lot 18 (`06226a1`) et catalogue de références V01 publié (`1d88614`). Les lits approvisionnés, dépôts locaux, besoins autonomes, torches, lanternes et fissure aménageable existent. La visite d’alcôve reste à vide et la sauvegarde v8 impose le retour au refuge. La [roadmap détaillée](roadmap-production.md) distingue les acquis des travaux restants. Le PDF v0.1 demeure historique ; il ne doit pas servir de liste des fonctionnalités actuelles.
 
-**Premier résultat jouable suivant.** Approvisionner physiquement un chantier de lit avec les livraisons existantes ; démontrer concurrence, annulation, besoins et reprise. Puis réserves locales, torches portées et premier secteur sombre relié. Le plan détaille les dépendances et critères de chacun.
+**Premier résultat jouable suivant.** Étape 6A : reconnaître le secteur adjacent avec une lanterne et revenir par la fissure. Puis 6B : rendre le passage compatible avec une charge et rapporter une ressource existante utile au refuge ; 6C : sauvegarder et reprendre en expédition. Réutiliser les modèles fonctionnels. La fourmi intervient ensuite sur le parcours cuisine ; la refonte artistique générale attend le bilan du premier chapitre. Le plan détaille chaque démonstration et ses critères ; sa révision est validée par le joueur, avec validation séparée des futurs lots.
 
 **Références.** Les fiches `gameplay-lot-06.md` à `gameplay-lot-13.md` documentent les incréments déjà livrés. Le fichier `inventaire-assets.csv` est la source de suivi des assets ; les quantités sont des cibles, et un statut partiel ne vaut pas acceptation du lot complet.
 

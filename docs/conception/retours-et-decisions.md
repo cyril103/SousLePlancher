@@ -78,6 +78,10 @@ La version 0.2 devra harmoniser les chapitres, les statistiques provisoires, les
 
 ## Validation de la reprise
 
+**Recentrage demandé après le catalogue.** Le joueur demande de retravailler la roadmap selon l’état actuel, sans s’éparpiller. La révision propose de terminer l’expédition en trois livraisons (6A reconnaissance équipée, 6B récolte distante, 6C sauvegarde en voyage), en conservant les assets fonctionnels. La première fourmi est replacée dans le parcours cuisine et la refonte artistique générale est différée. Le joueur valide cette révision et demande son commit et sa publication. Aucun nouveau lot de code n’est engagé par cette révision ; les livraisons futures seront présentées séparément.
+
+**Publications confirmées.** Le lot 18 a été publié dans `06226a1`. Le catalogue de douze planches, ses prompts et sa galerie ont été validés pour commit et push puis publiés dans `1d88614`. Il fournit des références artistiques ; cette publication ne constitue pas une commande de remplacement de tous les modèles.
+
 **Lot 15 — dépôts locaux validés.** Le joueur autorise l'étape suivante (« ok c'est parti »). Capacité, filtres, stocks physiques, chantiers et besoins servis localement, sauvegarde v5. Le placement du casier est provisoirement gratuit et instantané ; fabrication et transferts entre dépôts restent à développer. Voir `gameplay-lot-15.md`. Le joueur confirme « je valide » après la démonstration ; commit et push autorisés.
 
 **Lot 14 — approvisionnement des lits validé.** Le joueur confirme « tu peux valider » après présentation et lancement de la démo. Livraison physique avant fabrication, réservations, récupération après annulation et sauvegarde v4. Voir `gameplay-lot-14.md`. Commit et push autorisés selon le fonctionnement convenu.
