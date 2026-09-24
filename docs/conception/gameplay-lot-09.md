@@ -45,3 +45,5 @@ La pièce est présentée sans toit et avec une coupe latérale pour rendre l’
 Il n’y a pas encore de geste spécifique de la main sur la poignée : l’ouverture est automatique à l’approche réservée. Le système global d’évitement entre piétons reste celui des lots précédents ; l’accès de la porte est réservé, mais les croisements ordinaires à l’extérieur ne sont pas des collisions dynamiques.
 
 Après revue : raccorder la passerelle validée à une nouvelle petite zone de ressources, puis étendre les accès à plusieurs connexions et introduire les premières contraintes d’exploration. Les besoins des habitants et l’aménagement intérieur restent des lots séparés à équilibrer.
+
+La suite engagée est décrite dans [le lot 10 — passerelle et reconnaissance](gameplay-lot-10.md).

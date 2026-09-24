@@ -17,14 +17,16 @@ func configure(footprints: Array[Rect2], stands: Array[Rect2] = []) -> void:
 	# Low loading stands require the close approach authored in the kneeling clip.
 	# Keep foot clearance; shoulders and the carried crate pass above their edge.
 	for box in stands: collision_boxes.append(box.grow(0.08))
-	grid.region = Rect2i(-42, -26, 85, 53)
+	var first := Vector2i(floori(area.position.x / STEP), floori(area.position.y / STEP))
+	var last := Vector2i(ceili(area.end.x / STEP), ceili(area.end.y / STEP))
+	grid.region = Rect2i(first, last - first + Vector2i.ONE)
 	grid.cell_size = Vector2.ONE * STEP
 	grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
 	grid.default_compute_heuristic = AStarGrid2D.HEURISTIC_OCTILE
 	grid.default_estimate_heuristic = AStarGrid2D.HEURISTIC_OCTILE
 	grid.update()
-	for y in range(-26, 27):
-		for x in range(-42, 43):
+	for y in range(first.y, last.y + 1):
+		for x in range(first.x, last.x + 1):
 			grid.set_point_solid(Vector2i(x, y), not walkable(Vector3(x * STEP, 0, y * STEP)))
 	revision += 1
 

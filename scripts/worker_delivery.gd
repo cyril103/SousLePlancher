@@ -43,6 +43,13 @@ var waiting_door := false
 var exit_requested := false
 var recall_after_door := false
 var door_crossings := 0
+var bridge_active := false
+var bridge_target := Vector3.ZERO
+var bridge_cancel := false
+var waiting_bridge := false
+var bridge_crossings := 0
+var exploring := false
+var exploration_time := 0.0
 
 func setup(world: Node3D, data: Dictionary, index: int, transactions: DeliveryLedger) -> void:
 	game = world
@@ -76,6 +83,14 @@ func change(next: String) -> void:
 	retry_time = 0.0
 
 func cancel() -> void:
+	exploring = false
+	exploration_time = 0
+	if bridge_active:
+		bridge_cancel = true
+		return
+	game.bridge.release(owner)
+	waiting_bridge = false
+	if state == "explore" and not climbing: change("return_home")
 	exit_requested = false
 	if door_active:
 		recall_after_door = true
@@ -119,6 +134,15 @@ func move(target: Vector3, dt: float, loaded: bool) -> bool:
 	var travel := 0.0
 	while budget > 0 and route_index < route.size():
 		var target_point := route[route_index]
+		if game.bridge.is_edge(actor.position, target_point):
+			bridge_active = true
+			bridge_target = target_point
+			return false
+		if route_index + 1 < route.size() and game.bridge.is_edge(target_point, route[route_index + 1]):
+			waiting_bridge = not game.bridge.request(owner)
+			if waiting_bridge:
+				pose("pick_up" if loaded else "idle", 1.8 if loaded else 0.0)
+				return false
 		if absf(target_point.y - actor.position.y) > 1:
 			climbing = true
 			climb_up = target_point.y > actor.position.y
@@ -159,9 +183,12 @@ func plan_route(target: Vector3) -> bool:
 	route_index = 0
 	retry_time = 1.0
 	if route.is_empty():
+		game.bridge.release(owner)
+		waiting_bridge = false
 		game.ladder.release(owner)
 		waiting_ladder = false
 		navigation_issue = "Trajet bloqué vers " + ("le dépôt" if worker.carrying > 0 else ("le refuge" if state == "return_home" else "le gisement"))
+		if state == "explore": navigation_issue = "Trajet bloqué vers la réserve de l’Est"
 		return false
 	navigation_issue = ""
 	return true
@@ -176,6 +203,9 @@ func depot_reachable() -> bool:
 	return depot_accessible
 
 func tick(dt: float) -> void:
+	if bridge_active:
+		advance_bridge(dt)
+		return
 	if door_active:
 		advance_door(dt)
 		return
@@ -192,7 +222,10 @@ func tick(dt: float) -> void:
 			pose("idle", fposmod(timer, 4.0))
 			if inside_refuge:
 				actor.rotation.y = rotate_toward(actor.rotation.y, 0, dt * 2)
-				if not game.hiding and (exit_requested or worker.patch >= 0): change("leave_home")
+				if not game.hiding and (exit_requested or worker.patch >= 0 or exploring): change("leave_home")
+				return
+			if exploring and not game.hiding:
+				change("explore")
 				return
 			if game.hiding or worker.patch < 0: return
 			source_position = game.patches[worker.patch].pos + Vector3(0.9, GROUND_Y, 0.2)
@@ -284,8 +317,19 @@ func tick(dt: float) -> void:
 			waiting_door = not game.refuge.request(owner)
 			pose("idle", 0)
 			if not waiting_door and game.refuge.opening >= 1: begin_door(false)
+		"explore":
+			if move(game.Bridge.SCOUT_POINT, dt, false):
+				pose("idle", fposmod(timer, 4))
+				exploration_time += dt
+				if exploration_time >= 3:
+					game.discover_east()
+					exploring = false
+					change("return_home")
 
 func description() -> String:
+	if bridge_active: return "Traverse la passerelle"
+	if waiting_bridge: return "Attend la passerelle"
+	if exploring and not climbing and not door_active: return navigation_issue if not navigation_issue.is_empty() else "Reconnaît la réserve de l’Est"
 	if door_active: return "Entre dans le refuge" if door_entering else "Franchit la porte vers l’extérieur"
 	if waiting_door: return "Attend la porte du refuge"
 	if inside_refuge: return "À l’abri" if state == "idle" else "Se prépare à sortir"
@@ -380,3 +424,21 @@ func advance_door(dt: float) -> void:
 		if not inside_refuge: exit_requested = false
 		change("idle")
 	pose("idle", 0)
+
+func advance_bridge(dt: float) -> void:
+	var delta := bridge_target - actor.position
+	var step := minf(delta.length(), dt * 1.2)
+	actor.rotation.y = rotate_toward(actor.rotation.y, atan2(delta.x, delta.z), dt * 9)
+	actor.position += delta.normalized() * step
+	var clip := "carry_walk" if worker.carrying > 0 else "walk"
+	anim_time += step / float(ResidentAnimator.SPEEDS[clip])
+	pose(clip, fposmod(anim_time, actor.player.get_animation(clip).length))
+	if actor.position.distance_to(bridge_target) > .001: return
+	actor.position = bridge_target
+	bridge_active = false
+	bridge_crossings += 1
+	route_index += 1
+	game.bridge.release(owner)
+	if bridge_cancel:
+		bridge_cancel = false
+		cancel()

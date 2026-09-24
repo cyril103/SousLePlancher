@@ -3,6 +3,7 @@ extends Node3D
 const Art = preload("res://scripts/world.gd")
 const Navigation = preload("res://scripts/ground_navigation.gd")
 const Ladder = preload("res://scripts/ladder_passage.gd")
+const Bridge = preload("res://scripts/bridge_passage.gd")
 const Refuge = preload("res://scripts/refuge_access.gd")
 const HOME := Vector3(-3, 0, 1)
 const COSTS := {"shelter": {"wood": 8, "fiber": 4}, "workshop": {"wood": 10, "fiber": 6}}
@@ -49,6 +50,13 @@ var assign_button: Button
 var release_button: Button
 var speed_button: Button
 var notice_timer := 0.0
+var bridge := Bridge.new()
+var east_navigation := Navigation.new()
+var east_obstacles: Array[Rect2] = []
+var east_stands: Array[Rect2] = []
+var east_discovered := false
+var east_label: Label3D
+var east_stand: Node3D
 var ladder := Ladder.new()
 var refuge: Node3D
 var upper_navigation := Navigation.new()
@@ -84,7 +92,20 @@ func _ready() -> void:
 	_add_patch("wood", Vector3(5.2, 2.04, -4.5), 50)
 	_add_patch("fiber", Vector3(-7, 0, 3), 45)
 	_add_patch("fiber", Vector3(3.7, 2.04, -5.5), 40)
-	var landing := preload("res://assets/models/navigation_08/resource_landing.glb").instantiate() as Node3D
+	_add_patch("wood", Vector3(9.7, 2.04, -5.5), 90)
+	patches[-1].discovered = false
+	patches[-1].label.position = Vector3(.7, 1, .8)
+	patches[-1].node.hide()
+	var east := preload("res://assets/models/exploration_10/east_store_platform.glb").instantiate() as Node3D
+	add_child(east)
+	east.position = Vector3(10.5, 0, -4.55)
+	var bridge_model := preload("res://assets/models/refuge_02/bridge_2m.glb").instantiate() as Node3D
+	add_child(bridge_model)
+	bridge_model.position = Vector3(8, 1.989, -4)
+	bridge_model.rotation.y = PI / 2
+	east_label = Art.caption(self, "Réserve inexplorée", Vector3(10.5, 3.3, -3.3), Color("eac37e"))
+	east_label.pixel_size = .005
+	var landing := preload("res://assets/models/exploration_10/landing_connected.glb").instantiate() as Node3D
 	add_child(landing)
 	landing.position = Vector3(5, 0, -4.55)
 	var ladder_model := preload("res://assets/models/refuge_02/ladder_2m.glb").instantiate() as Node3D
@@ -133,12 +154,23 @@ func _ready() -> void:
 		_news("H fait ressortir les habitants et reprendre leurs tâches. V montre l’intérieur du refuge.")
 	if "--capture" in OS.get_cmdline_user_args():
 		_capture.call_deferred()
+	if "--demo-exploration" in OS.get_cmdline_user_args():
+		start_panel.hide()
+		paused = false
+		zoom = 18
+		focus = Vector3(5, 0, -2)
+		start_exploration()
+		for i in range(1, 4):
+			selected = [0, 1, 2][i - 1]
+			assign_worker(i)
+		selected = -1
+		_news("Un éclaireur reconnaît la réserve. T : exploration ; C : affecter au gisement découvert ; H : rappel.")
 
 func _add_patch(kind: String, pos: Vector3, amount: int) -> void:
 	var node := Art.model(self, kind, pos)
 	var label := Art.caption(node, NAMES[kind], Vector3(0, 1.0, 0), Color("eac37e"))
 	label.pixel_size = 0.0055
-	patches.append({"kind": kind, "pos": pos, "amount": amount, "reserved": 0, "node": node, "label": label})
+	patches.append({"kind": kind, "pos": pos, "amount": amount, "reserved": 0, "node": node, "label": label, "discovered": true})
 
 func _exit_tree() -> void:
 	# Workers store their controller; detach its dictionary reference on teardown.
@@ -167,10 +199,14 @@ func _make_loading_stations() -> void:
 		var floor_y := 2.04 if station.y > 1 else 0.0
 		stand.position = Vector3(top.x, floor_y, top.z)
 		stand.scale = Vector3(0.70, (top.y - floor_y) / 0.49, 0.70)
-		var stands: Array[Rect2] = upper_stands if floor_y > 1 else navigation_stands
+		var stands: Array[Rect2] = (east_stands if station.x > 8 else upper_stands) if floor_y > 1 else navigation_stands
+		if station.x > 8 and floor_y > 1:
+			east_stand = stand
+			stand.hide()
 		stands.append(Navigation.footprint(stand.position, Vector2(0.22, 0.18)))
 	navigation.configure(navigation_obstacles, navigation_stands)
 	upper_navigation.configure(upper_obstacles, upper_stands)
+	east_navigation.configure(east_obstacles, east_stands)
 	_refresh_navigation_slots(workers.size())
 	for i in range(workers.size()): workers[i].node.position = home_position(i)
 	var depot_label := Art.caption(self, "DÉPÔT", controller.destination_position + Vector3(0, 0.95, 0.9), Color("eac37e"))
@@ -184,11 +220,14 @@ func _setup_navigation() -> void:
 	for torch in [Vector3(-6.3, 0, 3.8), Vector3(3, 0, 4.9), HOME + Vector3(1.05, 0, 0.65)]:
 		navigation_obstacles.append(Navigation.footprint(torch, Vector2(0.12, 0.12)))
 	navigation_obstacles.append(Rect2(3, -6.05, 4, 3))
+	navigation_obstacles.append(Rect2(9, -6.05, 3, 3))
+	east_navigation.area = Rect2(9, -6.05, 3, 3)
 	upper_navigation.area = Rect2(3, -6.05, 4, 3)
 	for patch in patches:
-		var obstacles: Array[Rect2] = upper_obstacles if patch.pos.y > 1 else navigation_obstacles
+		var obstacles: Array[Rect2] = (east_obstacles if patch.pos.x > 8 else upper_obstacles) if patch.pos.y > 1 else navigation_obstacles
 		obstacles.append(Navigation.footprint(patch.pos, Vector2(0.55, 0.5)))
 	upper_navigation.configure(upper_obstacles)
+	east_navigation.configure(east_obstacles)
 	navigation.configure(navigation_obstacles)
 	# Initial slots are replaced after the physical loading stands are registered.
 	_refresh_navigation_slots(4)
@@ -278,7 +317,7 @@ func _unhandled_input(event: InputEvent) -> void:
 					hud.assignment_target = -1
 					for i in range(patches.size()):
 						var hit = Plane(Vector3.UP, patches[i].pos.y).intersects_ray(camera.project_ray_origin(event.position), camera.project_ray_normal(event.position))
-						if hit != null and hit.distance_to(patches[i].pos) < 1.1:
+						if patches[i].discovered and hit != null and hit.distance_to(patches[i].pos) < 1.1:
 							selected = i
 					_show_tray("people" if selected >= 0 else "")
 	if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE):
@@ -376,7 +415,7 @@ func simulate(dt: float) -> void:
 		_end(true, "Deux abris, un atelier et des réserves !\nVotre colonie a trouvé sa place sous le plancher.")
 
 func assign_worker(worker_index: int = -1) -> bool:
-	if selected < 0 or ended or patches[selected].amount <= 0: return false
+	if selected < 0 or ended or not patches[selected].discovered or patches[selected].amount <= 0: return false
 	for i in range(workers.size()):
 		if worker_index >= 0 and i != worker_index: continue
 		var worker := workers[i]
@@ -409,6 +448,7 @@ func _valid_site(pos: Vector3) -> bool:
 	if footprint.intersects(refuge_footprint()): return false
 	if footprint.has_point(Vector2(HOME.x, HOME.z + Refuge.OUTSIDE.z)): return false
 	if footprint.intersects(Rect2(3, -6.05, 4, 3)): return false
+	if footprint.intersects(Rect2(7, -6.05, 4, 3)): return false
 	if footprint.has_point(Vector2(Ladder.LOWER.x, Ladder.LOWER.z)): return false
 	for i in range(workers.size() + 1):
 		var waiting: Vector3 = ladder.waiting(i, false)
@@ -547,14 +587,14 @@ func _capture() -> void:
 func travel_path(from: Vector3, to: Vector3, id: int = 0) -> PackedVector3Array:
 	var upper := from.y > 1
 	var nav: GroundNavigation = upper_navigation if upper else navigation
-	if upper == (to.y > 1): return nav.path(from, to)
+	if upper == (to.y > 1): return upper_path(from, to, id) if upper else nav.path(from, to)
 	var entry: Vector3 = Ladder.UPPER if upper else Ladder.LOWER
 	var exit: Vector3 = Ladder.LOWER if upper else Ladder.UPPER
 	var wait: Vector3 = ladder.waiting(id, upper)
-	var first := nav.path(from, wait)
+	var first: PackedVector3Array = upper_path(from, wait, id) if upper else nav.path(from, wait)
 	var approach := nav.path(wait, entry)
 	var other: GroundNavigation = navigation if upper else upper_navigation
-	var last := other.path(exit, to)
+	var last: PackedVector3Array = other.path(exit, to) if upper else upper_path(exit, to, id)
 	if first.is_empty() or approach.is_empty() or last.is_empty(): return PackedVector3Array()
 	first.append_array(approach)
 	first.append(exit)
@@ -562,7 +602,49 @@ func travel_path(from: Vector3, to: Vector3, id: int = 0) -> PackedVector3Array:
 	return first
 
 func travel_revision() -> int:
-	return navigation.revision + upper_navigation.revision
+	return navigation.revision + upper_navigation.revision + east_navigation.revision
 
 func refuge_footprint() -> Rect2:
 	return Rect2(Refuge.FOOTPRINT.position + Vector2(HOME.x, HOME.z), Refuge.FOOTPRINT.size)
+
+func upper_path(from: Vector3, to: Vector3, id: int) -> PackedVector3Array:
+	var far_side := from.x > 8
+	var nav: GroundNavigation = east_navigation if far_side else upper_navigation
+	if far_side == (to.x > 8): return nav.path(from, to)
+	var entry: Vector3 = Bridge.FAR if far_side else Bridge.NEAR
+	var exit: Vector3 = Bridge.NEAR if far_side else Bridge.FAR
+	var wait: Vector3 = bridge.waiting(id, far_side)
+	var first := nav.path(from, wait)
+	var approach := nav.path(wait, entry)
+	var other: GroundNavigation = upper_navigation if far_side else east_navigation
+	var last := other.path(exit, to)
+	if first.is_empty() or approach.is_empty() or last.is_empty(): return PackedVector3Array()
+	first.append_array(approach)
+	first.append(exit)
+	first.append_array(last)
+	return first
+
+func start_exploration() -> bool:
+	if east_discovered or hiding or ended or start_panel.visible: return false
+	for worker in workers:
+		if worker.delivery.exploring:
+			_news("Un habitant explore déjà la réserve.")
+			return false
+	for worker in workers:
+		var controller: WorkerDelivery = worker.delivery
+		if worker.patch < 0 and worker.carrying == 0 and controller.state == "idle":
+			controller.exploring = true
+			controller.change("leave_home" if controller.inside_refuge else "explore")
+			_news("Un habitant part reconnaître la réserve au-delà de la passerelle.")
+			return true
+	_news("Libérez un habitant pour explorer la réserve.")
+	return false
+
+func discover_east() -> void:
+	if east_discovered: return
+	east_discovered = true
+	patches[-1].discovered = true
+	patches[-1].node.show()
+	east_stand.show()
+	east_label.text = "Réserve de l’Est"
+	_news("Réserve découverte : un gisement de bois est disponible dans les affectations.")

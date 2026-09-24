@@ -31,7 +31,7 @@ func run() -> void:
 	game._unhandled_input(escape)
 	check(game.active_tray == "", "Escape dismisses command panel")
 	check(game.workers.size() == 4, "Initial population")
-	check(game.patches.size() == 6, "Resource patches")
+	check(game.patches.size() == 7 and not game.patches[6].discovered, "Six known resources and one undiscovered reserve")
 	var screen = game.camera.unproject_position(game.patches[0].pos)
 	check(game.ground_point(screen).distance_to(game.patches[0].pos) < 0.01, "3D picking projection")
 	game.selected = 0

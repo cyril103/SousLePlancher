@@ -28,6 +28,7 @@ var resident_index := 0
 var people_list: VBoxContainer
 var worker_rows: Array[Button] = []
 var work_label: Label
+var explore_button: Button
 var routes_button: Button
 var stocks_label: Label
 var build_buttons: Dictionary = {}
@@ -305,7 +306,13 @@ func _make_trays() -> void:
 	people_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	wrapped(people, "Cliquez sur un habitant pour l’inspecter. [H] rappelle toute la colonie en conservant ses tâches.", 16, MUTED)
 	var work := tray("work", "Travaux en cours")
-	work_label = wrapped(work, "", 18)
+	var work_scroll := ScrollContainer.new()
+	work_scroll.custom_minimum_size.y = 225
+	work_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	work.add_child(work_scroll)
+	work_label = wrapped(work_scroll, "", 16)
+	work_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	explore_button = button(work, "Explorer la réserve de l’Est", func(): game.start_exploration(); refresh(), "Envoyer un habitant disponible au-delà de la passerelle")
 	routes_button = button(work, "Afficher le trajet sélectionné [N]", func(): game.show_paths = not game.show_paths; refresh())
 	button(work, "Organiser les affectations", func(): game._show_tray("people"))
 	var stocks := tray("stocks", "Le garde-manger")
@@ -472,6 +479,11 @@ func refresh() -> void:
 	for worker in game.workers:
 		if not worker.delivery.navigation_issue.is_empty(): blocked += 1
 	work_label.text += "\n\nÉCHELLE · %s · %d en attente" % ["Passage occupé" if game.ladder.owner >= 0 else "Libre", game.ladder.queue.size()]
+	work_label.text += "\nPASSERELLE · %s · %d en attente" % ["Passage occupé" if game.bridge.owner >= 0 else "Libre", game.bridge.queue.size()]
+	var exploring := false
+	for worker in game.workers: exploring = exploring or worker.delivery.exploring
+	explore_button.disabled = game.east_discovered or exploring or game.hiding or game.ended
+	explore_button.text = "Réserve de l’Est découverte" if game.east_discovered else ("Reconnaissance en cours…" if exploring else "Explorer la réserve de l’Est")
 	var sheltered := 0
 	for worker in game.workers:
 		if worker.delivery.at_refuge(): sheltered += 1
@@ -498,5 +510,7 @@ func refresh() -> void:
 	modal_shade.visible = game.start_panel.visible or game.end_panel.visible
 	for i in range(game.patches.size()):
 		var patch: Dictionary = game.patches[i]
+		game.patch_picker.set_item_disabled(i + 1, not patch.discovered)
+		if i == game.patches.size() - 1: game.patch_picker.set_item_text(i + 1, "Réserve de l’Est · Bois" if patch.discovered else "Réserve inexplorée")
 		patch.label.text = ("▸ " if i == game.selected else "") + game.NAMES[patch.kind] + " · %d" % patch.amount + (" · Palier" if patch.pos.y > 1 else "")
 		patch.label.modulate = Color("fff1c8") if i == game.selected else Color("eac37e")
