@@ -25,6 +25,10 @@ Le **lot 12** introduit le sommeil, les propriétaires de lits, la fabrication e
 
 Le **lot 13** ajoute les besoins autonomes de faim et de soif au sommeil : trois jauges individuelles, repas et boissons au refuge, collecte d’urgence de nourriture et d’eau, réveil en cas de besoin critique. La démo `-- --demo-needs` montre ces comportements. Voir [les règles et limites](docs/conception/gameplay-lot-13.md).
 
+## Suite de production
+
+Voir la [roadmap par étapes](docs/conception/roadmap-production.md) et le [cahier des charges révisé](docs/conception/cahier-des-charges.md). Chaque étape est présentée et validée avant commit et push. Le PDF v0.1 est une archive de conception ; le suivi actuel est dans les documents Markdown.
+
 ## Assets Blender
 
 Les habitants animés sont maintenant utilisés dans la **partie principale**, avec réservation, prise, transport et dépose des caisses. Les affectations affichent l'état des livraisons. **H** rappelle les porteurs avec leur charge ; **Libérer** annule avant la prise ou termine le retour si la caisse est déjà portée. Voir `docs/conception/gameplay-lot-06.md` pour les tests et limites. Le paramètre `-- --demo-deliveries` lance une partie avec quatre affectations préparées.

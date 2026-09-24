@@ -1,4 +1,4 @@
-"""Generate the review PDF and production inventory; no game files are modified."""
+"""Generate the review PDF from the maintained Markdown and CSV; no game files are modified."""
 from pathlib import Path
 import csv, re, html, json
 from collections import Counter
@@ -18,7 +18,7 @@ BASE = Path(__file__).resolve().parent
 ROOT = BASE.parents[1]
 OUT = ROOT / 'output' / 'pdf'
 OUT.mkdir(parents=True, exist_ok=True)
-PDF = OUT / 'Sous_le_plancher_Cahier_des_charges_v0.1.pdf'
+PDF = OUT / 'Sous_le_plancher_Cahier_des_charges_v0.2.pdf'
 for name, file in [('Body','calibri.ttf'),('Bold','calibrib.ttf'),('Italic','calibrii.ttf'),('Light','calibril.ttf')]:
     pdfmetrics.registerFont(TTFont(name, str(Path('C:/Windows/Fonts')/file)))
 pdfmetrics.registerFontFamily('Body', normal='Body', bold='Bold', italic='Italic', boldItalic='Bold')
@@ -27,99 +27,16 @@ PALE=colors.HexColor('#edf2ee'); GRAY=colors.HexColor('#5a6963'); LINE=colors.He
 W,H=595.276,841.89
 FW=W-88
 
-ASSETS = [
-('CHR-01','Personnages','Habitant de référence et rig','Prototype à remplacer','1 corps + 1 rig + 3 visages','J0-J2','P0','Échelle, capsule, points main/dos/tête'),
-('CHR-02','Personnages','Variantes de métiers','À créer','6 palettes + 4 accessoires + 3 sacs','J3-J4','P1','Rig CHR-01 ; silhouettes distinctes'),
-('CHR-03','Personnages','Locomotion','À créer','5 animations + transitions','J2','P0','Rig et vitesse réelle de navigation'),
-('CHR-04','Personnages','Travail et manipulation','À créer','5 animations interruptibles','J2-J3','P0','Contrat de tâches et attaches de charge'),
-('CHR-05','Personnages','Besoins, blessures et danger','À créer','7 animations + transitions','J4-J5','P1','Besoins, soin et règles de mortalité'),
-('CHR-06','Personnages','Traversées et entraide','À créer','4 séquences','J3-J5','P1','Liens de navigation et coordination à deux'),
-('FAU-01','Faune','Fourmi','À créer','1 rig + 2 variantes + 5 actions','J3','P0','Piste, transport et défense locale'),
-('FAU-02','Faune','Araignée','À créer','1 rig + 2 tailles + 5 actions','J5','P1','Toile active et perception vibratoire'),
-('FAU-03','Faune','Souris','À créer','1 rig + 2 matières + 6 actions','J5','P1','Territoire, reniflement et fuite'),
-('FAU-04','Faune','Rat','À créer','1 variante adaptée + 6 actions','J6','P2','Fonction différente de la souris à valider'),
-('FAU-05','Faune','Cloporte et cafard','Option à confirmer','2 rigs + 4 actions chacun','J6+','P2','Humidité et pillage ; priorité après J3'),
-('ENV-01','Environnement','Kit bois sous-plancher','Prototype à reprendre','6 planches + 3 poutres','J0-J3','P0','Scène étalon, UV et usure'),
-('ENV-02','Environnement','Fondations et raccords','Prototype à reprendre','4 murs/angles + 2 jonctions','J3-J6','P1','Connexion à ENV-01 et passages'),
-('ENV-03','Environnement','Cuisine miniature','À créer','3 modules + 6 accessoires','J3','P0','Géométrie de la première aventure'),
-('ENV-04','Environnement','Cloisons et conduits','À créer','4 modules + 4 intersections','J4-J6','P1','Entrées nommées et liens verticaux'),
-('ENV-05','Environnement','Cave et Grand Refuge','À créer','4 modules + 2 sites','J6','P1','Objectifs de campagne et rat éventuel'),
-('ENV-06','Environnement','Salle de bains','Option à confirmer','3 modules + 4 accessoires','Après J6','P2','Campagne étendue, eau et fuite'),
-('ENV-07','Environnement','Grenier','Option à confirmer','3 modules + 4 accessoires','Après J6','P2','Campagne étendue et sécheresse'),
-('BLD-01','Bâtiments','Refuge initial','Prototype à reprendre','1 bâtiment / 4 états','J2','P0','Stocks, lits et sorties'),
-('BLD-02','Bâtiments','Abri','Prototype à reprendre','1 bâtiment / 4 états','J2','P0','2 lits, chantier, arrivée non instantanée'),
-('BLD-03','Bâtiments','Atelier','Prototype à reprendre','1 bâtiment / 4 états','J2-J4','P0','Poste artisan et files'),
-('BLD-04','Bâtiments','Dépôt intermédiaire','À créer','1 bâtiment / 4 états','J3','P0','12 emplacements et filtres'),
-('BLD-05','Bâtiments','Pont en allumettes','À créer','3 longueurs / 4 états','J2-J3','P0','Réservation de passage et accès chantier'),
-('BLD-06','Bâtiments','Échelle','À créer','2 hauteurs / 4 états','J3-J4','P1','Animation de montée et capacité du lien'),
-('BLD-07','Bâtiments','Étai','À créer','2 variantes / 4 états','J4','P1','Intégrité de passage fragile'),
-('BLD-08','Bâtiments','Collecteur eau','À créer','1 bâtiment / 4 états','J4','P1','Source active, débit et réservoir'),
-('BLD-09','Bâtiments','Infirmerie','À créer','1 bâtiment / 4 états','J4','P1','Lit, soins et animation de transport'),
-('BLD-10','Bâtiments','Poste de veille','À créer','1 bâtiment / 4 états','J5','P1','Champ de vision et observation'),
-('BLD-11','Bâtiments','Table préparation repas','À créer','1 bâtiment / 4 états','J4','P1','Recettes et représentation des stocks'),
-('BLD-12','Bâtiments','Bac de culture','À créer','1 bac / 3 croissances / dégâts','J6','P2','Eau, humidité, rendement'),
-('BLD-13','Bâtiments','Porte camouflée','À créer','2 variantes / ouverte-fermée','J5','P1','Navigation, odeur, visibilité'),
-('BLD-14','Bâtiments','Gouttière','À créer','3 segments + raccord','J5','P2','Volumes de fuite et écoulement'),
-('BLD-15','Bâtiments','Grand Refuge','À créer','1 ensemble / 4 états','J6','P1','Lits, 2 accès, victoire et évacuation'),
-('PRP-01','Objets','Nourriture et biscuit','Prototype à reprendre','3 tas + biscuit + charge','J3','P0','Quantité restante visible'),
-('PRP-02','Objets','Bois récoltable','Prototype à reprendre','3 tas + charge','J2','P0','Volume de stockage'),
-('PRP-03','Objets','Fibres récoltables','Prototype à reprendre','3 tas + charge','J2','P0','Volume de stockage'),
-('PRP-04','Objets','Eau et récipients','À créer','3 niveaux + charge','J4','P1','Lisibilité de quantité et qualité'),
-('PRP-05','Objets','Métal récupéré','À créer','3 tas + charge','J4','P1','Agrafes, trombone, outils'),
-('PRP-06','Objets','Résine','À créer','2 tas + charge','J5','P2','Recette étanchéité'),
-('PRP-07','Objets','Soie récoltable','À créer','2 tas + charge','J5','P1','Différente des toiles fonctionnelles'),
-('PRP-08','Objets','Déchets et accessoires','Prototype à reprendre','12 objets, variantes usuelles','J3-J6','P1','Instanciation et composition'),
-('PRP-09','Objets','Outils et bandages','À créer','4 outils + 1 bandage','J4','P1','Attaches mains/dos et recette'),
-('PRP-10','Objets','Appâts','À créer','2 types / 3 états','J3-J5','P0','Attraction et consommation visibles'),
-('PRP-11','Objets','Charges portées','À créer','8 catégories liées aux ressources','J2-J5','P0','Rig, emplacements et absence de clipping'),
-('PRP-12','Objets','Conteneurs','À créer','3 tailles / 3 niveaux','J3-J4','P1','Filtres de réserve et inventaire'),
-('PRP-13','Objets','Indices exploration','À créer','6 traces / variantes','J3-J5','P1','Odeurs figurées, griffures, fuites'),
-('VFX-01','Effets','Torche, flamme et braises','Prototype à affiner','1 ensemble / 3 intensités','J0-J3','P0','Source Blender, lumière et budget ombres'),
-('VFX-02','Effets','Lumière entre planches','Prototype à affiner','3 profils distincts','J0-J3','P0','Profondeur, rotation, réglage réduit'),
-('VFX-03','Effets','Poussière en suspension','Prototype à affiner','2 densités + 1 variante chantier','J0-J3','P0','Lisibilité sans effet de neige'),
-('VFX-04','Effets','Toiles','Prototype décoratif à étendre','2 décoratives + 1 active déchirable','J0-J5','P1','Fil fonctionnel signalé, mode arachnophobie'),
-('VFX-05','Effets','Fuite et eau','À créer','Filet, impact, sol humide','J4-J5','P1','Volume dangereux synchronisé'),
-('VFX-06','Effets','Passage humain','Prototype partiel','Ombre, secousse, aspiration','J5','P1','Réglage accessibilité et signaux'),
-('VFX-07','Effets','Travaux','À créer','3 petits effets','J2-J3','P1','Animation et production de bruit'),
-('VFX-08','Effets','Humidité locale','Option à confirmer','1 effet léger','J6','P2','Budget transparent et visibilité'),
-('UI-01','Interface','Barre et pictogrammes','Prototype à compléter','12-16 pictogrammes','J1-J4','P0','Échelles UI et texte de remplacement'),
-('UI-02','Interface','Portraits et états','À créer','6 portraits + 10 états','J4','P1','Identité et besoins sans couleur seule'),
-('UI-03','Interface','Carte et niveaux','À créer','1 vue + 8 symboles','J3-J6','P0','Inconnu, mémorisé, observé'),
-('UI-04','Interface','Panneaux gestion','Prototype partiel','8 vues','J1-J6','P0','Stocks, métiers, chantiers, réglages'),
-('UI-05','Interface','Alertes et journal','Prototype à reprendre','3 sévérités + historique','J2-J5','P0','Cause, action et centrage'),
-('UI-06','Interface','Tutoriel et fin','Prototype à reprendre','6 étapes + bilan final','J3-J6','P1','Pas de guidage oral requis'),
-('AUD-01','Audio','Ambiances de secteur','À créer','4 boucles','J3-J6','P1','Licence et transitions'),
-('AUD-02','Audio','Humains','À créer','6 prises de pas + 3 événements','J3-J5','P0','Correspondance calendrier et sous-titres'),
-('AUD-03','Audio','Travaux et portage','À créer','8 familles x 3 variantes','J2-J4','P1','Limite de voix simultanées'),
-('AUD-04','Audio','Faune','À créer','4 familles','J3-J6','P1','Perception et discrétion'),
-('AUD-05','Audio','Interface','À créer','8 sons courts','J3','P1','Volume séparé et priorité'),
-('AUD-06','Audio','Musique','À créer','2 thèmes/textures','J6-J7','P2','Pas de révélation involontaire du danger'),
-]
+# The CSV is the maintained source of truth. PDF generation is read-only for it.
+INVENTORY = BASE / 'inventaire-assets.csv'
+with INVENTORY.open(encoding='utf-8-sig', newline='') as inventory_file:
+    _rows = list(csv.reader(inventory_file, delimiter=';'))
+if not _rows or any(len(row) != 10 for row in _rows):
+    raise ValueError('Asset inventory must contain ten columns per row')
+ASSETS = [tuple(row[:8]) for row in _rows[1:]]
 
 def inventory():
-    path=BASE/'inventaire-assets.csv'
-    fields=['ID','Famille','Lot','Statut actuel','Quantité / variantes','Jalon','Priorité','Dépendances et usage','Livrables attendus','Validation']
-    with path.open('w',encoding='utf-8-sig',newline='') as f:
-        w=csv.writer(f,delimiter=';'); w.writerow(fields)
-        for row in ASSETS:
-            family=row[1]
-            if family in ['Personnages','Faune']:
-                deliver='Source Blender ; GLB ; rig ; clips ; textures ; LOD ; attaches ; licence'
-                test='Échelle, transitions et silhouette validées ; pas de glissement de pieds ; intégration navigation'
-            elif family in ['Environnement','Bâtiments','Objets']:
-                deliver='Source Blender ; GLB ; textures ; collisions utiles ; points interaction ; variantes ; licence'
-                test='Échelle et pivots ; UV ; collision ; accès ; états ; coût mesuré dans scène étalon'
-            elif family=='Effets':
-                deliver='Scène Godot ; shader ; textures éventuelles ; paramètres ; profil réduit'
-                test='Caméra normale, rotation et gros plan ; pas de scintillement ; effet stoppé aux obstacles'
-            elif family=='Interface':
-                deliver='Sources vectorielles ; exports ; scène UI ; états ; textes et infobulles'
-                test='1280x800 et 1920x1080 ; UI agrandie ; contraste ; clavier ; aucune commande perdue'
-            else:
-                deliver='Sources autorisées ; WAV de travail ; OGG export ; licence ; volumes et variations'
-                test='Pas de raccord ni saturation ; variantes ; volume séparé ; signal équivalent sans son'
-            w.writerow([*row,deliver,test])
-    return path
+    return INVENTORY
 
 def rich(text):
     text=html.escape(text.strip())
@@ -217,7 +134,7 @@ def diagram(kind):
 class Dossier(BaseDocTemplate):
     def __init__(self,path):
         super().__init__(str(path),pagesize=(W,H),leftMargin=44,rightMargin=44,topMargin=55,bottomMargin=47,
-                         title='Sous le plancher - Cahier des charges v0.1',author='Projet Sous le plancher',
+                         title='Sous le plancher - Cahier des charges v0.2',author='Projet Sous le plancher',
                          subject='Conception, assets et roadmap - propositions à valider')
         frame=Frame(44,47,FW,H-102,leftPadding=0,rightPadding=0,topPadding=0,bottomPadding=0)
         self.addPageTemplates(PageTemplate(id='main',frames=[frame],onPage=self.page))
@@ -227,7 +144,7 @@ class Dossier(BaseDocTemplate):
         if doc.page==1: return
         c.saveState();c.setStrokeColor(LINE);c.setLineWidth(.5);c.line(44,H-35,W-44,H-35)
         c.setFont('Bold',8);c.setFillColor(GREEN);c.drawString(44,H-25,'SOUS LE PLANCHER')
-        c.setFont('Body',8);c.setFillColor(GRAY);c.drawRightString(W-44,H-25,'CONCEPTION / v0.1 / À DISCUTER')
+        c.setFont('Body',8);c.setFillColor(GRAY);c.drawRightString(W-44,H-25,'CONCEPTION / v0.2 / À DISCUTER')
         c.line(44,35,W-44,35);c.drawString(44,23,'24 septembre 2026  |  Valeurs futures proposées, à tester')
         c.drawRightString(W-44,23,str(doc.page));c.restoreState()
     def afterFlowable(self,flow):
@@ -250,7 +167,7 @@ class Cover(Spacer):
         img=ROOT/'artifacts'/'ambiance-finition.png'
         if img.exists(): c.drawImage(str(img),0,175,width=FW,height=FW*9/16,mask='auto')
         c.setFont('Body',8);c.setFillColor(colors.HexColor('#bacabd'));c.drawString(0,160,'Capture du prototype existant - ne représente pas les fonctionnalités futures.')
-        c.setFont('Bold',12);c.setFillColor(colors.HexColor('#d7b77c'));c.drawString(0,112,'VERSION 0.1 - POUR RELECTURE ET DISCUSSION')
+        c.setFont('Bold',12);c.setFillColor(colors.HexColor('#d7b77c'));c.drawString(0,112,'VERSION 0.2 - POUR RELECTURE ET DISCUSSION')
         c.setFont('Body',11);c.setFillColor(colors.white)
         c.drawString(0,86,'Gameplay · Habitants · IA · Carte · Assets · Production')
         c.drawString(0,62,'Propositions détaillées avant reprise du développement')

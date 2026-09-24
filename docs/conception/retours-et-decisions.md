@@ -78,6 +78,11 @@ La version 0.2 devra harmoniser les chapitres, les statistiques provisoires, les
 
 ## Validation de la reprise
 
+**Nouvelle méthode demandée.** Une étape à la fois, présentation du résultat, validation du joueur, puis commit et push. La révision documentaire et la roadmap sont validées par le joueur (« je valide ») ; commit et push autorisés pour cette étape. Les torches individuelles et les liaisons physiques entre secteurs font partie de la suite autorisée, avec démonstration de chaque incrément.
+
+**Lots 12–13 — couchages et besoins autonomes validés et publiés.** Le joueur confirme « ok validé, commit et push ». Commit `3d1c9a3` : fabrication des lits et alcôves, propriété et intimité, sommeil, faim et soif autonomes, animations et sauvegarde des nouveaux états. Voir les fiches `gameplay-lot-12.md` et `gameplay-lot-13.md`. Les besoins ne comprennent pas encore santé, température ni simulation sociale.
+
+
 **Lot 11 — sauvegarde au refuge et reprise validées.** Suite engagée à la demande « on passe à la suite ». Point manuel après rappel et livraison, persistance de la colonie et des découvertes, validation au chargement et copie de secours. Voir `gameplay-lot-11.md`. Le joueur confirme « validé, tu peux commit pousser » après la démonstration ; publication autorisée.
 
 **Lot 10 — passerelle et reconnaissance validées.** Suite engagée à la demande « on passe à la suite ». Réserve orientale à découvrir, passage réservé, affectations après reconnaissance et livraisons par plusieurs accès. Voir `gameplay-lot-10.md`. Le joueur confirme « je valide et tu peux commit et pousser » après la démonstration ; publication autorisée.

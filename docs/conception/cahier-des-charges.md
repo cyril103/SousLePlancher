@@ -1,19 +1,19 @@
 # Sous le plancher
-Cahier des charges de conception et roadmap - version 0.1 pour discussion
-24 septembre 2026 | Référence du prototype : commit 8dc2863 | Godot 4.7.2
+Cahier des charges de conception et roadmap - version 0.2 — plan validé, livraisons progressives
+24 septembre 2026 | Référence du prototype : commit 3d1c9a3 | Godot 4.7.2
 
 ## 01. Lire et commenter ce dossier
 **Objet.** Définir le jeu avant de poursuivre sa production. Ce document décrit une direction complète, des règles candidates, les assets à produire et des jalons vérifiables. Il ne constitue ni un devis ni une promesse de date de sortie. Aucun développement de gameplay n'est engagé par sa rédaction.
 
-**Trois statuts à distinguer.** EXISTANT désigne un comportement présent dans le dépôt. PROPOSÉ désigne la recommandation de conception à valider. OPTION désigne une extension exclue des premiers jalons. Toutes les valeurs du futur équilibrage, durées de partie et limites techniques sont des hypothèses de départ, pas des mesures de satisfaction des joueurs.
+**Statuts à distinguer.** VALIDÉ EN ENTRETIEN désigne une direction approuvée, sans signifier que son implémentation existe.  EXISTANT désigne un comportement présent dans le dépôt. PROPOSÉ désigne la recommandation de conception à valider. OPTION désigne une extension exclue des premiers jalons. Toutes les valeurs du futur équilibrage, durées de partie et limites techniques sont des hypothèses de départ, pas des mesures de satisfaction des joueurs.
 
 **Lecture conseillée.** Commencer par la vision, la carte et la première aventure. Examiner ensuite les habitants, les travaux et les dangers. Terminer par les assets, la roadmap et les décisions ouvertes. Les identifiants SYS, ART, QA et DEC servent à formuler les retours sans ambiguïté.
 
-**Livrables associés.** Le PDF est destiné à la lecture ; ce Markdown reste la source modifiable. Le fichier `inventaire-assets.csv` recense les lots de production. Le fichier `retours-et-decisions.md` fournit une trame de commentaires. Les diagrammes sont des schémas de conception, pas des captures de fonctionnalités existantes. L'image de couverture provient du prototype actuel.
+**Livrables associés.** Le PDF v0.1 reste une archive historique non actualisée. Ce Markdown et la [roadmap de production](roadmap-production.md) constituent la révision courante ; les schémas historiques restent conceptuels et ne décrivent pas toutes les extensions retenues. Le fichier `inventaire-assets.csv` recense les lots de production. Le fichier `retours-et-decisions.md` conserve les décisions de l’entretien et les validations de lots. Les diagrammes sont des schémas de conception, pas des captures de fonctionnalités existantes. L'image de couverture provient du prototype actuel.
 
 **Périmètre proposé.** Jeu solo PC Windows, clavier/souris, interface française, caméra 3D de gestion. Simulation avec pause et accélération. Carte de maison fabriquée à la main, événements partiellement variables. Objectif : une colonie attachante et un monde crédible à l'échelle miniature.
 
-**À valider en priorité.** Le ton de survie, la présence de morts définitives, l'échelle de population, la menace de rénovation et le niveau de réalisme visuel. Les décisions DEC-01 à DEC-12 sont regroupées en fin de dossier. Les choix proposés restent réversibles jusqu'à la validation du jalon J0.
+**Décisions et prochaine validation.** Les douze orientations DEC sont renseignées au chapitre 32. La présente révision et le découpage en étapes sont validés par le joueur. Les détails non discutés et les statistiques candidates ne sont pas automatiquement approuvés. Chaque étape est montrée au joueur, puis commitée et poussée seulement après sa validation.
 
 ## 02. Vision, promesse et limites
 **Promesse.** Faire d'un espace oublié une civilisation discrète. Le joueur se souvient d'avoir franchi une fissure, sauvé un porteur et détourné une piste de fourmis, pas seulement d'avoir rempli une jauge.
@@ -26,29 +26,31 @@ Cahier des charges de conception et roadmap - version 0.1 pour discussion
 
 **Boucle émotionnelle.** Curiosité devant un passage inconnu, tension pendant une sortie, soulagement au refuge, satisfaction lorsqu'un travail rend une zone accessible. Le refuge doit être chaleureux malgré un environnement sale et hostile.
 
-**PROPOSÉ : réalisme miniature stylisé.** Matériaux et éclairage crédibles, silhouettes lisibles, proportions légèrement expressives. L'ambition de finition professionnelle se juge sur les images en mouvement et la cohérence de tous les assets. « AAA » n'est pas un critère mesurable : on le traduit en contrôles de qualité visuels, budgets et scènes de référence.
+**DIRECTION VALIDÉE : réalisme miniature stylisé.** Matériaux et éclairage crédibles, silhouettes lisibles, proportions légèrement expressives. L'ambition de finition professionnelle se juge sur les images en mouvement et la cohérence de tous les assets. « AAA » n'est pas un critère mesurable : on le traduit en contrôles de qualité visuels, budgets et scènes de référence.
 
-**Hors premier périmètre.** Multijoueur, monde infini, terrain entièrement destructible, simulation complète des humains, reproduction génétique, combat tactique à grande échelle, véhicules complexes et plusieurs maisons. Aucune boutique intégrée. Les modes libre et difficulté réduite sont prévus après la boucle principale.
+**Hors premier périmètre.** Multijoueur, génération procédurale dès le premier chapitre, terrain entièrement destructible, simulation complète des humains, reproduction génétique, combat tactique à grande échelle, véhicules complexes et plusieurs maisons. Aucune boutique intégrée. Les modes libre et difficulté réduite sont prévus après la boucle principale.
 
 ## 03. État réel du prototype et écarts
-Référence vérifiée dans le README et les scripts du dépôt au commit 8dc2863. Le prototype valide une intention, pas encore l'architecture de production.
+Base publiée : `3d1c9a3`, après les lots 12–13. Les fiches de lots décrivent les contrôles et limites de chaque livraison ; ce tableau distingue leur intégration de la cible complète.
 
 | Domaine | EXISTANT | À construire |
 | --- | --- | --- |
-| Boucle | 4 habitants, récolte et livraison, 3 ressources | Besoins individuels, économie à réserves locales |
-| Construction | Abri, atelier, placement avec coût immédiat | Livraison des matériaux, chantier, réparation |
-| Navigation | Déplacement direct vers une position | Obstacles, chemins, liens verticaux, circulation |
-| Affectation | Un gisement par habitant, rappel global | Métiers, priorités, tâches réservées, urgences |
-| Menaces | Cycle de 100 s, soupçons globaux | Horaires observables, perception locale, animaux |
-| Carte | Une scène de plancher ouverte | Secteurs cachés, passages, étages et exploration |
-| Visuel | Modèles Blender stylisés, torches, poussière, volumes de lumière | Rig, animations, matériaux finalisés, bibliothèque modulaire |
-| Produit | Barre de commandes, plein écran, tests de boucle | Sauvegardes, réglages, audio, campagne et tutoriel |
+| Habitants | 4 habitants, faim, soif et sommeil autonomes, repas et boissons au refuge | Soins, traits, relations, recrutement et métiers |
+| Stocks | Nourriture, bois, fibres, eau ; réservations et livraisons au dépôt global | Dépôts locaux, capacités, filtres et routes de ravitaillement |
+| Travaux | Fabrication de lits et alcôves, propriétaires et annulation | Acheminement des matériaux ; murs, portes et pièces libres |
+| Navigation | Chemins au sol, palier, échelle, passerelle, porte et files réservées | Graphe de secteurs, passages aménageables et validation de foule |
+| Exploration | Reconnaissance de la réserve orientale dans la scène actuelle | Secteur sombre relié, information mémorisée, missions et cuisine |
+| Menaces | Cycle humain de 100 s, soupçons globaux | Routines observables, perception locale, faune et secours |
+| Visuel | Assets Blender, rig, animations, textures, poussière, toiles et torches fixes | Torches portées, faune animée, kits des nouvelles zones |
+| Produit | Interface Atelier miniature, sauvegarde au refuge, migrations de format | Sauvegarde en expédition, audio, tutoriel et campagne |
 
-**Règles actuelles à ne pas confondre avec la cible.** L'abri coûte 8 bois et 4 fibres ; l'atelier 10 bois et 6 fibres. Un abri fait apparaître instantanément un habitant. La colonie consomme une miette par habitant toutes les 18 secondes. Le passage humain survient entre les secondes 68 et 88. La victoire demande deux abris, un atelier, 35 miettes et 100 secondes écoulées.
+**Règles existantes.** Lit : 4 bois et 3 fibres ; alcôve : 6 bois et 5 fibres. Les matériaux sont encore prélevés dans le stock global avant fabrication. L’atelier coûte 10 bois et 6 fibres et améliore les transports. Aucun habitant n’apparaît à la fabrication d’un lit. Les anciennes constructions d’abris subsistent pour compatibilité mais ne définissent plus la progression. La victoire automatique et la famine globale du premier prototype ont été retirées.
 
-**Migration.** Garder ce prototype accessible via son commit. Les nouvelles données économiques seront dans un scénario distinct : on ne mélange pas les anciennes miettes et les futures portions. Le premier schéma de sauvegarde commence après séparation de la simulation et de la présentation.
+**Besoins existants.** Les habitants recherchent sommeil, nourriture et eau ; un besoin critique ralentit les déplacements. Ils dorment dans un lit disponible ou au sol. Le confort et l’intimité sont encore des qualités du couchage. Une jauge vide ne déclenche pas actuellement blessure ou mort. Voir [lot 12](gameplay-lot-12.md) et [lot 13](gameplay-lot-13.md) pour les statistiques réellement implémentées.
 
-**Preuve technique disponible.** Des tests couvrent une partie gagnante, la famine, la détection et les commandes principales. Une revue visuelle du décor initial a mesuré environ 16,61 ms par image à 1080p sur GTX 1650, avec synchronisation verticale. Cela ne valide ni 50 habitants, ni plusieurs secteurs, ni une sauvegarde longue.
+**Sauvegarde existante.** Format v3 avec migration v1/v2, point stable après rappel au refuge. Conserve notamment besoins, lits, propriétaires, travaux et découvertes. Ce n’est pas encore une sauvegarde libre pendant une expédition ; cette extension est requise à l’étape 6 de la roadmap.
+
+**Preuves et limites.** Les tests ciblés couvrent navigation, livraisons, interface, échelles, portes, reconnaissance, sauvegarde, sommeil et besoins. Ils ne prouvent ni une colonie de 50 habitants, ni plusieurs secteurs persistants, ni la stabilité d’une campagne longue. Les mesures graphiques du premier décor ne constituent pas un budget validé pour la future campagne.
 
 ## 04. Boucles de jeu et progression
 [[diagram:loop]]
@@ -85,12 +87,14 @@ Référence vérifiée dans le README et les scripts du dépôt au commit 8dc286
 
 **Vue en coupe.** Sélectionner un niveau masque le plafond gênant et conserve des silhouettes des niveaux voisins. Les entrées de conduits portent un nom et une destination. La carte stratégique indique les connexions et les horaires connus ; elle ne révèle pas les ressources non explorées.
 
-**Périmètre campagne recommandé.** Quatre secteurs indispensables : salon, cuisine, cloisons, fondations. Salle de bains et grenier restent des extensions de campagne si le coût de production dépasse les moyens disponibles. L'eau peut d'abord venir d'un tuyau fuyant dans une cloison.
+**Périmètre campagne retenu.** Salon, cuisine, cloisons et fondations, puis une ville souterraine indépendante proposant échanges, recrutement et missions, tout en conservant le refuge du joueur. Salle de bains et grenier restent des extensions de campagne si le coût de production dépasse les moyens disponibles. L'eau peut d'abord venir d'un tuyau fuyant dans une cloison.
+
+**Extension retenue à développer plus tard.** Extérieur et nouvelles zones procédurales persistantes, avec avant-postes, stocks, ateliers et ravitaillement. Les zones découvertes restent accessibles ; cette extension ne transforme pas la maison artisanale en carte entièrement aléatoire. Le joueur ne gère pas plusieurs colonies complètes. Voir les étapes 5–7 de la [roadmap](roadmap-production.md) pour le premier contrat de liaison et de persistance.
 
 ## 06. Première aventure : atteindre la cuisine
 [[diagram:slice]]
 
-**Tranche jouable J3, cible 20 à 30 minutes à tester.** Quatre habitants, un refuge, deux métiers actifs (éclaireur et ouvrier polyvalent), une zone de départ, un accès masqué vers la cuisine, un pont, un dépôt et une petite colonie de fourmis.
+**Tranche jouable J3.** Prévoir davantage de construction et d’aménagement du refuge avant le départ, conformément à DEC-08. La durée initiale de 20–30 minutes est à réévaluer après essai. Quatre habitants, un refuge, deux métiers actifs (éclaireur et ouvrier polyvalent), une zone de départ, un accès masqué vers la cuisine, un pont, un dépôt et une petite colonie de fourmis.
 
 1. Le joueur assure une réserve de départ et désigne un éclaireur. Une entrée de conduit est repérée par un indice sonore et une trace de miettes.
 2. L'éclaireur révèle la fissure et deux options : contour étroit praticable à vide, ou pont permettant les porteurs chargés.
@@ -105,11 +109,11 @@ Référence vérifiée dans le README et les scripts du dépôt au commit 8dc286
 **Mesures J3.** Tester avec 3 à 5 personnes si possible : majorité capable de livrer une première portion sans aide orale, aucun blocage irréversible, au moins deux stratégies observées. Échec technique si un habitant reste immobile plus de 10 secondes sans état expliqué ou si des ressources sont dupliquées à l'annulation.
 
 ## 07. Temps, difficulté et conditions de partie
-**SYS-03 - Horloge cible.** Un jour de fiction dure 12 minutes réelles à vitesse x1 : 1 heure de fiction = 30 secondes simulées. Pause, x1 et x2 dès J1 ; x4 seulement après validation des déplacements et des événements. Les besoins et la production utilisent le temps simulé, jamais les images rendues.
+**SYS-03 - Horloge cible.** La durée du jour reste provisoire selon DEC-12 ; 12 minutes réelles à x1 est seulement une hypothèse initiale. Le cycle humain actuel de 100 s ne représente pas encore cette journée cible. Pause, x1 et x2 dès J1 ; x4 seulement après validation des déplacements et des événements. Les besoins et la production utilisent le temps simulé, jamais les images rendues.
 
 **Cadences candidates.** Déplacement à chaque pas physique ; besoins et économie à 1 Hz simulé ; choix d'une nouvelle tâche sur événement ou au plus toutes les 0,5 s ; perception animale étalée entre agents. L'horloge est suspendue par pause. Les effets décoratifs peuvent continuer, sans changer la simulation.
 
-**SYS-04 - Difficulté.** Le mode Standard impose besoins, blessures et pertes de stocks. Le mode Détente augmente les délais d'alerte, désactive la mort permanente et réduit la consommation à 75 %. Un mode Survie, avec mort possible et ressources plus rares, reste OPTION après équilibrage. Les multiplicateurs sont enregistrés dans la sauvegarde.
+**SYS-04 - Difficulté.** Gestion avec difficultés réelles, anticipation et récupération. La mort définitive est possible dans la cible retenue, après danger annoncé et occasion de secours. Les modes Détente et Survie et leurs multiplicateurs restent à définir ; aucune valeur de difficulté n’est validée par la seule référence à RimWorld.
 
 **Règles d'équité.** Prévenir un événement majeur au moins 30 secondes simulées à l'avance lorsqu'il est observable. Le premier événement de chaque type est atténué. Aucun danger nouveau ne surgit directement dans le refuge initial sans indice préalable.
 
@@ -285,8 +289,10 @@ Référence vérifiée dans le README et les scripts du dépôt au commit 8dc286
 | --- | --- | --- | --- |
 | Fourmi | Nourriture, piste reliant un nid | Recherche, recrutement, transport, défense proche du nid | Appât, nettoyage de piste, route couverte |
 | Araignée | Poste de chasse, réseau de fils | Attend, détecte les vibrations, capture une proie | Contourner, observer, couper un fil à distance |
-| Cloporte | Humidité, matière organique | Se cache au sec, recycle des déchets | Canaliser l'humidité ; bât de transport en option |
+| Cloporte | Humidité, matière organique | Se cache au sec, recycle des déchets | Canaliser l'humidité ; espèce de bât à choisir |
 | Cafard | Abri sombre, nourriture accessible | Sortie opportuniste, fuite à la lumière | Stock fermé, éclairage temporaire, déplacement du dépôt |
+
+**Domestication retenue.** Quelques insectes utiles pour le transport ou la production, avec entretien et besoins. Les espèces et le jalon restent à préciser ; reproduction et dressage approfondi ne sont pas inclus automatiquement.
 
 **Fourmis J3.** Un nid abstrait émet des ouvrières jusqu'à un plafond de test de 20 visibles. Les pistes sont des concentrations sur un petit graphe de points, avec dépôt et évaporation ; ne pas lancer une simulation chimique sur toute la carte. Un appât attire la recherche, mais reste consommable et peut renforcer temporairement la fréquentation locale.
 
@@ -338,7 +344,7 @@ Référence vérifiée dans le README et les scripts du dépôt au commit 8dc286
 
 **Caméra.** Déplacement clavier, zoom avec limites selon le secteur, rotation, recentrage sur refuge, changement de niveau et suivi d'un habitant. Prévenir les coupes de caméra qui cachent un passage sélectionné. Les plafonds gênants deviennent invisibles sans supprimer les ombres utiles.
 
-**Accessibilité.** Taille d'interface 90-140 %, contraste et taille de texte réglables, pictogrammes doublés de texte, menace identifiable sans couleur seule, réduction des secousses et des scintillements, volume séparé des alertes, sous-titres pour indices sonores importants. Mode arachnophobie proposé : modèle simplifié et toile active signalée par un symbole, sans changer les règles.
+**Accessibilité.** Taille d'interface 90-140 %, contraste et taille de texte réglables, pictogrammes doublés de texte, menace identifiable sans couleur seule, réduction des secousses et des scintillements, volume séparé des alertes, sous-titres pour indices sonores importants. DEC-09 conserve l’apparence des araignées pour tous, sans représentation alternative.
 
 **Acceptation.** Tester 1280 x 800 et 1920 x 1080, texte français long, UI agrandie, toutes les alertes actives et clavier AZERTY. Aucun bouton hors écran, aucune commande de caméra déclenchée par un clic dans un panneau.
 
@@ -398,7 +404,7 @@ L'inventaire CSV associé est la liste de suivi détaillée. Les quantités sont
 
 **Contrat rig.** Origine au sol, axe avant documenté, hauteur et rayon de navigation associés. Points d'attache main droite, main gauche, dos, tête et charge. Le sac représente réellement la catégorie transportée. Les variantes partagent le squelette lorsqu'elles ont la même morphologie.
 
-**Lisibilité.** Tester les métiers sans se fier uniquement aux couleurs. Une blessure doit modifier posture ou démarche. Éviter de changer brutalement la taille d'un personnage pour une variante. Les insectes nécessitent un mode de représentation atténuée si DEC-09 est retenue.
+**Lisibilité.** Tester les métiers sans se fier uniquement aux couleurs. Une blessure doit modifier posture ou démarche. Éviter de changer brutalement la taille d'un personnage pour une variante. DEC-09 ne prévoit pas de représentation alternative des araignées.
 
 ## 24. Environnements, bâtiments et objets
 **ART-03 - Produire des kits, puis composer des lieux.** Un kit contient modules compatibles, raccords, usure, variantes et règles d'assemblage. Les zones ne doivent pas ressembler à une répétition d'un seul carré.
@@ -493,6 +499,7 @@ L'inventaire CSV associé est la liste de suivi détaillée. Les quantités sont
 **Playtests.** À J3 puis J6, 3 à 5 personnes minimum si disponibles. Noter sans guider : première récolte, première affectation, compréhension du danger, temps inactif, reprises après erreur, décisions différentes et frustrations. Modifier les règles avant de multiplier les assets si la boucle n'est pas comprise.
 
 ## 29. Roadmap : du socle à la première aventure
+**Ordre opérationnel actualisé.** Les jalons ci-dessous définissent des résultats cibles, pas leur état d’avancement. Le [plan de production par étapes](roadmap-production.md) fournit le bilan actuel, les démonstrations et les arrêts pour validation ; il remplace l’ancien ordre de reprise.
 [[diagram:roadmap]]
 
 Les jalons sont des contrats de résultat, pas des dates promises. Taille indicative : S = lot limité, M = plusieurs systèmes liés, L = étape nécessitant essais et itérations. Une estimation en jours de travail ne sera crédible qu'après J0 et le premier test de navigation. Limiter le travail en cours à un jalon principal.
@@ -521,13 +528,13 @@ Les jalons sont des contrats de résultat, pas des dates promises. Taille indica
 
 **J5 - Menaces lisibles.** Remplacer le cycle global simplifié par routines observables et alertes locales. Ajouter araignée et souris dans des secteurs dédiés ; introduire détournement, camouflage et portes. Acceptation : trois solutions différentes face à une menace, aucune perception omnisciente, comportement identique avant et après sauvegarde à état équivalent.
 
-**J6 - Campagne.** Composer les cloisons et fondations, ajouter savoir-faire, événements de rénovation, construction du Grand Refuge et évacuation. Rat seulement si sa fonction ne duplique pas la souris. Acceptation : campagne terminable, deux itinéraires finaux, aucune ressource indispensable dans une zone irréversiblement perdue sans alternative.
+**J6 - Campagne.** Composer les cloisons et fondations, ajouter savoir-faire, événements de rénovation, construction du Grand Refuge et évacuation, puis accès à la ville souterraine indépendante avec échanges, recrutement et missions. La partie peut continuer après le Grand Refuge. Rat seulement si sa fonction ne duplique pas la souris. Acceptation : campagne terminable, deux itinéraires finaux, aucune ressource indispensable dans une zone irréversiblement perdue sans alternative ; visite de la ville puis retour au refuge conservé.
 
 **J7 - Finition.** Revue artistique par secteur, sons finalisés, profils de performance, réglages, localisation française vérifiée, tutoriel allégé et correction des difficultés mal signalées. Acceptation : critères QA du chapitre 28, build autonome installable, sauvegardes robustes et aucune erreur bloquante connue.
 
 **Dépendances fortes.** Navigation avant expansion ; stocks et sauvegardes avant économie complexe ; première aventure avant nouveaux biomes ; perception avant animal dangereux ; scène étalon avant multiplication des assets finaux. Une amélioration graphique peut avancer en parallèle conceptuellement, mais ne doit pas retarder la validation du jeu jouable.
 
-**À réduire en premier si le périmètre déborde.** Reporter grenier et salle de bains ; garder une seule espèce de rongeur ; réduire les variantes de métiers ; supprimer domestication, chariot et chaînes de production avancées. Préserver les choix de trajet, les travaux utiles et l'autonomie des habitants.
+**À réduire en premier si le périmètre déborde.** Reporter grenier et salle de bains ; garder une seule espèce de rongeur ; réduire les variantes de métiers ; étaler la domestication utile en un lot distinct, reporter le chariot et réduire les chaînes avancées. Préserver les choix de trajet, les travaux utiles et l'autonomie des habitants.
 
 **Fin de jalon.** Démonstration de 10 minutes, résultats de tests, capture ou vidéo, liste des limites, mise à jour de l'inventaire et validation du joueur. Une étape refusée repart en correction avec un objectif précis ; elle ne déclenche pas automatiquement le jalon suivant.
 
@@ -551,44 +558,38 @@ Les jalons sont des contrats de résultat, pas des dates promises. Taille indica
 
 **Réserves de planning.** Ne pas affecter tout le temps disponible à la création de contenu : garder une marge pour tests, outils et retours. Après J2, mesurer le temps réel nécessaire pour produire un bâtiment complet et un agent animé ; extrapoler seulement à partir de ces deux exemples.
 
-## 32. Décisions à prendre avant la reprise
-Ces recommandations constituent le point de départ. Le joueur peut répondre par ID, conserver, modifier ou reporter. Une absence de retour ne vaut pas validation.
+## 32. Décisions retenues et détails ouverts
+Les choix ci-dessous sont issus de l’entretien, pas de nouvelles propositions. Leur réalisation demeure progressive.
 
-| ID | Question | Recommandation initiale |
-| --- | --- | --- |
-| DEC-01 | Ton : contemplation, tension ou survie dure ? | Gestion chaleureuse avec tension ponctuelle |
-| DEC-02 | Mort permanente des habitants ? | Incapacité et sauvetage en Standard ; mort à décider |
-| DEC-03 | Taille de colonie ? | 30-50 maximum, individus nommés |
-| DEC-04 | Style final ? | Réalisme miniature stylisé, validé sur scène étalon |
-| DEC-05 | But final de rénovation ? | Oui, révélé après installation ; délai désactivable |
-| DEC-06 | Carte fixe ou procédurale ? | Maison artisanale, variations de situations |
-| DEC-07 | Place du combat ? | Évitement, diversion et défense ; combat limité |
-| DEC-08 | Première version jouable ? | Atteindre la cuisine avec pont et fourmis |
-| DEC-09 | Mode arachnophobie ? | Oui, représentation alternative sans changer les règles |
-| DEC-10 | Domestication d'insectes ? | Reporter ; cloporte de bât en option après campagne |
-| DEC-11 | Étendue de la campagne ? | Quatre secteurs obligatoires ; deux facultatifs |
-| DEC-12 | Rythme et besoins ? | Jour de 12 min à tester ; eau introduite progressivement |
+| ID | Sujet | Retour / choix | Statut |
+| --- | --- | --- | --- |
+| DEC-01 | Ton et difficulté | Choix 1B : gestion de colonie avec de vraies difficultés, mais du temps pour anticiper et récupérer, « un peu comme RimWorld ». Cette référence ne valide pas automatiquement tous les systèmes de ce jeu. | Validé en entretien |
+| DEC-02 | Mort, blessures et sauvetage | Choix 2B : mort définitive possible, seulement après un danger clairement annoncé et une possibilité de sauvetage. Modalités et délais à concevoir. | Validé en entretien |
+| DEC-03 | Population maximale | Choix 1B : une colonie de 30 à 50 habitants à terme, avec métiers spécialisés et logistique. L'effectif initial reste à préciser. | Validé en entretien |
+| DEC-04 | Direction artistique | Choix 1B : minuscules humains réalistes mais légèrement stylisés, avec silhouettes et expressions lisibles à distance. Choix 2C : objets détournés intégrés à de petites maisons en matériaux récupérés. Direction retenue ; réalisation visuelle à valider sur une scène étalon. | Direction validée en entretien |
+| DEC-05 | Rénovation et but final | Choix 1B+C : construire un Grand Refuge durable et protégé, pouvoir continuer à jouer, et préparer une migration face aux rénovations menaçant le refuge initial. Menace annoncée suffisamment tôt. Ville souterraine indépendante retenue à terme : échanges, recrutement et missions, tout en conservant notre refuge (choix 1B suivant). Articulation des étapes et calendrier de production à préciser. | Direction validée en entretien |
+| DEC-06 | Carte et variations | Choix 3B : structure générale de la maison conçue à la main, avec passages, ressources et territoires animaux variables entre les parties. | Validé en entretien |
+| DEC-07 | Place du combat | Choix 1B, « un peu à la RimWorld » : évitement et défense, avec des habitants équipés pour combattre lorsque nécessaire. Les modalités de mobilisation, équipements et tactiques restent à préciser. La référence ne valide pas automatiquement tous les systèmes de combat de RimWorld. | Validé en entretien |
+| DEC-08 | Première aventure cuisine | Choix 3B : conserver refuge, fissure, pont et accès à la nourriture près de la cuisine avec fourmis, mais consacrer davantage de temps à la construction et à l'aménagement avant l'expédition. Réviser le déroulé et la durée cible du chapitre 06. | Validé avec modification |
+| DEC-09 | Arachnophobie | Choix 3B : conserver l'apparence des araignées pour tout le monde, sans mode de représentation alternatif. | Validé en entretien |
+| DEC-10 | Domestication | Choix 2B, « à la RimWorld » : quelques espèces d'insectes apprivoisables pour transporter des charges ou produire des ressources. Espèces, entretien et jalon d'introduction à définir. Un système approfondi de reproduction et de dressage n'est pas validé par ce choix. | Validé en entretien |
+| DEC-11 | Nombre de secteurs | Choix 2B : première campagne avec sous-plancher du salon, cuisine, cloisons, fondations et ville souterraine ; grenier et salle de bains plus tard. Extérieur et nouvelles zones procédurales évoqués pour prolonger la partie : extension à approfondir. | Périmètre de campagne validé ; extension à préciser |
+| DEC-12 | Rythme, durée du jour et besoins | Choix 1C, « à la RimWorld » : garder une durée de journée provisoire puis décider après essai, avec pause et accélération disponibles. Besoins retenus : nourriture, eau, repos, confort et soins ; température, humidité et fumée influencent la vie de la colonie. Durées et valeurs à tester. | Méthode de réglage et besoins validés |
 
-**Questions ouvertes supplémentaires.** Les habitants sont-ils une espèce originale ou de minuscules humains ? Doivent-ils parler par petits sons, textes courts ou rester silencieux ? Le monde a-t-il une tonalité humoristique, poétique ou réaliste ? Le joueur souhaite-t-il construire librement ou suivre des emplacements partiellement prédéfinis ?
+**Compléments retenus.** Construction mixte : pièces sur grille, murs, portes, sols et mobilier, avec structures prêtes à placer. Verticalité par échelles, ponts et futurs monte-charges. Travaux désignés par le joueur, exécutés selon priorités ; contrôle direct d’urgence. Croissance par voyageurs et rescapés plutôt que naissances. Recherche liée aux découvertes. Relations individuelles, amitiés et tensions, sans déduire un système complet de familles.
 
-**Validation minimale de J0.** Confirmer DEC-01, 02, 03, 04 et 08, fixer la forme des habitants et le style du refuge, puis choisir une image étalon. Les autres décisions peuvent rester ouvertes si elles n'invalident pas les fondations techniques.
+**Détails ouverts.** Durée du jour, dimensions de grille, budgets de simulation, délais de secours, espèces domestiquées, règles de contrôle des groupes et propagation de température/humidité/fumée. Une simulation complète des gaz et fluides n’est pas requise par la référence à Oxygen Not Included.
 
-**Options volontairement reportées.** Diplomatie entre colonies, domestication de souris, commerce, reproduction, saisons, extérieur/jardin, coopération multijoueur et génération de maisons. Elles restent dans un carnet d'idées avec leur apport attendu, sans devenir des obligations cachées.
+**Exploration ajoutée à la suite.** Torches individuelles fabriquées, autonomie lumineuse, passages physiques entre secteurs et routes équipées. Les règles de mains occupées, combustible, persistance et retour sont proposées dans la roadmap pour validation par démonstration.
 
 ## 33. Méthode de retour et ordre de reprise
-**Pendant la pause.** Annoter les propositions qui donnent envie de jouer, celles qui paraissent fastidieuses et celles qui manquent. Il n'est pas nécessaire de valider toutes les statistiques une par une. Les valeurs servent à rendre les intentions testables ; elles évolueront après essais.
+Le joueur demande une livraison à la fois : résultat présenté, validation, puis commit et push. Une correction demandée fait partie de l’étape en cours. Aucune publication de cette révision ou d’un nouveau lot avant son accord.
 
-**Format de retour conseillé.** ID ou chapitre ; décision souhaitée ; raison ; exemple de situation. Exemple : « DEC-02 : pas de mort en Standard, je préfère une blessure longue qui oblige à organiser un sauvetage. » Ou : « SYS-08 : je veux pouvoir donner un ordre de réserve minimum par refuge. »
+**Étape actuelle.** Révision documentaire : bilan, décisions, assets et [roadmap détaillée](roadmap-production.md). Le PDF v0.1 demeure historique ; il ne doit pas servir de liste des fonctionnalités actuelles.
 
-**Registre.** Le fichier `retours-et-decisions.md` comporte les colonnes statut, décision et impact. Les décisions acceptées seront reportées dans une version 0.2 du dossier avec un historique. Les idées non retenues resteront listées avec leur motif, pour éviter de les rediscuter sans contexte.
+**Premier résultat jouable suivant.** Approvisionner physiquement un chantier de lit avec les livraisons existantes ; démontrer concurrence, annulation, besoins et reprise. Puis réserves locales, torches portées et premier secteur sombre relié. Le plan détaille les dépendances et critères de chacun.
 
-**Ordre recommandé à la reprise.** D'abord examiner les cinq décisions critiques. Ensuite revoir la première aventure et ses critères de réussite. Puis corriger l'inventaire d'assets et les dépendances de J0-J3. Enfin seulement, lancer un lot de production défini et vérifiable.
-
-**Premier lot après validation, non commencé ici.** Extraire l'horloge et l'inventaire, formaliser les tâches et leurs IDs, créer une arène de navigation, puis réaliser un trajet récolte-livraison interrompable avec sauvegarde. En parallèle de conception, préparer le brief de l'habitant étalon ; ne pas produire tout le catalogue.
-
-**Ce qui rendra le plan prêt pour production.** Un périmètre de première aventure stable, une direction artistique approuvée, des unités de simulation cohérentes, une architecture de données minimale et des critères de passage acceptés. Une roadmap détaillée n'est utile que si ces décisions restent visibles et modifiables.
-
-**Références internes.** Code du prototype : `scripts/game.gd`, `scripts/world.gd`, `scripts/atmosphere.gd` ; tests : `tests/smoke.gd` et `tests/visual_review.gd` ; sources des assets : `tools/create_assets.py`, `tools/create_atmosphere.py` et `art_source/`. Les règles futures de ce dossier sont des propositions originales issues de la discussion, pas des fonctionnalités déjà livrées.
+**Références.** Les fiches `gameplay-lot-06.md` à `gameplay-lot-13.md` documentent les incréments déjà livrés. Le fichier `inventaire-assets.csv` est la source de suivi des assets ; les quantités sont des cibles, et un statut partiel ne vaut pas acceptation du lot complet.
 
 ## 34. Annexe : valeurs initiales à tester
 Ces valeurs sont des points de départ de prototypage. Elles ne sont pas encore intégrées au jeu et ne constituent pas un équilibrage validé. Les unités de distance suivent la convention du chapitre 05.
