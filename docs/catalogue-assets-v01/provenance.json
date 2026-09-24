@@ -1,0 +1,141 @@
+{
+  "method": "image_gen integrated tool; model version unavailable",
+  "images": [
+    {
+      "board": "01",
+      "file": "images/01-habitant-reference.png",
+      "generated_source": "C:\\Users\\cyril\\.codex\\generated_images\\01a0d038-8894-7ec3-9481-82c7580439f3\\exec-38e5e9da-1b0b-4960-b696-c833a2a895d4.png",
+      "prompt_mode": "standalone",
+      "model_version": null,
+      "width": 1536,
+      "height": 1024,
+      "sha256": "7e0f25f314ac03d86b54c3a2abfae45ee7501df97e86ed348ebb12facf2db9f7",
+      "bytes": 2271481
+    },
+    {
+      "board": "02",
+      "file": "images/02-habitants-metiers.png",
+      "generated_source": "C:\\Users\\cyril\\.codex\\generated_images\\01a0d038-8894-7ec3-9481-82c7580439f3\\exec-fc6b74c0-ad6a-442d-924d-aafb4da4643e.png",
+      "prompt_mode": "common_plus_board",
+      "model_version": null,
+      "width": 1536,
+      "height": 1024,
+      "sha256": "9d5600647a67da9e67e5725568db4593fb2850874d4210f593b0630962c993b7",
+      "bytes": 2284274
+    },
+    {
+      "board": "03",
+      "file": "images/03-fourmis.png",
+      "generated_source": "C:\\Users\\cyril\\.codex\\generated_images\\01a0d038-8894-7ec3-9481-82c7580439f3\\exec-5f0bbf2d-5e47-46ee-af6d-0b69e1ac555f.png",
+      "prompt_mode": "common_plus_board",
+      "model_version": null,
+      "width": 1536,
+      "height": 1024,
+      "sha256": "b459e9852cc22facc70412506c3caf809d2eb6d0f7d29f8c47312ef5e821af6e",
+      "bytes": 2364516
+    },
+    {
+      "board": "04",
+      "file": "images/04-araignee.png",
+      "generated_source": "C:\\Users\\cyril\\.codex\\generated_images\\01a0d038-8894-7ec3-9481-82c7580439f3\\exec-fc6f41a2-b888-41e3-aba3-82193920482d.png",
+      "prompt_mode": "common_plus_board",
+      "model_version": null,
+      "width": 1536,
+      "height": 1024,
+      "sha256": "023709c964e4a495861c84a75b36c581ad5ed74500a1bd96a45610cc60f79882",
+      "bytes": 2660053
+    },
+    {
+      "board": "05",
+      "file": "images/05-cloporte-cafard.png",
+      "generated_source": "C:\\Users\\cyril\\.codex\\generated_images\\01a0d038-8894-7ec3-9481-82c7580439f3\\exec-0924060d-2e52-4d36-ba2c-590b2b9448bb.png",
+      "prompt_mode": "common_plus_board",
+      "model_version": null,
+      "width": 1536,
+      "height": 1024,
+      "sha256": "bc3fb209dd2775f0c687a26ee5c147b6750929890115e0316dcd74d2307b39e0",
+      "bytes": 2456708
+    },
+    {
+      "board": "06",
+      "file": "images/06-souris-rat.png",
+      "generated_source": "C:\\Users\\cyril\\.codex\\generated_images\\01a0d038-8894-7ec3-9481-82c7580439f3\\exec-09103c9e-8e50-42d2-a23f-e72e06bf19a1.png",
+      "prompt_mode": "common_plus_board",
+      "model_version": null,
+      "width": 1536,
+      "height": 1024,
+      "sha256": "d0ac0c76945fa8fff07d84afccde92f2aa32a28f5c7b91bb9e2f82d92f78f22f",
+      "bytes": 2729161
+    },
+    {
+      "board": "07",
+      "file": "images/07-outils-portage.png",
+      "generated_source": "C:\\Users\\cyril\\.codex\\generated_images\\01a0d038-8894-7ec3-9481-82c7580439f3\\exec-139b5a71-3057-4543-9737-8f4526ff2350.png",
+      "prompt_mode": "common_plus_board",
+      "model_version": null,
+      "width": 1536,
+      "height": 1024,
+      "sha256": "9fe99056fecc5af8529ba7908a489717737c891cf0723d96ef74a8567eb5bf95",
+      "bytes": 2626527
+    },
+    {
+      "board": "08",
+      "file": "images/08-eclairage.png",
+      "generated_source": "C:\\Users\\cyril\\.codex\\generated_images\\01a0d038-8894-7ec3-9481-82c7580439f3\\exec-52227d3b-b2b3-4d73-90fa-abb5000e9d53.png",
+      "prompt_mode": "common_plus_board",
+      "model_version": null,
+      "width": 1536,
+      "height": 1024,
+      "sha256": "7b909d8e12f216061775a84c3549374765122eca320b331279992c817161e20c",
+      "bytes": 2549264
+    },
+    {
+      "board": "09",
+      "file": "images/09-couchages-intimite.png",
+      "generated_source": "C:\\Users\\cyril\\.codex\\generated_images\\01a0d038-8894-7ec3-9481-82c7580439f3\\exec-c16d9a74-722b-4d39-9b8a-f09761ad8012.png",
+      "prompt_mode": "common_plus_board",
+      "model_version": null,
+      "width": 1536,
+      "height": 1024,
+      "sha256": "4fcef1f296cd16592eac6ed9d44c9802e4fdc2036abba237f51365b820f447ac",
+      "bytes": 2653508
+    },
+    {
+      "board": "10",
+      "file": "images/10-atelier-stockage.png",
+      "generated_source": "C:\\Users\\cyril\\.codex\\generated_images\\01a0d038-8894-7ec3-9481-82c7580439f3\\exec-26086252-63b2-47b9-9428-284368e52d10.png",
+      "prompt_mode": "common_plus_board_then_edit",
+      "model_version": null,
+      "revision": {
+        "source": "C:\\Users\\cyril\\.codex\\generated_images\\01a0d038-8894-7ec3-9481-82c7580439f3\\exec-e35b8a7f-1569-424b-bc7a-5488bd3bb93a.png",
+        "prompt": "Edit this asset reference board. Keep the same workshop bench, storage rack and bins, all their designs and view layout. Correct only presentation lighting/background: use a uniform LIGHT warm gray studio background throughout, no dark vignette, no dramatic black corners. All headings and labels must be dark charcoal with excellent legibility. Soft evenly lit neutral product lighting with readable wood grain and construction joints. Preserve the title SOUS LE PLANCHER and 10 — ATELIER & STOCKS. No other changes."
+      },
+      "width": 1536,
+      "height": 1024,
+      "sha256": "93b801f02e0376e507ce574cdc006e6750b842202fb81e85ceeaba748363d618",
+      "bytes": 2453306
+    },
+    {
+      "board": "11",
+      "file": "images/11-ressources-eau-repas.png",
+      "generated_source": "C:\\Users\\cyril\\.codex\\generated_images\\01a0d038-8894-7ec3-9481-82c7580439f3\\exec-0d2c9a07-225e-4b24-8f07-3f6f20cc63af.png",
+      "prompt_mode": "common_plus_board",
+      "model_version": null,
+      "width": 1536,
+      "height": 1024,
+      "sha256": "90b27dc155890d141e3145981a509bdfe49fb8964de40d5801272c7469d1ab81",
+      "bytes": 2816876
+    },
+    {
+      "board": "12",
+      "file": "images/12-construction-passages.png",
+      "generated_source": "C:\\Users\\cyril\\.codex\\generated_images\\01a0d038-8894-7ec3-9481-82c7580439f3\\exec-8de19399-54c5-4f3b-aa31-2941d1f92ec1.png",
+      "prompt_mode": "common_plus_board",
+      "model_version": null,
+      "width": 1536,
+      "height": 1024,
+      "sha256": "8a45327c9f8a7ebcec8893fb91db19333b09fd5f4a603d522d4591aef6f85323",
+      "bytes": 2724299
+    }
+  ]
+}

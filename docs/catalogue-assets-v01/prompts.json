@@ -1,0 +1,182 @@
+{
+  "project": "Sous le Plancher",
+  "version": "v01",
+  "status": "Propositions visuelles à valider, pas des assets 3D finalisés",
+  "method": "Générateur d’images intégré ; version de modèle non sélectionnable/non attestée.",
+  "common_prompt": "Use case: stylized-concept. Create one premium MODELING REFERENCE SHEET for the tiny-human colony game \"SOUS LE PLANCHER\". Landscape 3:2, highest practical detail. A carefully art-directed production concept board, warm light grey studio paper background, clean charcoal typography, generous gutters, isolated objects with soft contact shadows. Grounded miniature realism with subtle stylization for readable game silhouettes. Exquisite material definition: recovered timber fibres, oversized woven fabric, hand stitching, scuffed leather, dull brass, household scraps, believable accumulated dust; sophisticated restrained natural palette. Neutral even studio illumination showing the whole form, clear sharp focus. This is a reference for subsequent Blender modeling, not a gameplay screenshot, not a grid of icons, no game UI. Repeated views must depict precisely the same design and fittings. Objects must not overlap, no cropped silhouettes, no arbitrary technical measurements, no brands, no watermarks, no invented fantasy magic or steampunk machinery. Only the specified short French text, no gibberish paragraphs. ",
+  "boards": [
+    {
+      "n": "01",
+      "slug": "habitant-reference",
+      "title": "Habitant de référence",
+      "family": "Habitants",
+      "ids": [
+        "CHR-01",
+        "CHR-03"
+      ],
+      "status": "Évolution visuelle proposée",
+      "notes": "Reprend la tenue et le sac du modèle validé. Quatre vues pour préparer la nouvelle topologie ; contrôler la cohérence des mains, du visage et des coutures avant modélisation.",
+      "prompt": "Use case: stylized-concept. Transform the supplied existing Blender character render into a premium game-art character MODELING REFERENCE SHEET for the tiny-human colony game SOUS LE PLANCHER. This is a proposed polished evolution of that character, preserving his recognizable clothing, colors, adult human identity and centered backpack, not a screenshot. Landscape 3:2, highest practical detail. Warm light grey studio backdrop, clean spacious editorial board, thin charcoal rules and small discreet numbered labels. Physically credible slightly stylized adult human proportions, expressive but not cartoon doll, believable hands with five fingers, no elf ears, no fantasy armor. Retain chestnut swept hair, off-white rolled linen sleeves, sage green waistcoat, charcoal trousers with a rust-colored knee patch, stitched worn brown leather boots and leather belt, small sage canvas backpack centered between shoulder blades with symmetric straps. Hand-stitched recovered fabric with large visible weave, scuffed leather, muted brass, dust lodged in seams, carefully authored wear, not plastic.\nShow exactly FOUR consistent full-body views of the SAME male adult: FRONT in relaxed A-pose, LEFT PROFILE, BACK in A-pose, THREE QUARTER. Keep feet on the same baseline and identical height. All limbs and clothing fully visible, even neutral studio light, no cinematic darkness, no dramatic depth of field. Include a lower strip with three close-ups: face, hand/belt attachment, centered backpack straps and buckle. Spare negative space, clean isolated subject silhouettes. Text only: 'SOUS LE PLANCHER', '01 — HABITANT', 'FACE', 'PROFIL', 'DOS', '3/4'. No brand logos or watermarks, no numerical real-world scale, no tools, no new scenery. Modeling-ready clear construction, premium grounded miniature-world aesthetic.",
+      "reference": "artifacts/reference_01/resident_front_back.png"
+    },
+    {
+      "n": "02",
+      "slug": "habitants-metiers",
+      "title": "Habitants et métiers",
+      "family": "Habitants",
+      "ids": [
+        "CHR-01",
+        "CHR-02",
+        "PRP-09"
+      ],
+      "status": "Variantes proposées",
+      "notes": "Quatre adultes et accessoires interchangeables. Les métiers illustrent la roadmap, sans ajouter de compétences au jeu. Conserver le rig commun et des sacs centrés.",
+      "prompt": "Show FOUR adult miniature human colonists across the main row, each full body front three-quarter with consistent adult proportions, average seven-head height, varied faces, body shapes and skin tones, natural hands: female builder with tied dark hair, sage patched waistcoat and worn leather apron; male porter with short textured hair, ochre canvas vest and balanced empty carrying harness; older female caretaker with greying braid, ivory rolled sleeves and compact bandage pouch; male scout with chestnut hair, sage waistcoat, charcoal trousers, rust knee patch and centered small canvas backpack. They wear practical handmade salvaged clothing and boots, no medieval costumes or oversized cartoon heads. Lower row: matching four smaller rear views, showing centered equipment and clean shoulder/hip attachments. Four tidy isolated accessory details beside the relevant rear view: tiny hammer, removable harness, cotton bandage roll, enclosed belt lantern. No weapons. Palette ivory, sage, charcoal, muted ochre and worn leather. Text only: \"SOUS LE PLANCHER\", \"02 — HABITANTS & MÉTIERS\", \"BÂTISSEUSE\", \"PORTEUR\", \"SOIGNANTE\", \"ÉCLAIREUR\"."
+    },
+    {
+      "n": "03",
+      "slug": "fourmis",
+      "title": "Fourmis",
+      "family": "Faune",
+      "ids": [
+        "FAU-01"
+      ],
+      "status": "Référence proposée · priorité cuisine",
+      "notes": "Six pattes attachées au thorax, antennes articulées, abdomen distinct. Séparer rig, mandibules et charge. Les vues ne fixent pas encore l’échelle de gameplay.",
+      "prompt": "A grounded household black-brown worker ant, natural insect anatomy, no fantasy monster. Main large three-quarter study occupies upper left; orthographic side view upper right; clean dorsal top view below left; front head/mandible close-up below center; lower right two small behavior thumbnails of the SAME ant investigating with antennae and holding one biscuit crumb in mandibles. Precisely SIX legs, all attached to the thorax, three paired legs per side, elbowed paired antennae, recognizable head/thorax/petiole/abdomen, no legs growing out of abdomen. Clearly separate feet so a modeler can follow leg joints. Black-brown chitin, restrained amber reflections, sparse fine hairs, tiny dust particles on feet. Modest shape stylization, credible proportions and workable mandible joints. Add two small unambiguous chitin color swatches, dark brown and reddish brown; these are material variants, not new anatomy. Ant stands unarmed and nonaggressive. Text only: \"SOUS LE PLANCHER\", \"03 — FOURMIS\", \"3/4\", \"PROFIL\", \"DESSUS\", \"MANDIBULES\", \"RECHERCHE\", \"TRANSPORT\"."
+    },
+    {
+      "n": "04",
+      "slug": "araignee",
+      "title": "Araignée et toile",
+      "family": "Faune",
+      "ids": [
+        "FAU-02",
+        "VFX-04"
+      ],
+      "status": "Référence proposée · menace future",
+      "notes": "Huit pattes rattachées au céphalothorax. Toile irrégulière en volume ; contrôler le nombre de membres et les articulations avant le rig.",
+      "prompt": "A natural brown house spider, believable rather than horror fantasy, slender articulated legs with short visible setae, patterned matte abdomen, smaller cephalothorax. Three consistent large views of the same spider: three-quarter, exact dorsal top view, side elevation; exactly EIGHT legs (four pairs) attached to the cephalothorax, two main body masses, no antennae, no extra limbs from abdomen, pedipalps visibly shorter and distinct from walking legs. In the dorsal view leave every leg silhouette separated so each can be traced. At lower right a detail vignette of an irregular dusty house-spider web stretched between splintered wood, sagging individual silk threads, uneven density, broken edges, realistic nonuniform tangled web, not a geometric radial diagram. Two lower-left close-ups of foot contacts and abdomen silk attachment area. Dusty umber, muted tan markings, soft even studio light so no joints are lost in shadow. No blood, no attack, no giant fangs, no luminous eyes. Text only: \"SOUS LE PLANCHER\", \"04 — ARAIGNÉE\", \"3/4\", \"DESSUS\", \"PROFIL\", \"SOIE\"."
+    },
+    {
+      "n": "05",
+      "slug": "cloporte-cafard",
+      "title": "Cloporte et cafard",
+      "family": "Faune",
+      "ids": [
+        "FAU-05",
+        "FAU-06"
+      ],
+      "status": "Exploratoire · espèces et domestication à confirmer",
+      "notes": "Espèces optionnelles du cahier des charges. Le cloporte n’est pas un insecte. Aucune domestication n’est acquise ; pas de selle définitive.",
+      "prompt": "A comparative reference board of TWO unadorned realistic household invertebrates, no fantasy equipment. Left half: grey-brown WOODLOUSE, articulated overlapping convex dorsal plates, exactly seven pairs of short walking legs tucked beneath body, small antennae. Show a large three-quarter view, a dorsal top view and one small curled protective pose consistent with a pill woodlouse. Right half: brown COCKROACH, flat oval body, broad pronotum, folded leathery wings, exactly three pairs of spiny legs attached to thorax, two very long fine antennae. Show a large three-quarter view, a dorsal top view and a side view with all three visible-side legs legible. Subtle chitin sheen, surface dust, carefully separated appendages on the grey background. The two species are displayed in separate panels at independently enlarged scales, do not imply they are identical actual size. These are ecological candidates for a colony game, not pets or finalized domesticated species. No saddle, reins, eyes on stalks, extra legs or cartoon faces. Text only: \"SOUS LE PLANCHER\", \"05 — FAUNE À EXPLORER\", \"CLOPORTE\", \"CAFARD\", \"3/4\", \"DESSUS\", \"PROFIL\"."
+    },
+    {
+      "n": "06",
+      "slug": "souris-rat",
+      "title": "Souris et rat",
+      "family": "Faune",
+      "ids": [
+        "FAU-03",
+        "FAU-04"
+      ],
+      "status": "Références proposées · rat conditionnel",
+      "notes": "Distinguer silhouettes et matières, sans imposer le rat comme nouvelle menace. Fourrure prévue en matière/cartes maîtrisées, pas en simulation de poils.",
+      "prompt": "A modeling board comparing one small household MOUSE and one brown RAT, natural quadruped anatomy without clothes. Two horizontal panels. Mouse upper panel: slim delicate grey-brown body, large round ears relative to head, pointed muzzle, thin long tail, small pink paws; large three-quarter view, side orthographic profile and frontal head study. Rat lower panel: distinctly more robust brown-grey torso, heavier head, smaller ears relative to skull, thicker scaly tail, broad rear paws; matching three-quarter, side profile and head study. Exactly four limbs per animal with credible hands/feet and visible whiskers. Calm alert sniffing poses, mouth closed; no anthropomorphic faces or aggression. Coherent dense short fur clumps suitable as inspiration for game fur textures, not an impossible cloud of individual hairs. Isolated complete tails laid in simple curves clear of feet, silhouettes fully in frame. Both panels individually magnified for detail, not a scientific same-scale comparison. Text only: \"SOUS LE PLANCHER\", \"06 — RONGEURS\", \"SOURIS\", \"RAT\", \"3/4\", \"PROFIL\", \"TÊTE\"."
+    },
+    {
+      "n": "07",
+      "slug": "outils-portage",
+      "title": "Outils et portage",
+      "family": "Objets",
+      "ids": [
+        "PRP-09",
+        "PRP-11",
+        "PRP-12",
+        "CHR-02"
+      ],
+      "status": "Références proposées",
+      "notes": "Outils et charges détachables ; définir prises et pivots. Préserver un volume compatible avec les animations de caisse et le sac centré.",
+      "prompt": "Six carefully arranged prop studies in a 3-column by 2-row board, each main three-quarter view plus a small side or rear construction detail. 1 tiny builder hammer made from an iron nail head in a split matchwood handle bound with twine; 2 salvaged metal shard scraper with a wrapped leather grip and bluntly readable functional silhouette; 3 sewing-needle prybar with recovered wooden grip and capped opposite end, a hand tool not a giant sword; 4 sage canvas backpack with ivory flap, centered buckled leather straps, rear view showing symmetric harness; 5 small open matchwood salvage crate with worn corners, grips on opposite sides and loose fibre lashings, empty inside; 6 rolled linen field bandages with small cloth pouch and simple knot fastening. All design language is household objects cleverly reclaimed by miniature humans, convincing materials, functional joints, human-scale household parts recognizable, no industrial power tools, no branded marks. Space objects clearly, show their attachment points rather than decorative clutter. Text only: \"SOUS LE PLANCHER\", \"07 — OUTILS & PORTAGE\", \"MARTEAU\", \"RACLOIR\", \"LEVIER\", \"SAC\", \"CAISSE\", \"BANDAGES\"."
+    },
+    {
+      "n": "08",
+      "slug": "eclairage",
+      "title": "Éclairage et combustible",
+      "family": "Objets",
+      "ids": [
+        "PRP-14",
+        "PRP-15",
+        "BLD-17",
+        "VFX-01"
+      ],
+      "status": "Torche et lanterne existantes · finitions et support proposés",
+      "notes": "La lanterne doit libérer les mains et éviter le sac, les cuisses et la caisse. Le support fixe et le combustible séparé sont des concepts futurs, pas des recettes déjà implémentées.",
+      "prompt": "Three main equipment designs in three spacious columns. LEFT hand torch: short splintered matchwood grip, cotton rag wick wound around top, twine ties, soot transition; show unlit three-quarter, side view, one small lit thumbnail with soft irregular warm flame. CENTER belt lantern: closed palm-sized rectangular reclaimed brass and matchwood frame, four transparent amber mica panes, small wax stub with wick, ventilated hood, rolled metal caps, worn leather belt loop at top; show three-quarter, back and side plus a small exploded view separating loop, hood, cage and wax stub in a mechanically coherent vertical stack. RIGHT future fixed light bracket: simple recovered bent wire wall hook on a matchwood backplate, rope attachment, same removable enclosed lantern hung safely clear of timber; small inset fuel shapes of wax stub and fibrous wick, no invented liquid machinery. Make fittings and belt attachment legible. Studio exposure that reveals construction, flames only as small state examples, not cinematic darkness. No steampunk gears or electrical LEDs. Text only: \"SOUS LE PLANCHER\", \"08 — ÉCLAIRAGE\", \"TORCHE\", \"LANTERNE\", \"SUPPORT\", \"MÈCHE & CIRE\"."
+    },
+    {
+      "n": "09",
+      "slug": "couchages-intimite",
+      "title": "Couchages et intimité",
+      "family": "Habitat",
+      "ids": [
+        "BLD-16",
+        "BLD-09",
+        "PRP-09"
+      ],
+      "status": "Couchages existants · finitions proposées",
+      "notes": "Boîte d’allumettes immédiatement identifiable. Les séparations sont des panneaux autonomes ; prévoir accès, propriétaire, matelas, couverture et états d’occupation.",
+      "prompt": "Production prop sheet for a tiny-human bed crafted from a clearly recognizable REAL HOUSEHOLD MATCHBOX DRAWER. Top left large three-quarter bed: cardboard drawer base, printed aged sleeve reused as headboard, visibly rough dark striker strips, fibrous paper edges, stitched ivory mattress, sage patchwork blanket folded back, small cloth pillow. Keep the bed appropriately long for an adult tiny human, not a fullsize human bed with pasted graphics. Top right exact side view and top view of the SAME bed, showing accessible open long side, pillow and recessed sleeping surface. Lower half a matching privacy alcove: the SAME bed surrounded by three independent thin matchwood and reclaimed cloth partition panels, doorway left open and no roof so game camera can read occupant. Show an exploded arrangement of the three panels and bed with no overlap, plus one closer textile/corner-joint detail. Modest wear, dust in hidden corners, care and repair rather than garbage heaps. Text only: \"SOUS LE PLANCHER\", \"09 — COUCHAGES\", \"LIT\", \"PROFIL\", \"DESSUS\", \"INTIMITÉ\"; matchbox label may read \"ALLUMETTES\" only, no brand names or long gibberish print."
+    },
+    {
+      "n": "10",
+      "slug": "atelier-stockage",
+      "title": "Atelier et stockage",
+      "family": "Habitat",
+      "ids": [
+        "BLD-03",
+        "BLD-04",
+        "PRP-12"
+      ],
+      "status": "Modèles existants · détails et variantes proposés",
+      "notes": "Conserver les emplacements de travail et de livraison. Les contenants doivent montrer le type et le remplissage sans multiplier les matériaux uniques.",
+      "prompt": "Modeling reference sheet of TWO related miniature colony structures assembled from recovered household materials. Left half a practical WORKBENCH: coarse matchwood slat tabletop, thick hand-tied cross-braced legs, simple pin-and-wire vise, spool stub used as a tool holder, two small drawers made of folded matchbox cardboard; large three-quarter hero, smaller side orthographic and rear view with structural cross-bracing fully readable. Right half STORAGE RACK: compact four-compartment wood-slat rack standing on short feet, twine joints, removable salvaged cardboard bins with handgrip cutouts and small blank paper tags; three-quarter hero, front orthographic, lower strip showing one bin empty, half filled with wood chips, full with neatly coiled fibre. No piles obscure the functional working surface or walking approaches. Believable engineering at miniature scale, chipped wood, greasy working spots, crushed paper corners, restrained household bricolage, no decorative machine gears. Both structures independent, no background room. Text only: \"SOUS LE PLANCHER\", \"10 — ATELIER & STOCKS\", \"ATELIER\", \"PROFIL\", \"DOS\", \"CASIER\", \"VIDE\", \"MI-PLEIN\", \"PLEIN\"."
+    },
+    {
+      "n": "11",
+      "slug": "ressources-eau-repas",
+      "title": "Ressources, eau et repas",
+      "family": "Objets",
+      "ids": [
+        "PRP-01",
+        "PRP-02",
+        "PRP-03",
+        "PRP-04",
+        "PRP-05",
+        "PRP-06",
+        "PRP-07",
+        "BLD-08"
+      ],
+      "status": "Ressources existantes et futures · chaîne résine à confirmer",
+      "notes": "Distinguer source, petit tas et charge transportable. Résine, métal et soie restent des références futures ; aucun rendement ni recette ne sont validés par cette planche.",
+      "prompt": "An elegant 4-column by 2-row specimen board of eight resource families for miniature humans. Each cell has one substantial detailed three-quarter object and one small useful alternate view, with generous separation. 1 broken plain butter biscuit with porous crumb and smaller harvested crumbs; 2 rough timber splinters alongside a compact twine-bound carried bundle; 3 tangled coarse cotton fibres alongside an orderly coil; 4 thimble bucket with bent wire handle containing readable still water, plus side handle attachment detail; 5 salvaged bent staple and iron pin fragments, lightly rusted, compact separate shapes; 6 amber resin bead attached to a rough wood chip and one small collected bead, translucent not glowing magical; 7 irregular silk strands caught on twig alongside a loose silk coil, clearly finer than cotton; 8 bottle-cap meal dish with biscuit pieces and tiny thimble drinking cup, worn unbranded metal. The last cell is a prepared meal prop, not a giant cooking station. This is a physical material collection, no inventory UI, no repeated tiny thumbnails, no floating magical resources. Warm grey backdrop, controlled realistic studio reflections, detailed matte surfaces. Text only: \"SOUS LE PLANCHER\", \"11 — RESSOURCES\", \"MIETTES\", \"BOIS\", \"FIBRES\", \"EAU\", \"MÉTAL\", \"RÉSINE\", \"SOIE\", \"REPAS\"."
+    },
+    {
+      "n": "12",
+      "slug": "construction-passages",
+      "title": "Construction et passages",
+      "family": "Habitat",
+      "ids": [
+        "ENV-01",
+        "ENV-02",
+        "ENV-08",
+        "BLD-05",
+        "BLD-06",
+        "BLD-07"
+      ],
+      "status": "Kit existant · évolution et variantes proposées",
+      "notes": "Modules à mesurer contre l’habitant et les animations validées. Garder entrée/sortie, surface de marche et points d’appui distincts du décor ; état fissure bloquée puis étayée.",
+      "prompt": "Six buildable miniature-world environment modules isolated on a clean warm grey production board, 3 columns by 2 rows, each cell with a main three-quarter view plus small orthographic or construction detail. 1 rough floorboard module with splintered edge, recessed grain and dull nail head, top and end section; 2 reusable short wall panel of salvaged thin timber and cloth with simple corner joining notch, front and rear; 3 miniature ladder made from two matchwood stiles, evenly spaced practical rungs and thread lashings, three-quarter and side, stable top landing attachment; 4 short narrow matchwood footbridge with rope railings, clear level walkway and visibly supported ends, side elevation detail; 5 blocked split in a much larger household joist, irregular broken timber fibres and loose slats, identifiable narrow humanoid-sized opening; 6 exactly the SAME split now cleared and supported by two paired wooden uprights, cross headers and strong twine lashings, front and side threshold section showing continuous floor through it. Dust, recovered materials and structural credibility, carefully crafted imperfect joints. No full house, no giant fantasy doors, no floating supports. Text only: \"SOUS LE PLANCHER\", \"12 — CONSTRUIRE & RELIER\", \"PLANCHER\", \"CLOISON\", \"ÉCHELLE\", \"PASSERELLE\", \"BLOQUÉ\", \"ÉTAYÉ\"."
+    }
+  ]
+}

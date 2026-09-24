@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sous le Plancher — Catalogue des assets</title>
+<style>
+:root{color-scheme:dark;--bg:#171a18;--panel:#222622;--ink:#f0ebdf;--muted:#b7b9ac;--gold:#d4b478;--line:#41473e}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Segoe UI,Arial,sans-serif;line-height:1.6}button,input,a{font:inherit}button,a,input{touch-action:manipulation}a{color:var(--gold)}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:5px}
+.wrap{max-width:1450px;margin:auto;padding:0 48px}.masthead{padding:24px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:20px;font-size:12px;letter-spacing:.15em;text-transform:uppercase}.masthead a{text-decoration:none;color:var(--ink)}.eyebrow{color:var(--gold);font-size:12px;text-transform:uppercase;letter-spacing:.15em;font-weight:600}
+header{padding:66px 0 44px;display:grid;grid-template-columns:1fr 240px;gap:48px}h1{font:normal clamp(40px,5vw,70px)/1.08 Georgia,serif;margin:18px 0 24px;letter-spacing:-.035em}header p{max-width:760px;color:var(--muted);font-size:18px;margin:0}.edition{align-self:end;border-left:1px solid var(--line);padding-left:32px;color:var(--muted);font-size:14px}.edition strong{display:block;color:var(--gold);font:normal 100px/1 Georgia,serif}.edition span{display:block;margin-top:12px}
+.direction{display:grid;grid-template-columns:repeat(3,1fr);border-block:1px solid var(--line);gap:32px;padding:26px 0 30px;margin-bottom:36px}.direction h2{font:normal 23px Georgia,serif;margin:0 0 8px}.direction p{font-size:14px;color:var(--muted);margin:0}
+.toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap;margin:30px 0 12px}.filters{display:flex;gap:8px;flex-wrap:wrap}.filters button,.modal-button{background:transparent;border:1px solid var(--line);border-radius:30px;color:var(--ink);padding:9px 17px}.filters button[aria-pressed=true]{background:var(--gold);border-color:var(--gold);color:#171a18}.search{border:1px solid var(--line);border-radius:7px;background:var(--panel);padding:10px 15px;color:var(--ink);width:270px;max-width:100%}.counter{font-size:13px;color:var(--muted);margin:0 0 24px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:30px}.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}.card[hidden]{display:none}.picture{display:block;width:100%;border:0;padding:0;position:relative;background:#d5d0c5}.picture img{width:100%;height:auto;aspect-ratio:3/2;object-fit:contain;display:block}.zoom{position:absolute;right:12px;bottom:12px;padding:5px 12px;background:#171a18df;border-radius:20px;color:var(--ink);font-size:12px}.card-copy{padding:24px 27px 25px}.card h2{font:normal 31px/1.15 Georgia,serif;margin:10px 0}.status{color:var(--gold);font-size:13px}.card p{color:var(--muted);font-size:14px;margin:16px 0;max-width:65ch}.tags{display:flex;flex-wrap:wrap;gap:7px}.tags span{font-size:11px;padding:3px 7px;border:1px solid var(--line);border-radius:3px;color:var(--muted)}.original{display:inline-block;margin-top:18px;font-size:13px;text-underline-offset:4px}.empty{padding:35px;border:1px dashed var(--line);color:var(--muted)}
+.production{margin:60px 0 40px;padding:30px;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:5px}.production h2{font:normal 29px Georgia,serif;margin:0 0 15px}.production p,.production li{font-size:14px;color:var(--muted)}.production ul{padding-left:20px;columns:2;column-gap:50px}.production li{break-inside:avoid;margin-bottom:12px}footer{display:flex;justify-content:space-between;gap:25px;padding:24px 0 35px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+dialog{width:96vw;max-width:1800px;max-height:96vh;background:#151815;border:1px solid var(--line);padding:16px;color:var(--ink);border-radius:8px}dialog::backdrop{background:#000d}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:10px}.modal-head h2{font:normal 24px Georgia,serif;margin:0}.modal-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.modal-button{padding:5px 14px}.image-stage{overflow:auto;max-height:79vh;display:block;text-align:center;background:#d5d0c5}.image-stage img{display:block;max-width:100%;max-height:79vh;width:auto;height:auto;margin:auto}.image-stage.actual img{max-width:none;max-height:none;width:auto;height:auto}.modal-note{font-size:12px;color:var(--muted);margin:8px 0 0}.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:850px){.wrap{padding:0 20px}header{grid-template-columns:1fr;padding-top:36px;gap:25px}.edition{display:none}.direction{grid-template-columns:1fr;gap:20px}.grid{grid-template-columns:1fr}.production ul{columns:1}.modal-head{align-items:start;flex-direction:column}.masthead{font-size:10px}.search{width:100%}footer{flex-direction:column}}
+@media print{:root{--bg:white;--panel:white;--ink:#222;--muted:#444;--gold:#745728;--line:#ccc}body{background:white;color:#222}.wrap{padding:0}.toolbar,.counter,.zoom,.original,dialog{display:none!important}header{padding:10px 0}.edition{display:none}.grid{display:block}.card,.card[hidden]{display:block;break-inside:avoid;page-break-before:always;border:0}.card-copy{padding:12px 0}.picture img{max-height:65vh}.direction,.production{break-inside:avoid}footer a{color:#444}}
+</style></head><body><div class="wrap">
+<div class="masthead"><a href="#">Sous le Plancher</a><span>Direction artistique / Catalogue V01</span></div>
+<header><div><div class="eyebrow">Références pour la création 3D</div><h1>Un petit monde.<br>Des objets qui racontent.</h1><p>Habitants, faune et objets récupérés : des planches à examiner ensemble pour donner une matière, une silhouette et une logique de fabrication à la vie sous le plancher.</p></div><div class="edition"><strong>12</strong><span>planches originales<br>4 familles d’assets<br>Propositions à commenter</span></div></header>
+<section class="direction" aria-label="Direction artistique"><div><h2>Humains minuscules</h2><p>Des adultes lisibles et expressifs, du tissu récupéré et des tenues réparées. Une stylisation mesurée, sans proportions de poupée.</p></div><div><h2>Matières vécues</h2><p>Bois fendu, coton grossier, cuir usé, mica et métal terni. Les traces d’usage suivent la construction de chaque objet.</p></div><div><h2>Des vues pour construire</h2><p>Angles complémentaires, détails d’attache et états utiles. Un éclairage neutre révèle les formes ; l’ambiance sombre revient dans le jeu.</p></div></section>
+<nav class="toolbar" aria-label="Filtrer le catalogue"><div class="filters"><button aria-pressed="true" data-filter="Tous">Tout voir</button><button aria-pressed="false" data-filter="Habitants">Habitants</button><button aria-pressed="false" data-filter="Faune">Faune</button><button aria-pressed="false" data-filter="Objets">Objets</button><button aria-pressed="false" data-filter="Habitat">Habitat</button></div><label class="visually-hidden" for="search">Rechercher un asset</label><input id="search" class="search" type="search" placeholder="Rechercher : lit, fourmi, CHR-01…"></nav>
+<p class="counter" aria-live="polite">12 planches affichées — cliquer sur une image pour l’agrandir.</p>
+<main class="grid" id="catalogue"><article class="card" data-family="Habitants" data-search="Habitant de référence Habitants Reprend la tenue et le sac du modèle validé. Quatre vues pour préparer la nouvelle topologie ; contrôler la cohérence des mains, du visage et des coutures avant modélisation. CHR-01 CHR-03">
+          <button class="picture" data-src="images/01-habitant-reference.png" data-title="Habitant de référence" aria-label="Agrandir : Habitant de référence">
+            <img src="images/01-habitant-reference.png" alt="Planche 01 : Habitant de référence, vues et détails de référence" loading="lazy" width="1536" height="1024">
+            <span class="zoom">Agrandir ↗</span>
+          </button>
+          <div class="card-copy"><div class="eyebrow">01 / Habitants</div>
+            <h2>Habitant de référence</h2><div class="status">Évolution visuelle proposée</div>
+            <p>Reprend la tenue et le sac du modèle validé. Quatre vues pour préparer la nouvelle topologie ; contrôler la cohérence des mains, du visage et des coutures avant modélisation.</p><div class="tags"><span>CHR-01</span><span>CHR-03</span></div>
+            <a class="original" href="images/01-habitant-reference.png" target="_blank" rel="noopener">Ouvrir l’image originale ↗</a>
+          </div></article>
+<article class="card" data-family="Habitants" data-search="Habitants et métiers Habitants Quatre adultes et accessoires interchangeables. Les métiers illustrent la roadmap, sans ajouter de compétences au jeu. Conserver le rig commun et des sacs centrés. CHR-01 CHR-02 PRP-09">
+          <button class="picture" data-src="images/02-habitants-metiers.png" data-title="Habitants et métiers" aria-label="Agrandir : Habitants et métiers">
+            <img src="images/02-habitants-metiers.png" alt="Planche 02 : Habitants et métiers, vues et détails de référence" loading="lazy" width="1536" height="1024">
+            <span class="zoom">Agrandir ↗</span>
+          </button>
+          <div class="card-copy"><div class="eyebrow">02 / Habitants</div>
+            <h2>Habitants et métiers</h2><div class="status">Variantes proposées</div>
+            <p>Quatre adultes et accessoires interchangeables. Les métiers illustrent la roadmap, sans ajouter de compétences au jeu. Conserver le rig commun et des sacs centrés.</p><div class="tags"><span>CHR-01</span><span>CHR-02</span><span>PRP-09</span></div>
+            <a class="original" href="images/02-habitants-metiers.png" target="_blank" rel="noopener">Ouvrir l’image originale ↗</a>
+          </div></article>
+<article class="card" data-family="Faune" data-search="Fourmis Faune Six pattes attachées au thorax, antennes articulées, abdomen distinct. Séparer rig, mandibules et charge. Les vues ne fixent pas encore l’échelle de gameplay. FAU-01">
+          <button class="picture" data-src="images/03-fourmis.png" data-title="Fourmis" aria-label="Agrandir : Fourmis">
+            <img src="images/03-fourmis.png" alt="Planche 03 : Fourmis, vues et détails de référence" loading="lazy" width="1536" height="1024">
+            <span class="zoom">Agrandir ↗</span>
+          </button>
+          <div class="card-copy"><div class="eyebrow">03 / Faune</div>
+            <h2>Fourmis</h2><div class="status">Référence proposée · priorité cuisine</div>
+            <p>Six pattes attachées au thorax, antennes articulées, abdomen distinct. Séparer rig, mandibules et charge. Les vues ne fixent pas encore l’échelle de gameplay.</p><div class="tags"><span>FAU-01</span></div>
+            <a class="original" href="images/03-fourmis.png" target="_blank" rel="noopener">Ouvrir l’image originale ↗</a>
+          </div></article>
+<article class="card" data-family="Faune" data-search="Araignée et toile Faune Huit pattes rattachées au céphalothorax. Toile irrégulière en volume ; contrôler le nombre de membres et les articulations avant le rig. FAU-02 VFX-04">
+          <button class="picture" data-src="images/04-araignee.png" data-title="Araignée et toile" aria-label="Agrandir : Araignée et toile">
+            <img src="images/04-araignee.png" alt="Planche 04 : Araignée et toile, vues et détails de référence" loading="lazy" width="1536" height="1024">
+            <span class="zoom">Agrandir ↗</span>
+          </button>
+          <div class="card-copy"><div class="eyebrow">04 / Faune</div>
+            <h2>Araignée et toile</h2><div class="status">Référence proposée · menace future</div>
+            <p>Huit pattes rattachées au céphalothorax. Toile irrégulière en volume ; contrôler le nombre de membres et les articulations avant le rig.</p><div class="tags"><span>FAU-02</span><span>VFX-04</span></div>
+            <a class="original" href="images/04-araignee.png" target="_blank" rel="noopener">Ouvrir l’image originale ↗</a>
+          </div></article>
+<article class="card" data-family="Faune" data-search="Cloporte et cafard Faune Espèces optionnelles du cahier des charges. Le cloporte n’est pas un insecte. Aucune domestication n’est acquise ; pas de selle définitive. FAU-05 FAU-06">
+          <button class="picture" data-src="images/05-cloporte-cafard.png" data-title="Cloporte et cafard" aria-label="Agrandir : Cloporte et cafard">
+            <img src="images/05-cloporte-cafard.png" alt="Planche 05 : Cloporte et cafard, vues et détails de référence" loading="lazy" width="1536" height="1024">
+            <span class="zoom">Agrandir ↗</span>
+          </button>
+          <div class="card-copy"><div class="eyebrow">05 / Faune</div>
+            <h2>Cloporte et cafard</h2><div class="status">Exploratoire · espèces et domestication à confirmer</div>
+            <p>Espèces optionnelles du cahier des charges. Le cloporte n’est pas un insecte. Aucune domestication n’est acquise ; pas de selle définitive.</p><div class="tags"><span>FAU-05</span><span>FAU-06</span></div>
+            <a class="original" href="images/05-cloporte-cafard.png" target="_blank" rel="noopener">Ouvrir l’image originale ↗</a>
+          </div></article>
+<article class="card" data-family="Faune" data-search="Souris et rat Faune Distinguer silhouettes et matières, sans imposer le rat comme nouvelle menace. Fourrure prévue en matière/cartes maîtrisées, pas en simulation de poils. FAU-03 FAU-04">
+          <button class="picture" data-src="images/06-souris-rat.png" data-title="Souris et rat" aria-label="Agrandir : Souris et rat">
+            <img src="images/06-souris-rat.png" alt="Planche 06 : Souris et rat, vues et détails de référence" loading="lazy" width="1536" height="1024">
+            <span class="zoom">Agrandir ↗</span>
+          </button>
+          <div class="card-copy"><div class="eyebrow">06 / Faune</div>
+            <h2>Souris et rat</h2><div class="status">Références proposées · rat conditionnel</div>
+            <p>Distinguer silhouettes et matières, sans imposer le rat comme nouvelle menace. Fourrure prévue en matière/cartes maîtrisées, pas en simulation de poils.</p><div class="tags"><span>FAU-03</span><span>FAU-04</span></div>
+            <a class="original" href="images/06-souris-rat.png" target="_blank" rel="noopener">Ouvrir l’image originale ↗</a>
+          </div></article>
+<article class="card" data-family="Objets" data-search="Outils et portage Objets Outils et charges détachables ; définir prises et pivots. Préserver un volume compatible avec les animations de caisse et le sac centré. PRP-09 PRP-11 PRP-12 CHR-02">
+          <button class="picture" data-src="images/07-outils-portage.png" data-title="Outils et portage" aria-label="Agrandir : Outils et portage">
+            <img src="images/07-outils-portage.png" alt="Planche 07 : Outils et portage, vues et détails de référence" loading="lazy" width="1536" height="1024">
+            <span class="zoom">Agrandir ↗</span>
+          </button>
+          <div class="card-copy"><div class="eyebrow">07 / Objets</div>
+            <h2>Outils et portage</h2><div class="status">Références proposées</div>
+            <p>Outils et charges détachables ; définir prises et pivots. Préserver un volume compatible avec les animations de caisse et le sac centré.</p><div class="tags"><span>PRP-09</span><span>PRP-11</span><span>PRP-12</span><span>CHR-02</span></div>
+            <a class="original" href="images/07-outils-portage.png" target="_blank" rel="noopener">Ouvrir l’image originale ↗</a>
+          </div></article>
+<article class="card" data-family="Objets" data-search="Éclairage et combustible Objets La lanterne doit libérer les mains et éviter le sac, les cuisses et la caisse. Le support fixe et le combustible séparé sont des concepts futurs, pas des recettes déjà implémentées. PRP-14 PRP-15 BLD-17 VFX-01">
+          <button class="picture" data-src="images/08-eclairage.png" data-title="Éclairage et combustible" aria-label="Agrandir : Éclairage et combustible">
+            <img src="images/08-eclairage.png" alt="Planche 08 : Éclairage et combustible, vues et détails de référence" loading="lazy" width="1536" height="1024">
+            <span class="zoom">Agrandir ↗</span>
+          </button>
+          <div class="card-copy"><div class="eyebrow">08 / Objets</div>
+            <h2>Éclairage et combustible</h2><div class="status">Torche et lanterne existantes · finitions et support proposés</div>
+            <p>La lanterne doit libérer les mains et éviter le sac, les cuisses et la caisse. Le support fixe et le combustible séparé sont des concepts futurs, pas des recettes déjà implémentées.</p><div class="tags"><span>PRP-14</span><span>PRP-15</span><span>BLD-17</span><span>VFX-01</span></div>
+            <a class="original" href="images/08-eclairage.png" target="_blank" rel="noopener">Ouvrir l’image originale ↗</a>
+          </div></article>
+<article class="card" data-family="Habitat" data-search="Couchages et intimité Habitat Boîte d’allumettes immédiatement identifiable. Les séparations sont des panneaux autonomes ; prévoir accès, propriétaire, matelas, couverture et états d’occupation. BLD-16 BLD-09 PRP-09">
+          <button class="picture" data-src="images/09-couchages-intimite.png" data-title="Couchages et intimité" aria-label="Agrandir : Couchages et intimité">
+            <img src="images/09-couchages-intimite.png" alt="Planche 09 : Couchages et intimité, vues et détails de référence" loading="lazy" width="1536" height="1024">
+            <span class="zoom">Agrandir ↗</span>
+          </button>
+          <div class="card-copy"><div class="eyebrow">09 / Habitat</div>
+            <h2>Couchages et intimité</h2><div class="status">Couchages existants · finitions proposées</div>
+            <p>Boîte d’allumettes immédiatement identifiable. Les séparations sont des panneaux autonomes ; prévoir accès, propriétaire, matelas, couverture et états d’occupation.</p><div class="tags"><span>BLD-16</span><span>BLD-09</span><span>PRP-09</span></div>
+            <a class="original" href="images/09-couchages-intimite.png" target="_blank" rel="noopener">Ouvrir l’image originale ↗</a>
+          </div></article>
+<article class="card" data-family="Habitat" data-search="Atelier et stockage Habitat Conserver les emplacements de travail et de livraison. Les contenants doivent montrer le type et le remplissage sans multiplier les matériaux uniques. BLD-03 BLD-04 PRP-12">
+          <button class="picture" data-src="images/10-atelier-stockage.png" data-title="Atelier et stockage" aria-label="Agrandir : Atelier et stockage">
+            <img src="images/10-atelier-stockage.png" alt="Planche 10 : Atelier et stockage, vues et détails de référence" loading="lazy" width="1536" height="1024">
+            <span class="zoom">Agrandir ↗</span>
+          </button>
+          <div class="card-copy"><div class="eyebrow">10 / Habitat</div>
+            <h2>Atelier et stockage</h2><div class="status">Modèles existants · détails et variantes proposés</div>
+            <p>Conserver les emplacements de travail et de livraison. Les contenants doivent montrer le type et le remplissage sans multiplier les matériaux uniques.</p><div class="tags"><span>BLD-03</span><span>BLD-04</span><span>PRP-12</span></div>
+            <a class="original" href="images/10-atelier-stockage.png" target="_blank" rel="noopener">Ouvrir l’image originale ↗</a>
+          </div></article>
+<article class="card" data-family="Objets" data-search="Ressources, eau et repas Objets Distinguer source, petit tas et charge transportable. Résine, métal et soie restent des références futures ; aucun rendement ni recette ne sont validés par cette planche. PRP-01 PRP-02 PRP-03 PRP-04 PRP-05 PRP-06 PRP-07 BLD-08">
+          <button class="picture" data-src="images/11-ressources-eau-repas.png" data-title="Ressources, eau et repas" aria-label="Agrandir : Ressources, eau et repas">
+            <img src="images/11-ressources-eau-repas.png" alt="Planche 11 : Ressources, eau et repas, vues et détails de référence" loading="lazy" width="1536" height="1024">
+            <span class="zoom">Agrandir ↗</span>
+          </button>
+          <div class="card-copy"><div class="eyebrow">11 / Objets</div>
+            <h2>Ressources, eau et repas</h2><div class="status">Ressources existantes et futures · chaîne résine à confirmer</div>
+            <p>Distinguer source, petit tas et charge transportable. Résine, métal et soie restent des références futures ; aucun rendement ni recette ne sont validés par cette planche.</p><div class="tags"><span>PRP-01</span><span>PRP-02</span><span>PRP-03</span><span>PRP-04</span><span>PRP-05</span><span>PRP-06</span><span>PRP-07</span><span>BLD-08</span></div>
+            <a class="original" href="images/11-ressources-eau-repas.png" target="_blank" rel="noopener">Ouvrir l’image originale ↗</a>
+          </div></article>
+<article class="card" data-family="Habitat" data-search="Construction et passages Habitat Modules à mesurer contre l’habitant et les animations validées. Garder entrée/sortie, surface de marche et points d’appui distincts du décor ; état fissure bloquée puis étayée. ENV-01 ENV-02 ENV-08 BLD-05 BLD-06 BLD-07">
+          <button class="picture" data-src="images/12-construction-passages.png" data-title="Construction et passages" aria-label="Agrandir : Construction et passages">
+            <img src="images/12-construction-passages.png" alt="Planche 12 : Construction et passages, vues et détails de référence" loading="lazy" width="1536" height="1024">
+            <span class="zoom">Agrandir ↗</span>
+          </button>
+          <div class="card-copy"><div class="eyebrow">12 / Habitat</div>
+            <h2>Construction et passages</h2><div class="status">Kit existant · évolution et variantes proposées</div>
+            <p>Modules à mesurer contre l’habitant et les animations validées. Garder entrée/sortie, surface de marche et points d’appui distincts du décor ; état fissure bloquée puis étayée.</p><div class="tags"><span>ENV-01</span><span>ENV-02</span><span>ENV-08</span><span>BLD-05</span><span>BLD-06</span><span>BLD-07</span></div>
+            <a class="original" href="images/12-construction-passages.png" target="_blank" rel="noopener">Ouvrir l’image originale ↗</a>
+          </div></article></main><p class="empty" hidden>Aucune planche ne correspond. Changez de famille ou effacez la recherche.</p>
+<section class="production"><div class="eyebrow">De la référence au modèle</div><h2>Ce que nous fixerons avant Blender</h2><p>Ces images sont des propositions artistiques. Elles ne remplacent pas les assets actuels et ne valident pas de nouvelles mécaniques de jeu. Les espèces optionnelles restent identifiées comme exploratoires.</p><ul><li>Choisir les silhouettes et matériaux à retenir ; signaler les éléments à simplifier ou à reprendre.</li><li>Fixer les dimensions contre l’habitant et les animations existantes. Les objets et espèces de différentes planches ne sont pas à la même échelle.</li><li>Recouper les vues générées : nombre de membres, coutures, raccords et attaches peuvent varier. Elles ne constituent pas des plans cotés.</li><li>Modéliser dans Blender : volumes, topologie, UV, matériaux et points d’interaction, puis vérifier le rig et les collisions dans Godot.</li><li>Séparer le corps, les vêtements, les accessoires et les charges lorsque leur usage l’exige ; garder le sac centré et les mains disponibles.</li><li>Évaluer la lecture à distance et les budgets du cahier des charges. Les microdétails de ces images ne seront pas tous modélisés.</li></ul></section>
+<footer><span>Sous le Plancher · Références visuelles V01 · À valider</span><span><a href="README.md">Notes de production</a> · <a href="prompts.json">Prompts et provenance</a> · Générateur intégré, version non attestée</span></footer>
+</div>
+<dialog aria-labelledby="modal-title"><div class="modal-head"><h2 id="modal-title"></h2><div class="modal-controls"><button class="modal-button" id="previous" aria-label="Planche précédente">←</button><button class="modal-button" id="next" aria-label="Planche suivante">→</button><button class="modal-button" id="zoom" aria-pressed="false">Taille réelle</button><a id="download" class="modal-button" download>PNG original</a><button class="modal-button" id="close">Fermer ×</button></div></div><div class="image-stage"><img id="full-image" alt=""></div><p class="modal-note">Flèches : changer de planche · Échap : fermer · Taille réelle : examiner les détails</p></dialog>
+<script>
+const cards=[...document.querySelectorAll('.card')], filters=[...document.querySelectorAll('[data-filter]')];
+const search=document.querySelector('#search'); let family='Tous';
+const normalize=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+function filter(){const q=normalize(search.value);let count=0;for(const card of cards){card.hidden=!((family==='Tous'||card.dataset.family===family)&&normalize(card.dataset.search).includes(q));if(!card.hidden)count++;}document.querySelector('.counter').textContent=count+' planche'+(count>1?'s':'')+' affichée'+(count>1?'s':'')+' — cliquer sur une image pour l’agrandir.';document.querySelector('.empty').hidden=count!==0;}
+filters.forEach(b=>b.addEventListener('click',()=>{family=b.dataset.filter;filters.forEach(x=>x.setAttribute('aria-pressed',String(x===b)));filter();}));search.addEventListener('input',filter);
+const modal=document.querySelector('dialog'), stage=document.querySelector('.image-stage'), zoom=document.querySelector('#zoom');let current=0;
+function visible(){return cards.filter(c=>!c.hidden).map(c=>c.querySelector('.picture'));}
+function show(index){const items=visible();current=(index+items.length)%items.length;const item=items[current];document.querySelector('#modal-title').textContent=item.dataset.title;const img=document.querySelector('#full-image');img.src=item.dataset.src;img.alt=item.getAttribute('aria-label').replace('Agrandir : ','');document.querySelector('#download').href=item.dataset.src;stage.classList.remove('actual');zoom.setAttribute('aria-pressed','false');zoom.textContent='Taille réelle';}
+document.querySelectorAll('.picture').forEach(b=>b.addEventListener('click',()=>{show(visible().indexOf(b));modal.showModal();}));document.querySelector('#close').onclick=()=>modal.close();document.querySelector('#previous').onclick=()=>show(current-1);document.querySelector('#next').onclick=()=>show(current+1);zoom.onclick=()=>{const actual=stage.classList.toggle('actual');zoom.setAttribute('aria-pressed',String(actual));zoom.textContent=actual?'Adapter à l’écran':'Taille réelle';};modal.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'){e.preventDefault();show(current-1);}if(e.key==='ArrowRight'){e.preventDefault();show(current+1);}});
+</script></body></html>

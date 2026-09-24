@@ -41,6 +41,8 @@ Voir la [roadmap par étapes](docs/conception/roadmap-production.md) et le [cahi
 
 ## Assets Blender
 
+Le [catalogue visuel des assets V01](docs/catalogue-assets-v01/index.html) rassemble douze planches générées pour préparer les modèles Blender : habitants, faune, objets et habitat. Les images, prompts et notes de production sont conservés dans `docs/catalogue-assets-v01/`. Ce sont des propositions à commenter avant adoption, sans remplacement des assets actuels.
+
 Les habitants animés sont maintenant utilisés dans la **partie principale**, avec réservation, prise, transport et dépose des caisses. Les affectations affichent l'état des livraisons. **H** rappelle les porteurs avec leur charge ; **Libérer** annule avant la prise ou termine le retour si la caisse est déjà portée. Voir `docs/conception/gameplay-lot-06.md` pour les tests et limites. Le paramètre `-- --demo-deliveries` lance une partie avec quatre affectations préparées.
 
 Le **lot 05** complète `scenes/interaction_review.tscn` avec les pivots de transport et la descente : **1** livraison, **2** montée, **3** descente. Les appuis et raccords sont vérifiés ; voir `docs/conception/assets-lot-05.md` pour les limites et le contrat d'intégration.
