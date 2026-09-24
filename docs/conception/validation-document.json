@@ -1,0 +1,153 @@
+{
+  "pages": 41,
+  "asset_lots": 66,
+  "chapters": [
+    [
+      "01. Lire et commenter ce dossier",
+      4
+    ],
+    [
+      "02. Vision, promesse et limites",
+      5
+    ],
+    [
+      "03. État réel du prototype et écarts",
+      6
+    ],
+    [
+      "04. Boucles de jeu et progression",
+      7
+    ],
+    [
+      "05. Carte de la maison et échelles",
+      8
+    ],
+    [
+      "06. Première aventure : atteindre la cuisine",
+      9
+    ],
+    [
+      "07. Temps, difficulté et conditions de partie",
+      10
+    ],
+    [
+      "08. Habitants : identité, besoins et états",
+      11
+    ],
+    [
+      "09. Métiers spécialisés et progression",
+      12
+    ],
+    [
+      "10. Ordonnancement des tâches et autonomie",
+      13
+    ],
+    [
+      "11. Logistique et stocks locaux",
+      14
+    ],
+    [
+      "12. Navigation, collisions et passages",
+      15
+    ],
+    [
+      "13. Exploration et information imparfaite",
+      16
+    ],
+    [
+      "14. Ressources, recettes et équilibrage",
+      17
+    ],
+    [
+      "15. Construction, travaux et entretien",
+      18
+    ],
+    [
+      "16. Humains, discrétion et événements",
+      19
+    ],
+    [
+      "17. Insectes : comportements et interactions",
+      20
+    ],
+    [
+      "18. Rongeurs, blessures et sauvetage",
+      21
+    ],
+    [
+      "19. Campagne, recherches et Grand Refuge",
+      22
+    ],
+    [
+      "20. Interface, feedback et accessibilité",
+      23
+    ],
+    [
+      "21. Direction artistique et critères de finition",
+      24
+    ],
+    [
+      "22. Pipeline Blender, Godot et budgets d'assets",
+      25
+    ],
+    [
+      "23. Personnages, faune et animations à produire",
+      26
+    ],
+    [
+      "24. Environnements, bâtiments et objets",
+      27
+    ],
+    [
+      "25. Effets, son et ambiance dynamique",
+      28
+    ],
+    [
+      "26. Architecture technique et données",
+      29
+    ],
+    [
+      "27. Sauvegardes, stabilité et livraison",
+      30
+    ],
+    [
+      "28. Qualité, tests et budgets de performance",
+      31
+    ],
+    [
+      "29. Roadmap : du socle à la première aventure",
+      32
+    ],
+    [
+      "30. Roadmap : étapes jouables, campagne et finition",
+      33
+    ],
+    [
+      "31. Risques et arbitrages de production",
+      34
+    ],
+    [
+      "32. Décisions à prendre avant la reprise",
+      35
+    ],
+    [
+      "33. Méthode de retour et ordre de reprise",
+      36
+    ],
+    [
+      "34. Annexe : valeurs initiales à tester",
+      37
+    ],
+    [
+      "35. Annexe : matrice de livraison et définition de terminé",
+      38
+    ],
+    [
+      "36. Inventaire de production - catalogue",
+      39
+    ]
+  ],
+  "pdf": "C:\\ChatGPT\\SousLePlancher\\output\\pdf\\Sous_le_plancher_Cahier_des_charges_v0.1.pdf",
+  "inventory": "C:\\ChatGPT\\SousLePlancher\\docs\\conception\\inventaire-assets.csv",
+  "characters": 85204
+}

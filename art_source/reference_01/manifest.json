@@ -1,0 +1,67 @@
+{
+  "units": "1 Blender unit = 1 Godot unit; resident height about 1.60",
+  "assets": [
+    {
+      "asset": "resident_reference",
+      "triangles": 15924,
+      "materials": 12,
+      "dimensions": [
+        0.6967,
+        0.407,
+        1.5814
+      ],
+      "rig_bones": 19,
+      "status": "art reference v0.1; review required"
+    },
+    {
+      "asset": "matchbox_bed",
+      "triangles": 5066,
+      "materials": 9,
+      "dimensions": [
+        1.045,
+        1.994,
+        0.8975
+      ],
+      "rig_bones": 0,
+      "status": "art reference v0.1; review required"
+    },
+    {
+      "asset": "thimble_bucket",
+      "triangles": 8376,
+      "materials": 3,
+      "dimensions": [
+        0.5657,
+        0.46,
+        0.715
+      ],
+      "rig_bones": 0,
+      "status": "art reference v0.1; review required"
+    },
+    {
+      "asset": "salvage_crate",
+      "triangles": 5712,
+      "materials": 5,
+      "dimensions": [
+        0.845,
+        0.67,
+        0.48
+      ],
+      "rig_bones": 0,
+      "status": "art reference v0.1; review required"
+    },
+    {
+      "asset": "floor_module_2x2",
+      "triangles": 2260,
+      "materials": 4,
+      "dimensions": [
+        1.992,
+        2.0,
+        0.134
+      ],
+      "rig_bones": 0,
+      "status": "art reference v0.1; review required"
+    }
+  ],
+  "textures": "image_gen atlases; Blender-baked albedo and estimated tangent normals; packed in blend and GLB",
+  "rig_limit": "rigid segment skinning, reference idle only; not a final deformable production rig"
+}

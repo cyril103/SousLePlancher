@@ -3,3 +3,4 @@ builds/
 artifacts/
 *.log
 *.blend1
+__pycache__/
