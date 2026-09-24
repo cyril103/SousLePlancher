@@ -10,6 +10,14 @@ var game: Node3D
 func consuming(c: WorkerDelivery) -> bool:
 	return c.state in ["eat", "drink"]
 
+func interrupt(c: WorkerDelivery) -> void:
+	if c.need_depot < 0: return
+	game.depots.release("n:%d" % c.owner)
+	game.depots.gate(c.need_depot).release_destination(-1000000000 - c.owner)
+	c.need_depot = -1
+	c.need_kind = ""
+	if c.state == "need_walk": c.change("return_home")
+
 func priority(c: WorkerDelivery) -> String:
 	var choice := ""
 	var lowest := THRESHOLD + 1
@@ -48,6 +56,7 @@ func source(c: WorkerDelivery, kind: String) -> int:
 	for i in range(game.patches.size()):
 		var patch: Dictionary = game.patches[i]
 		if patch.kind != kind or not patch.discovered or patch.amount <= patch.reserved: continue
+		if game.depots.sink(patch.pos + Vector3(.9, WorkerDelivery.GROUND_Y, .2), kind, 1, c.owner).is_empty(): continue
 		var path: PackedVector3Array = game.travel_path(from, patch.pos + Vector3(.9, WorkerDelivery.GROUND_Y, .2), c.owner)
 		if path.is_empty(): continue
 		var length := 0.0
@@ -65,19 +74,54 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 		c.consumption_time += used
 		c.worker[METERS[kind]] = minf(100, c.worker[METERS[kind]] + float(GAINS[kind]) * used / float(DURATIONS[kind]))
 		if c.consumption_time >= float(DURATIONS[kind]) - .00001:
+			interrupt(c)
 			c.need_interrupt = false
-			c.change("idle")
+			c.change("return_home" if not c.inside_refuge and (game.hiding or game.pending_save or c.personal_recall) else "idle")
 			c.pose("idle", 0)
+		return true
+	if c.state == "need_walk":
+		var gate: DeliveryLedger = game.depots.gate(c.need_depot)
+		var ticket := -1000000000 - c.owner
+		if gate.destination_owner != ticket:
+			if not c.move(game.depots.waiting(c.need_depot, c.owner), dt, false):
+				if not c.navigation_issue.is_empty(): interrupt(c)
+				return true
+			if not gate.acquire_slot(ticket):
+				c.pose("idle", 0)
+				return true
+		if c.move(game.depots.entry(c.need_depot), dt, false):
+			game.depots.withdraw("n:%d" % c.owner)
+			c.consumption_time = 0
+			c.actor.rotation.y = 0
+			c.change("eat" if c.need_kind == "food" else "drink")
+			c.pose(c.state, 0)
+		elif not c.navigation_issue.is_empty(): interrupt(c)
 		return true
 	if c.job >= 0 or c.state not in ["idle", "return_home"] or game.pending_save: return false
 	var kind := priority(c)
 	if kind.is_empty(): return false
 	# No activity takes priority over an explicit recall or a save in progress.
 	if game.hiding and not c.inside_refuge: return false
-	if game.stock.get(kind, 0) <= 0 and (game.hiding or source(c, kind) < 0):
+	var from: Vector3 = game.home_position(c.owner) if c.inside_refuge else c.actor.position
+	var depot: int = 0 if game.depots.available(0, kind) > 0 and (game.hiding or c.inside_refuge) else (-1 if game.hiding else game.depots.source(from, kind, c.owner))
+	if depot < 0 and (game.hiding or source(c, kind) < 0):
 		var other := "food" if kind == "water" else "water"
-		if c.worker[METERS[other]] <= THRESHOLD and game.stock.get(other, 0) > 0: kind = other
-	if game.stock.get(kind, 0) > 0:
+		if c.worker[METERS[other]] <= THRESHOLD:
+			var other_depot: int = 0 if game.depots.available(0, other) > 0 and (game.hiding or c.inside_refuge) else (-1 if game.hiding else game.depots.source(from, other, c.owner))
+			if other_depot >= 0:
+				kind = other
+				depot = other_depot
+	if depot > 0:
+		c.needs_supply = -1
+		if c.inside_refuge:
+			c.change("leave_home")
+			return true
+		game.depots.reserve_out("n:%d" % c.owner, depot, kind, 1)
+		c.need_depot = depot
+		c.need_kind = kind
+		c.change("need_walk")
+		return true
+	if depot == 0:
 		c.needs_supply = -1
 		if not c.inside_refuge:
 			if c.state != "return_home": c.change("return_home")
@@ -109,8 +153,10 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 	return false
 
 func description(c: WorkerDelivery) -> String:
-	if c.state == "eat": return "Mange au refuge"
-	if c.state == "drink": return "Boit au refuge"
+	if c.needs_supply >= 0 and not c.navigation_issue.is_empty(): return c.navigation_issue
+	if c.state == "need_walk": return "Va manger au dépôt %d" % c.need_depot if c.need_kind == "food" else "Va boire au dépôt %d" % c.need_depot
+	if c.state == "eat": return "Mange au dépôt %d" % c.need_depot if c.need_depot > 0 else "Mange au refuge"
+	if c.state == "drink": return "Boit au dépôt %d" % c.need_depot if c.need_depot > 0 else "Boit au refuge"
 	if c.needs_supply >= 0: return "Cherche de l’eau" if game.patches[c.needs_supply].kind == "water" else "Cherche à manger"
 	if c.need_interrupt and c.state == "return_home": return "Rentre boire" if priority(c) == "water" else "Rentre manger"
 	return ""

@@ -4,7 +4,7 @@ Révision du 24 septembre 2026. Base publiée : `3d1c9a3`, lots 12–13. **Étap
 
 Ce plan complète le [cahier des charges](cahier-des-charges.md) et applique les [décisions de l'entretien](retours-et-decisions.md). Les jalons J0–J7 désignent des objectifs de produit ; les étapes ci-dessous sont les livraisons successives, plus petites. Les nombres proposés restent ajustables après essai.
 
-**Suivi :** étape 1 validée et publiée dans `058345b`. Étape 2 réalisée et validée dans le [lot 14](gameplay-lot-14.md), commit et push autorisés. Les étapes 3 et suivantes ne sont pas commencées.
+**Suivi :** étape 1 publiée dans `058345b`. Étape 2 validée et publiée dans `de71c70` ([lot 14](gameplay-lot-14.md)). Étape 3 réalisée et validée dans le [lot 15](gameplay-lot-15.md), publication autorisée. Les étapes 4 et suivantes ne sont pas commencées.
 
 ## Notre fonctionnement
 

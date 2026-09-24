@@ -127,6 +127,7 @@ func run() -> void:
 	copy._choose_build("private_bed")
 	check(copy._place_build(Vector3(-3, 0, -4)), "Bed wake-up fixture placed")
 	copy.pending_save = false
+	copy.depots.sites[0].capacity = 1000 # Keep this fixture focused on waking for hunger.
 	copy.stock.food = 100
 	copy.stock.water = 100
 	for worker in copy.workers:

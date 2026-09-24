@@ -42,6 +42,9 @@ var load_was_paused := true
 var explore_button: Button
 var routes_button: Button
 var stocks_label: Label
+var depot_picker: OptionButton
+var depot_summary: Label
+var depot_filters: Dictionary = {}
 var build_buttons: Dictionary = {}
 var modal_shade: ColorRect
 var dock: PanelContainer
@@ -294,6 +297,7 @@ func _make_trays() -> void:
 		wrapped(details, spec[3], 16, MUTED)
 	wrapped(build, "Choisissez un bâtiment, puis un emplacement libre. Clic droit pour annuler.", 16, MUTED)
 	button(build, "Gérer les couchages", func(): game._show_tray("beds"))
+	build_buttons.depot = button(build, "Installer un dépôt local · 12 places", func(): game._choose_build("depot"), "Casier de stockage : placement provisoire sans coût")
 	var beds := tray("beds", "Couchages & intimité")
 	wrapped(beds, "Un lit personnel par habitant. Les cloisons améliorent le confort et la récupération. Elles ne protègent pas du passage des humains : H reste prioritaire.", 16, MUTED)
 	var bed_scroll := ScrollContainer.new()
@@ -339,8 +343,29 @@ func _make_trays() -> void:
 	routes_button = button(work, "Afficher le trajet sélectionné [N]", func(): game.show_paths = not game.show_paths; refresh())
 	button(work, "Organiser les affectations", func(): game._show_tray("people"))
 	var stocks := tray("stocks", "Le garde-manger")
+	button(stocks, "Gérer les dépôts et leurs filtres", func(): game._show_tray("depots"))
 	stocks_label = wrapped(stocks, "", 18)
 	wrapped(stocks, "Les matériaux sont disponibles pour construire après leur livraison au dépôt.", 16, MUTED)
+	var storage := tray("depots", "Dépôts locaux")
+	depot_picker = OptionButton.new()
+	depot_picker.focus_mode = Control.FOCUS_NONE
+	storage.add_child(depot_picker)
+	depot_picker.item_selected.connect(func(_index: int): _refresh_depots())
+	depot_summary = wrapped(storage, "", 16)
+	wrapped(storage, "Accepter les prochaines livraisons :", 16, INK)
+	var filter_row := row(storage, 4)
+	for kind in game.Depots.KINDS:
+		var key: String = kind
+		var control := CheckBox.new()
+		control.text = game.NAMES[key]
+		control.focus_mode = Control.FOCUS_NONE
+		control.add_theme_font_size_override("font_size", 15)
+		filter_row.add_child(control)
+		control.toggled.connect(func(enabled: bool): game.depots.set_filter(depot_picker.selected, key, enabled); _refresh_depots())
+		depot_filters[key] = control
+	wrapped(storage, "Les livraisons réservées arrivent même si leur filtre est décoché. Le stock présent reste utilisable. Aucun transfert automatique entre dépôts.", 15, MUTED)
+	button(storage, "Voir ce dépôt", func(): game.focus = game.depots.sites[depot_picker.selected].pos; game._update_camera())
+	button(storage, "Installer un dépôt · 12 places", func(): game._choose_build("depot"))
 	var goals := tray("goals", "Votre premier foyer")
 	game.objective_label = wrapped(goals, "", 19)
 	save_label = wrapped(goals, "", 16, MUTED)
@@ -495,7 +520,7 @@ func refresh() -> void:
 		carrying[worker.kind] += worker.carrying
 		worker_rows[i].text = "H%d · Énergie %d · %s%s" % [i + 1, roundi(worker.energy), worker.delivery.description(), " (%d)" % worker.carrying if worker.carrying > 0 else ""]
 	for key in resource_values:
-		resource_values[key].text = str(game.stock.get(key, 0))
+		resource_values[key].text = str(game.depots.total(key))
 	population.text = "%d habitants" % game.workers.size()
 	availability.text = "%d disponible%s" % [idle, "s" if idle != 1 else ""]
 	game.dock_buttons.people.tooltip_text = "%d habitant(s) disponible(s). Affectations [C]" % idle
@@ -563,15 +588,15 @@ func refresh() -> void:
 		if worker.delivery.at_refuge(): sheltered += 1
 	work_label.text += "\nREFUGE · %d/%d à l’abri · %d attendent la porte" % [sheltered, game.workers.size(), game.refuge.queue.size()]
 	if blocked > 0: work_label.text += "\n%d trajet(s) bloqué(s) : consultez les habitants." % blocked
-	stocks_label.text = "AU DÉPÔT          EN TRANSPORT\n"
+	stocks_label.text = "DANS LES DÉPÔTS          EN TRANSPORT\n"
 	for key in ["food", "wood", "fiber", "water"]:
-		stocks_label.text += "\n%s : %d          +%d" % [game.NAMES[key], game.stock.get(key, 0), carrying[key]]
+		stocks_label.text += "\n%s : %d          +%d" % [game.NAMES[key], game.depots.total(key), carrying[key]]
 	stocks_label.text += "\n\nChaque habitant mange et boit selon ses besoins.\nUne portion = 1 miette · Une boisson = 1 eau.\nSi une réserve est vide, les habitants cherchent une ressource accessible."
 	stocks_label.text += "\n\nRéservés aux chantiers : %d bois · %d fibres\nTas à récupérer : %d" % [game.construction.reserved("wood"), game.construction.reserved("fiber"), game.construction.recovery.size()]
 	for kind in build_buttons:
 		var affordable: bool = not game.ended and not game.start_panel.visible
 		for key in game.COSTS[kind]:
-			if game.construction.available(key) < game.COSTS[kind][key]: affordable = false
+			if game.depots.available(0, key) < game.COSTS[kind][key]: affordable = false
 		build_buttons[kind].disabled = game.ended or game.pending_save or (not affordable and not kind in ["bed", "private_bed"])
 		build_buttons[kind].tooltip_text = "Planifier un chantier ; livraison des matériaux avant fabrication" if kind in ["bed", "private_bed"] else ("Choisir un emplacement" if affordable else "Matériaux disponibles insuffisants")
 	resident_index = clampi(resident_index, 0, game.workers.size() - 1)
@@ -588,6 +613,8 @@ func refresh() -> void:
 	resident_needs.add_theme_color_override("font_color", Color("a33825") if resident.energy <= 25 else MUTED)
 	rest_button.disabled = game.ended or game.pending_save or resident.sleep_requested or resident.delivery.state in ["sleep", "floor_sleep", "bed_enter", "bed_exit"]
 	_refresh_beds()
+	_refresh_depots()
+
 	resident_cargo.text = "Charge : %d · %s" % [resident.carrying, game.NAMES[resident.kind]] if resident.carrying > 0 else (game.NAMES[game.patches[resident.patch].kind] if resident.patch >= 0 else "Sans affectation")
 	resident_recall.disabled = game.ended or (resident.patch < 0 and resident.carrying == 0 and (resident.delivery.inside_refuge or resident.delivery.state == "return_home"))
 	resident_assign.disabled = game.ended or game.hiding or resident.patch >= 0 or resident.carrying > 0 or resident.delivery.state != "idle"
@@ -599,6 +626,20 @@ func refresh() -> void:
 		if i == 6: game.patch_picker.set_item_text(i + 1, "Réserve de l’Est · Bois" if patch.discovered else "Réserve inexplorée")
 		patch.label.text = ("▸ " if i == game.selected else "") + game.NAMES[patch.kind] + " · %d" % patch.amount + (" · Palier" if patch.pos.y > 1 else "")
 		patch.label.modulate = Color("fff1c8") if i == game.selected else Color("eac37e")
+
+func _refresh_depots() -> void:
+	var id := maxi(0, depot_picker.selected)
+	if depot_picker.item_count != game.depots.sites.size():
+		depot_picker.clear()
+		for i in range(game.depots.sites.size()): depot_picker.add_item("Refuge" if i == 0 else "Dépôt %d" % i)
+		depot_picker.select(mini(id, game.depots.sites.size() - 1))
+	id = depot_picker.selected
+	var site: Dictionary = game.depots.sites[id]
+	depot_summary.text = "%d/%d places occupées · %d réservées\n(livraisons et retour possible des matériaux)\n" % [game.depots.used(id), site.capacity, game.depots.booked(id)]
+	for kind in game.Depots.KINDS:
+		depot_summary.text += "\n%s : %d · %d réservé(s)" % [game.NAMES[kind], game.depots.stocks(id).get(kind, 0), game.depots.reserved(id, kind)]
+		depot_filters[kind].set_pressed_no_signal(kind in site.filters)
+		depot_filters[kind].disabled = game.ended or game.pending_save
 
 func _refresh_beds() -> void:
 	if bed_controls.size() != game.sleeping.beds.size():

@@ -16,6 +16,7 @@ func advance(game: Node, seconds: float) -> void:
 func run() -> void:
 	var game = load("res://scenes/main.tscn").instantiate()
 	root.add_child(game)
+	game.depots.sites[0].capacity = 20000 # Large-stock fixture; capacity is tested by depots.gd.
 	game.set_process(false)
 	game.start_panel.hide()
 	game.stock = {"food": 10000, "wood": 100, "fiber": 100}

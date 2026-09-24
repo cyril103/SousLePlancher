@@ -20,7 +20,7 @@ func reserved(kind: String) -> int:
 	return count
 
 func available(kind: String) -> int:
-	return int(game.stock.get(kind, 0)) - reserved(kind)
+	return game.depots.total_available(kind)
 
 func for_site(bed: Dictionary, kind: String) -> int:
 	# Older sites get first choice, even while their porter is bringing another kind.
@@ -50,32 +50,37 @@ func quantities(bed: Dictionary) -> String:
 func start(c: WorkerDelivery) -> bool:
 	# Called only at the normal safe handover, after personal needs and cargo settlement.
 	var from: Vector3 = game.home_position(c.owner) if c.inside_refuge else c.actor.position
-	if game.travel_path(from, c.destination_position, c.owner).is_empty(): return false
 	for pile in recovery:
 		if pile.hauler >= 0: continue
 		if game.travel_path(from, pile.pos, c.owner).is_empty(): continue
 		for kind in ["wood", "fiber"]:
 			if pile.materials[kind] > 0:
-				return begin(c, kind, mini(pile.materials[kind], 3 + game.workshops), pile, {})
+				var choice: Dictionary = game.depots.sink(pile.pos, kind, mini(pile.materials[kind], 3 + game.workshops), c.owner)
+				if not choice.is_empty(): return begin(c, kind, choice.quantity, pile, {}, choice.id)
 	for bed in game.sleeping.beds:
 		if bed.built or bed.hauler >= 0 or supplied(bed): continue
-		if game.travel_path(c.destination_position, game.sleeping.entrance(bed), c.owner).is_empty(): continue
 		for kind in ["wood", "fiber"]:
-			var quantity := mini(int(cost(bed)[kind]) - int(bed.materials[kind]), mini(for_site(bed, kind), 3 + game.workshops))
-			if quantity > 0: return begin(c, kind, quantity, {}, bed)
+			var depot: int = game.depots.source(from, kind, c.owner, game.sleeping.entrance(bed))
+			if depot < 0: continue
+			var quantity := mini(int(cost(bed)[kind]) - int(bed.materials[kind]), mini(for_site(bed, kind), mini(game.depots.available(depot, kind), 3 + game.workshops)))
+			if quantity > 0: return begin(c, kind, quantity, {}, bed, depot)
 	return false
 
-func begin(c: WorkerDelivery, kind: String, quantity: int, source: Dictionary, target: Dictionary) -> bool:
+func begin(c: WorkerDelivery, kind: String, quantity: int, source: Dictionary, target: Dictionary, depot: int) -> bool:
 	if c.inside_refuge:
 		c.change("leave_home")
 		return true
 	var id := next_id
 	next_id += 1
-	jobs[id] = {"owner": c.owner, "kind": kind, "quantity": quantity, "source": source, "target": target,
+	var token := "s:%d" % id
+	if source.is_empty(): game.depots.reserve_out(token, depot, kind, quantity)
+	else: game.depots.reserve_in(token, {"id": depot, "kind": kind, "quantity": quantity})
+	jobs[id] = {"owner": c.owner, "kind": kind, "quantity": quantity, "source": source, "target": target, "depot": depot, "token": token,
 		"collected": false, "deposited": false, "returning": target.is_empty(), "ticket": -id - 1}
 	if not source.is_empty(): source.hauler = c.owner
 	if not target.is_empty(): target.hauler = c.owner
 	c.supply_job = id
+	c.set_depot(depot)
 	c.worker.kind = kind
 	c.change("supply_pick_walk" if not source.is_empty() else "supply_wait")
 	if not target.is_empty(): game.sleeping.caption(game.sleeping.beds.find(target))
@@ -84,7 +89,8 @@ func begin(c: WorkerDelivery, kind: String, quantity: int, source: Dictionary, t
 func release_claims(job: Dictionary) -> void:
 	if not job.source.is_empty(): job.source.hauler = -1
 	if not job.target.is_empty(): job.target.hauler = -1
-	game.delivery_ledger.release_destination(job.ticket)
+	game.depots.gate(job.depot).release_destination(job.ticket)
+	game.depots.release(job.token)
 	if not job.target.is_empty(): game.sleeping.caption(game.sleeping.beds.find(job.target))
 
 func finish(c: WorkerDelivery) -> void:
@@ -92,6 +98,7 @@ func finish(c: WorkerDelivery) -> void:
 	jobs.erase(c.supply_job)
 	release_claims(job)
 	c.supply_job = -1
+	c.set_depot(0)
 	c.actor.cargo.hide()
 	c.change("return_home" if game.hiding or c.personal_recall or c.worker.sleep_requested or c.need_interrupt else "idle")
 	c.pose("idle", 0)
@@ -111,7 +118,7 @@ func cancel(c: WorkerDelivery) -> bool:
 		game.sleeping.caption(game.sleeping.beds.find(job.target))
 	job.target = {}
 	job.returning = true
-	game.delivery_ledger.release_destination(job.ticket)
+	game.depots.gate(job.depot).release_destination(job.ticket)
 	c.change("supply_wait")
 	return true
 
@@ -126,11 +133,17 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 	var job: Dictionary = jobs[c.supply_job]
 	match c.state:
 		"supply_wait":
-			if c.depot_reachable() and game.delivery_ledger.acquire_slot(job.ticket):
+			if job.returning and not c.depot_reachable():
+				var previous: int = job.depot
+				if game.depots.reroute(job.token, c.actor.position, c.owner):
+					job.depot = game.depots.incoming[job.token].id
+					c.set_depot(job.depot)
+					if previous != job.depot: game.depots.gate(previous).release_destination(job.ticket)
+			if c.depot_reachable() and game.depots.gate(job.depot).acquire_slot(job.ticket):
 				c.change("supply_drop_walk" if job.collected else "supply_pick_walk")
 			else:
-				if not c.depot_reachable(): game.delivery_ledger.release_destination(job.ticket)
-				if c.move(game.queue_position(c.owner), dt, job.collected): c.pose("pick_up" if job.collected else "idle", 1.8 if job.collected else 0.0)
+				if not c.depot_reachable(): game.depots.gate(job.depot).release_destination(job.ticket)
+				if c.move(game.depots.waiting(job.depot, c.owner), dt, job.collected): c.pose("pick_up" if job.collected else "idle", 1.8 if job.collected else 0.0)
 				if not c.depot_reachable(): c.navigation_issue = "Accès au dépôt bloqué"
 		"supply_pick_walk":
 			if c.move(source_position(c, job), dt, false):
@@ -143,7 +156,7 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 		"supply_pickup":
 			c.pose("pick_up", minf(c.timer, 1.8))
 			if c.timer >= c.CAPTURE_TIME and not job.collected:
-				if job.source.is_empty(): game.stock[job.kind] -= job.quantity
+				if job.source.is_empty(): game.depots.withdraw(job.token, true)
 				else:
 					job.source.materials[job.kind] -= job.quantity
 					recovery_visual(job.source)
@@ -152,7 +165,7 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 				c.actor.cargo.reparent(c.cargo_socket, false)
 				c.actor.cargo.transform = Transform3D(Basis.IDENTITY.scaled(Vector3.ONE * .52), Vector3.ZERO)
 			if c.timer >= 1.8:
-				game.delivery_ledger.release_destination(job.ticket)
+				game.depots.gate(job.depot).release_destination(job.ticket)
 				c.change("supply_wait" if job.returning else "supply_drop_walk")
 		"supply_drop_walk":
 			if c.move(target_position(c, job), dt, true):
@@ -160,7 +173,7 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 				c.change("supply_drop")
 			elif not c.navigation_issue.is_empty():
 				if job.returning:
-					game.delivery_ledger.release_destination(job.ticket)
+					game.depots.gate(job.depot).release_destination(job.ticket)
 					c.change("supply_wait")
 				else: cancel(c)
 		"supply_drop":
@@ -168,8 +181,9 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 			if c.timer >= c.DEPOSIT_TIME and not job.deposited:
 				c.actor.cargo.reparent(game, true)
 				c.actor.cargo.global_transform = Transform3D(Basis.IDENTITY, target_position(c, job)) * c.contact
-				if job.returning: game.stock[job.kind] += job.quantity
+				if job.returning: game.depots.deposit(job.token)
 				else:
+					game.depots.release(job.token)
 					job.target.materials[job.kind] += job.quantity
 					game.sleeping.visual(game.sleeping.beds.find(job.target))
 				job.deposited = true

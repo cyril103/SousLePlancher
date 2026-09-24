@@ -16,6 +16,7 @@ func advance(game: Node, seconds: float) -> void:
 func run() -> void:
 	var game = load("res://scenes/main.tscn").instantiate()
 	root.add_child(game)
+	game.depots.sites[0].capacity = 1000 # Legacy colony-growth scenario; bounded stocks are covered by depots.gd.
 	game.set_process(false)
 	game.start_panel.hide()
 	check(game.active_tray == "", "HUD starts with all command panels closed")

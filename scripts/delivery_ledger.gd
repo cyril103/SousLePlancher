@@ -49,11 +49,11 @@ func acquire_slot(id: int) -> bool:
 	destination_owner = id
 	return true
 
-func deliver(id: int, stock: Dictionary) -> int:
-	if not jobs.has(id) or not jobs[id].collected or destination_owner != id: return 0
+func deliver(id: int, stock: Dictionary, external_slot: bool = false) -> int:
+	if not jobs.has(id) or not jobs[id].collected or (destination_owner != id and not external_slot): return 0
 	var job: Dictionary = jobs[id]
 	var quantity: int = job.quantity
-	stock[job.kind] += quantity
+	stock[job.kind] = int(stock.get(job.kind, 0)) + quantity
 	leave_source(id)
 	jobs.erase(id)
 	# Keep the physical unloading slot until the actor has finished standing up.

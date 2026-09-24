@@ -9,11 +9,13 @@ const Refuge = preload("res://scripts/refuge_access.gd")
 const Sleep = preload("res://scripts/colony_sleep.gd")
 const Needs = preload("res://scripts/colony_needs.gd")
 const Construction = preload("res://scripts/construction_logistics.gd")
+const Depots = preload("res://scripts/local_depots.gd")
 const HOME := Vector3(-3, 0, 1)
-const COSTS := {"bed": {"wood": 4, "fiber": 3}, "private_bed": {"wood": 6, "fiber": 5}, "shelter": {"wood": 8, "fiber": 4}, "workshop": {"wood": 10, "fiber": 6}}
+const COSTS := {"depot": {}, "bed": {"wood": 4, "fiber": 3}, "private_bed": {"wood": 6, "fiber": 5}, "shelter": {"wood": 8, "fiber": 4}, "workshop": {"wood": 10, "fiber": 6}}
 var sleeping := Sleep.new()
 var needs := Needs.new()
 var construction := Construction.new()
+var depots := Depots.new()
 const NAMES := {"food": "Miettes", "wood": "Bois", "fiber": "Fibres", "water": "Eau"}
 var stock := {"food": 24, "wood": 12, "fiber": 6, "water": 16}
 var patches: Array[Dictionary] = []
@@ -84,6 +86,8 @@ var route_mesh: MeshInstance3D
 var route_timer := 0.0
 
 func _ready() -> void:
+	depots.game = self
+	depots.setup()
 	sleeping.game = self
 	construction.game = self
 	needs.game = self
@@ -185,10 +189,12 @@ func _ready() -> void:
 		_news("Un éclaireur reconnaît la réserve. T : exploration ; C : affecter au gisement découvert ; H : rappel.")
 	if "--demo-sleep" in OS.get_cmdline_user_args(): prepare_sleep_demo()
 	if "--demo-construction" in OS.get_cmdline_user_args(): prepare_construction_demo()
+	if "--demo-depots" in OS.get_cmdline_user_args(): prepare_depots_demo()
 	if "--demo-needs" in OS.get_cmdline_user_args(): prepare_needs_demo()
 
 func prepare_needs_demo() -> void:
 	start_panel.hide()
+	depots.sites[0].capacity = 256
 	stock = {"food": 40, "water": 30, "wood": 30, "fiber": 20}
 	_choose_build("private_bed")
 	_place_build(Vector3(-3, 0, -4))
@@ -217,6 +223,7 @@ func prepare_needs_demo() -> void:
 
 func prepare_sleep_demo() -> void:
 	start_panel.hide()
+	depots.sites[0].capacity = 256
 	stock = {"food": 150, "wood": 40, "fiber": 30, "water": 30}
 	for spec in [["private_bed", Vector3(-3, 0, -4)], ["bed", Vector3(0, 0, -3)]]:
 		_choose_build(spec[0])
@@ -240,6 +247,7 @@ func prepare_sleep_demo() -> void:
 
 func prepare_construction_demo() -> void:
 	start_panel.hide()
+	depots.sites[0].capacity = 256
 	stock = {"food": 80, "water": 50, "wood": 7, "fiber": 3}
 	for spec in [["bed", Vector3(-3, 0, -4)], ["private_bed", Vector3(0, 0, -3)]]:
 		_choose_build(spec[0])
@@ -253,6 +261,33 @@ func prepare_construction_demo() -> void:
 	_update_camera()
 	_news("Deux chantiers, des réserves limitées. Espace : livrer puis fabriquer. Affectez ensuite un habitant au bois et aux fibres pour terminer l’alcôve.")
 
+func prepare_depots_demo() -> void:
+	start_panel.hide()
+	get_window().title = "Sous le plancher — Dépôts locaux (démo)"
+	stock = {"food": 24, "water": 16, "wood": 0, "fiber": 0}
+	_choose_build("depot")
+	_place_build(Vector3(4, 0, 2))
+	depots.stocks(1).wood = 4
+	depots.stocks(1).fiber = 3
+	depots.stocks(1).food = 2
+	depots.stocks(1).water = 2
+	depots.refresh(1)
+	_choose_build("bed")
+	_place_build(Vector3(0, 0, -3))
+	workers[2].patch = 2
+	workers[3].node.position = Vector3(3, WorkerDelivery.GROUND_Y, 3.6)
+	workers[3].nutrition = 10.0
+	workers[3].hydration = 20.0
+	paused = true
+	zoom = 17
+	focus = Vector3(2, 0, 0)
+	yaw = .32
+	hud._refresh_depots()
+	hud.depot_picker.select(1)
+	_show_tray("depots")
+	_update_camera()
+	_news("Espace : le dépôt nourrit un habitant et approvisionne le lit ; un porteur le remplit de bois. Modifiez ses filtres dans ce panneau.")
+
 func _add_patch(kind: String, pos: Vector3, amount: int) -> void:
 	var node := Art.model(self, "needs_13/condensation" if kind == "water" else kind, pos)
 	var label := Art.caption(node, NAMES[kind], Vector3(0, 1.0, 0), Color("eac37e"))
@@ -260,6 +295,7 @@ func _add_patch(kind: String, pos: Vector3, amount: int) -> void:
 	patches.append({"kind": kind, "pos": pos, "amount": amount, "reserved": 0, "node": node, "label": label, "discovered": true})
 
 func _exit_tree() -> void:
+	depots.game = null
 	sleeping.game = null
 	construction.game = null
 	needs.game = null
@@ -341,13 +377,15 @@ func _navigation_allows_build(pos: Vector3, kind: String) -> bool:
 	var trial := Navigation.new()
 	var footprints: Array[Rect2] = navigation_obstacles.duplicate()
 	footprints.append(Navigation.building(pos, kind))
-	if not kind in ["bed", "private_bed"]: footprints.append(Navigation.footprint(pos + Vector3(1.05, 0, 0.65), Vector2(0.12, 0.12)))
+	if not kind in ["bed", "private_bed", "depot"]: footprints.append(Navigation.footprint(pos + Vector3(1.05, 0, 0.65), Vector2(0.12, 0.12)))
 	trial.configure(footprints, navigation_stands)
-	var depot: Vector3 = workers[0].delivery.destination_position
+	var depot: Vector3 = depots.entry(0)
 	var destinations: Array[Vector3] = home_slots.duplicate()
 	destinations.append(HOME + Refuge.OUTSIDE)
 	destinations.append_array(depot_slots)
 	for bed in sleeping.beds: destinations.append(sleeping.entrance(bed))
+	for id in range(1, depots.sites.size()): destinations.append(depots.entry(id))
+	if kind == "depot": destinations.append(pos + Depots.ENTRY)
 	for pile in construction.recovery: destinations.append(pile.pos)
 	if kind in ["bed", "private_bed"]: destinations.append(pos + Sleep.ENTRY)
 	for patch in patches:
@@ -418,6 +456,14 @@ func _unhandled_input(event: InputEvent) -> void:
 							return
 					selected = -1
 					hud.assignment_target = -1
+					for id in range(1, depots.sites.size()):
+						var depot_hit = ground_point(event.position)
+						if depot_hit != null and depot_hit.distance_to(depots.sites[id].pos) < 1:
+							hud._refresh_depots()
+							hud.depot_picker.select(id)
+							_show_tray("depots")
+							_refresh_ui()
+							return
 					for i in range(patches.size()):
 						var hit = Plane(Vector3.UP, patches[i].pos.y).intersects_ray(camera.project_ray_origin(event.position), camera.project_ray_normal(event.position))
 						if patches[i].discovered and hit != null and hit.distance_to(patches[i].pos) < 1.1:
@@ -563,7 +609,7 @@ func _choose_build(kind: String) -> void:
 	_cancel_build()
 	build_mode = kind
 	_show_tray("")
-	ghost = Art.model(self, "reference_01/matchbox_bed" if kind in ["bed", "private_bed"] else kind, Vector3.ZERO)
+	ghost = Art.model(self, "depots_15/local_depot" if kind == "depot" else ("reference_01/matchbox_bed" if kind in ["bed", "private_bed"] else kind), Vector3.ZERO)
 	if kind == "private_bed": Art.model(ghost, "sleep_12/privacy_partition", Vector3.ZERO)
 	_set_ghost(ghost)
 	_news("Cliquez sur un emplacement libre. Clic droit pour annuler.")
@@ -587,7 +633,7 @@ func _place_build(point: Vector3) -> bool:
 		return false
 	var furniture := build_mode in ["bed", "private_bed"]
 	for key in COSTS[build_mode]:
-		if not furniture and construction.available(key) < COSTS[build_mode][key]:
+		if not furniture and depots.available(0, key) < COSTS[build_mode][key]:
 			_news("Il manque des matériaux. Affectez des habitants au bois et aux fibres.")
 			return false
 	if not _navigation_allows_build(pos, build_mode):
@@ -596,13 +642,16 @@ func _place_build(point: Vector3) -> bool:
 	if not furniture:
 		for key in COSTS[build_mode]: stock[key] -= COSTS[build_mode][key]
 	if furniture: sleeping.add(pos, build_mode == "private_bed")
+	elif build_mode == "depot": depots.add(pos)
 	else: Art.building(self, pos, build_mode)
 	buildings.append({"pos": pos, "kind": build_mode})
 	navigation_obstacles.append(Navigation.building(pos, build_mode))
-	if not furniture: navigation_obstacles.append(Navigation.footprint(pos + Vector3(1.05, 0, 0.65), Vector2(0.12, 0.12)))
+	if not furniture and build_mode != "depot": navigation_obstacles.append(Navigation.footprint(pos + Vector3(1.05, 0, 0.65), Vector2(0.12, 0.12)))
 	navigation.configure(navigation_obstacles, navigation_stands)
 	if furniture:
 		_news("Chantier planifié. Bois et fibres seront livrés avant fabrication. T : suivi des travaux.")
+	elif build_mode == "depot":
+		_news("Dépôt local installé : 12 places. Stocks → Dépôts pour choisir les ressources acceptées.")
 	elif build_mode == "shelter":
 		shelters += 1
 		_refresh_navigation_slots(workers.size() + 1)
@@ -784,6 +833,7 @@ func cancel_checkpoint() -> void:
 	_news(save_status)
 
 func checkpoint_ready() -> bool:
+	if not depots.settled(): return false
 	if not construction.jobs.is_empty(): return false
 	if ended or not hiding or not delivery_ledger.jobs.is_empty() or delivery_ledger.destination_owner != -1: return false
 	for patch in patches:
@@ -822,6 +872,16 @@ func apply_checkpoint(data: Dictionary) -> bool:
 		if not _place_build(point): return false
 	for kind in ["food", "wood", "fiber"]: stock[kind] = int(data.stock[kind])
 	stock.water = int(data.stock.get("water", 16))
+	if data.version >= 5:
+		for id in range(depots.sites.size()):
+			var saved: Dictionary = data.depots[id]
+			depots.sites[id].capacity = int(saved.capacity)
+			depots.sites[id].filters = saved.filters.duplicate()
+			if id > 0:
+				for kind in Depots.KINDS: depots.sites[id].stock[kind] = int(saved.stock[kind])
+			depots.refresh(id)
+	else:
+		depots.sites[0].capacity = maxi(80, depots.used(0))
 	if data.version >= 2:
 		for i in range(sleeping.beds.size()):
 			for key in ["owner", "work", "built"]: sleeping.beds[i][key] = data.furnishings[i][key]

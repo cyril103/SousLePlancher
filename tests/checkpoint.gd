@@ -24,6 +24,7 @@ func run() -> void:
 	var game = load("res://scenes/main.tscn").instantiate()
 	game.save_path = path
 	root.add_child(game)
+	game.depots.sites[0].capacity = 20000 # Large-stock fixture; capacity is tested by depots.gd.
 	game.set_process(false)
 	game.start_panel.hide()
 	game.paused = false
@@ -87,6 +88,7 @@ func run() -> void:
 	# A failed replacement must leave the existing primary file untouched.
 	var changed := snapshot.duplicate(true)
 	changed.stock.wood += 5
+	changed.depots[0].stock.wood += 5
 	DirAccess.make_dir_recursive_absolute(path + ".bak.tmp")
 	check(not Save.write_checkpoint(path, changed).is_empty(), "Backup write failure is reported")
 	check(Save.read_file(path).data.stock.wood == snapshot.stock.wood, "Failed write preserves primary checkpoint")
@@ -136,6 +138,7 @@ func run() -> void:
 	game = load("res://scenes/main.tscn").instantiate()
 	game.save_path = path.get_base_dir() + "/recruited_during_recall.json"
 	root.add_child(game)
+	game.depots.sites[0].capacity = 20000 # Large-stock fixture; capacity is tested by depots.gd.
 	game.set_process(false)
 	game.start_panel.hide()
 	game.paused = false

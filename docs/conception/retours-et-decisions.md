@@ -78,6 +78,8 @@ La version 0.2 devra harmoniser les chapitres, les statistiques provisoires, les
 
 ## Validation de la reprise
 
+**Lot 15 — dépôts locaux validés.** Le joueur autorise l'étape suivante (« ok c'est parti »). Capacité, filtres, stocks physiques, chantiers et besoins servis localement, sauvegarde v5. Le placement du casier est provisoirement gratuit et instantané ; fabrication et transferts entre dépôts restent à développer. Voir `gameplay-lot-15.md`. Le joueur confirme « je valide » après la démonstration ; commit et push autorisés.
+
 **Lot 14 — approvisionnement des lits validé.** Le joueur confirme « tu peux valider » après présentation et lancement de la démo. Livraison physique avant fabrication, réservations, récupération après annulation et sauvegarde v4. Voir `gameplay-lot-14.md`. Commit et push autorisés selon le fonctionnement convenu.
 
 **Nouvelle méthode demandée.** Une étape à la fois, présentation du résultat, validation du joueur, puis commit et push. La révision documentaire et la roadmap sont validées par le joueur (« je valide ») ; commit et push autorisés pour cette étape. Les torches individuelles et les liaisons physiques entre secteurs font partie de la suite autorisée, avec démonstration de chaque incrément.

@@ -13,6 +13,7 @@ func run() -> void:
 	var game = load("res://scenes/main.tscn").instantiate()
 	game.save_path = "user://tests/checkpoint_visual_%d/colony.json" % Time.get_ticks_usec()
 	root.add_child(game)
+	game.depots.sites[0].capacity = 20000 # Large-stock fixture; capacity is tested by depots.gd.
 	game.set_process(false)
 	game.start_panel.hide()
 	game.stock.food = 10000

@@ -53,6 +53,9 @@ var exploration_time := 0.0
 var rest_bed := -1
 var furniture_order := -1
 var supply_job := -1
+var depot_id := 0
+var need_depot := -1
+var need_kind := ""
 var rest_recall := false
 var personal_recall := false
 var needs_supply := -1
@@ -124,11 +127,14 @@ func cancel() -> void:
 	game.ladder.release(owner)
 	waiting_ladder = false
 	navigation_issue = ""
+	game.needs.interrupt(self)
 	if game.construction.cancel(self): return
 	if game.sleeping.interrupt(self): return
 	if state == "putdown": return # Complete an unloading already in progress.
 	if job < 0: return
 	if ledger.cancel(job):
+		game.depots.release("h:%d" % job)
+		game.depots.gate(depot_id).release_destination(job)
 		job = -1
 		actor.cargo.hide()
 		worker.work = 0.0
@@ -222,6 +228,21 @@ func depot_reachable() -> bool:
 		depot_accessible = not game.travel_path(actor.position, destination_position, owner).is_empty()
 	return depot_accessible
 
+func set_depot(id: int) -> void:
+	if depot_id == id and destination_position == game.depots.entry(id): return
+	depot_id = id
+	destination_position = game.depots.entry(id)
+	depot_revision = -1
+
+func harvest_destination() -> bool:
+	if depot_reachable(): return true
+	var token := "h:%d" % job
+	var previous := depot_id
+	if not game.depots.reroute(token, actor.position, owner): return false
+	set_depot(game.depots.incoming[token].id)
+	if previous != depot_id: game.depots.gate(previous).release_destination(job)
+	return true
+
 func tick(dt: float) -> void:
 	game.sleeping.update_need(self, dt)
 	game.needs.update(self, dt)
@@ -257,8 +278,14 @@ func tick(dt: float) -> void:
 			if game.hiding or patch < 0: return
 			source_position = game.patches[patch].pos + Vector3(0.9, GROUND_Y, 0.2)
 			if not plan_route(source_position): return
-			job = ledger.reserve(owner, patch, 3 + game.workshops)
+			var choice: Dictionary = game.depots.sink(source_position, game.patches[patch].kind, mini(3 + game.workshops, game.patches[patch].amount - game.patches[patch].reserved), owner)
+			if choice.is_empty():
+				navigation_issue = "Aucun dépôt accessible n’accepte cette charge ou n’a de place"
+				return
+			job = ledger.reserve(owner, patch, choice.quantity)
 			if job < 0: return
+			game.depots.reserve_in("h:%d" % job, choice)
+			set_depot(choice.id)
 			worker.kind = ledger.jobs[job].kind
 			actor.cargo.reparent(game, true)
 			actor.cargo.global_transform = Transform3D(Basis.IDENTITY, source_position) * contact
@@ -272,6 +299,7 @@ func tick(dt: float) -> void:
 			elif not navigation_issue.is_empty():
 				# No charge has been taken: release the source immediately.
 				ledger.cancel(job)
+				game.depots.release("h:%d" % job)
 				job = -1
 				actor.cargo.hide()
 				change("idle")
@@ -296,32 +324,34 @@ func tick(dt: float) -> void:
 			if actor.position.y > 1:
 				move(game.ladder.waiting(owner, false), dt, true)
 				return
-			if depot_reachable() and ledger.acquire_destination(job):
+			if harvest_destination() and game.depots.gate(depot_id).acquire_slot(job):
 				change("to_storage")
 			else:
-				if not depot_reachable(): ledger.release_destination(job)
-				if move(game.queue_position(owner), dt, true): pose("pick_up", 1.8)
+				if not depot_reachable(): game.depots.gate(depot_id).release_destination(job)
+				if move(game.depots.waiting(depot_id, owner), dt, true): pose("pick_up", 1.8)
 				if not depot_reachable(): navigation_issue = "Trajet bloqué vers le dépôt"
 		"to_storage":
 			if move(destination_position, dt, true):
 				actor.rotation.y = 0
 				change("putdown")
 			elif not navigation_issue.is_empty():
-				ledger.release_destination(job)
+				game.depots.gate(depot_id).release_destination(job)
 				change("waiting_storage")
 		"putdown":
 			pose("put_down", minf(timer, 1.8))
 			if timer >= DEPOSIT_TIME and not deposited:
 				actor.cargo.reparent(game, true)
 				actor.cargo.global_transform = Transform3D(Basis.IDENTITY, destination_position) * contact
-				var amount := ledger.deliver(job, game.stock)
+				var amount := ledger.deliver(job, game.depots.stocks(depot_id), game.depots.gate(depot_id).destination_owner == job)
+				game.depots.release("h:%d" % job)
 				assert(amount == worker.carrying and amount > 0)
 				worker.carrying = 0
 				deposited = true
 				completed_deliveries += 1
 			if timer >= 1.8:
-				ledger.release_destination(job)
+				game.depots.gate(depot_id).release_destination(job)
 				job = -1
+				set_depot(0)
 				actor.cargo.hide()
 				change("idle" if worker.patch >= 0 and not game.hiding else "return_home")
 		"return_home":

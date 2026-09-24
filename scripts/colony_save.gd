@@ -1,6 +1,6 @@
 extends RefCounted
 ## Plain, versioned data only. Transient jobs must settle before capture.
-const VERSION := 4
+const VERSION := 5
 const DEFAULT_PATH := "user://saves/colony_v1.json"
 const KINDS := ["food", "food", "wood", "wood", "fiber", "fiber", "wood", "water"]
 
@@ -25,6 +25,7 @@ static func capture(game: Node) -> Dictionary:
 		"assignments": assignments, "speed": game.speed,
 		"needs": needs, "furnishings": game.sleeping.snapshot(),
 		"recovery": game.construction.snapshot(),
+		"depots": game.depots.snapshot(),
 		"water_source": vector(game.patches[7].pos),
 		"clock": {"elapsed": game.elapsed, "meal_timer": game.meal_timer, "suspicion": game.suspicion, "hunger": game.hunger, "event_index": game.event_index},
 		"view": {"focus": vector(game.focus), "yaw": game.yaw, "zoom": game.zoom, "paths": game.show_paths, "resident": game.hud.resident_index, "cutaway": game.refuge.cutaway}
@@ -67,10 +68,14 @@ static func validate(data: Variant) -> String:
 		if i == 7 and not patch.discovered: return "Point d’eau initial manquant."
 	if not data.buildings is Array or data.buildings.size() > 64: return "Bâtiments invalides."
 	var shelters := 0
+	var depot_count := 1
 	var furnishings: Array = []
 	for building in data.buildings:
 		if not fields(building, ["kind", "pos"]) or not valid_vector(building.pos): return "Bâtiment incomplet."
-		if not building.kind in ["shelter", "workshop", "bed", "private_bed"]: return "Type de bâtiment inconnu."
+		if not building.kind in ["shelter", "workshop", "bed", "private_bed", "depot"]: return "Type de bâtiment inconnu."
+		if building.kind == "depot":
+			if data.version < 5: return "Dépôt incompatible avec l’ancien format."
+			depot_count += 1
 		if building.kind in ["bed", "private_bed"]: furnishings.append(building.kind)
 		if building.pos[1] != 0 or not number(building.pos[0], -9, 9, true) or not number(building.pos[2], -6, 6, true): return "Emplacement de bâtiment invalide."
 		if building.kind == "shelter": shelters += 1
@@ -111,6 +116,23 @@ static func validate(data: Variant) -> String:
 			if absf(pile.pos[0]) > 10 or absf(pile.pos[2]) > 8 or absf(pile.pos[1] + .0105) > .001: return "Tas de récupération hors de la carte."
 			if not number(pile.materials.wood, 0, 6, true) or not number(pile.materials.fiber, 0, 5, true): return "Quantité à récupérer invalide."
 			if pile.materials.wood + pile.materials.fiber == 0: return "Tas de récupération vide."
+	if data.version >= 5:
+		if not data.has("depots") or not data.depots is Array or data.depots.size() != depot_count: return "Dépôts incomplets."
+		for i in range(depot_count):
+			var depot = data.depots[i]
+			if not fields(depot, ["stock", "capacity", "filters"]) or not fields(depot.stock, ["food", "wood", "fiber", "water"]): return "Dépôt incomplet."
+			if not number(depot.capacity, 12, 400000000, true) or (i > 0 and depot.capacity != 12): return "Capacité de dépôt invalide."
+			var used := 0
+			for kind in ["food", "wood", "fiber", "water"]:
+				if not number(depot.stock[kind], 0, 100000000, true): return "Stock local invalide."
+				used += int(depot.stock[kind])
+			if used > depot.capacity: return "Dépôt au-delà de sa capacité."
+			if not depot.filters is Array or depot.filters.size() > 4: return "Filtres invalides."
+			var seen: Array = []
+			for kind in depot.filters:
+				if not kind in ["food", "wood", "fiber", "water"] or kind in seen: return "Filtre inconnu ou dupliqué."
+				seen.append(kind)
+		if data.depots[0].stock != data.stock: return "Stock du refuge incohérent."
 	for assignment in data.assignments:
 		if not number(assignment, -1, count - 1, true): return "Affectation invalide."
 		if assignment >= 0 and not data.patches[int(assignment)].discovered: return "Affectation dans une zone inconnue."

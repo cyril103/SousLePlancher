@@ -12,6 +12,7 @@ func run() -> void:
 	DirAccess.make_dir_recursive_absolute("res://artifacts/doors")
 	var game = load("res://scenes/main.tscn").instantiate()
 	root.add_child(game)
+	game.depots.sites[0].capacity = 20000 # Large-stock fixture; capacity is tested by depots.gd.
 	game.set_process(false)
 	game.start_panel.hide()
 	game.stock.food = 10000
