@@ -34,6 +34,7 @@ static func footprint(pos: Vector3, half: Vector2) -> Rect2:
 	return Rect2(Vector2(pos.x, pos.z) - half, half * 2)
 
 static func building(pos: Vector3, kind: String) -> Rect2:
+	if kind in ["bed", "private_bed"]: return footprint(pos, Vector2(.8, 1.2))
 	return footprint(pos, Vector2(0.85, 0.60) if kind == "workshop" else Vector2(0.85, 1.0))
 
 func walkable(pos: Vector3) -> bool:

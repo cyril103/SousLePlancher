@@ -71,7 +71,7 @@ func run() -> void:
 	check(game.stock.wood == stock_before + 3 and game.workers[2].carrying == 0, "Recall deposits cargo exactly once")
 	game.stock.wood = 0
 	game._refresh_ui()
-	check(hud.build_buttons.shelter.disabled and hud.resource_values.wood.text == "0", "Stock and construction affordability are live")
+	check(hud.build_buttons.bed.disabled and hud.build_buttons.private_bed.disabled and hud.resource_values.wood.text == "0", "Stock and furniture affordability are live")
 	game._add_worker()
 	game._refresh_ui()
 	await settle()

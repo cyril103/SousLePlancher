@@ -31,7 +31,7 @@ func run() -> void:
 	game._unhandled_input(escape)
 	check(game.active_tray == "", "Escape dismisses command panel")
 	check(game.workers.size() == 4, "Initial population")
-	check(game.patches.size() == 7 and not game.patches[6].discovered, "Six known resources and one undiscovered reserve")
+	check(game.patches.size() == 8 and game.patches[7].kind == "water" and not game.patches[6].discovered, "Initial resources include water and one undiscovered reserve")
 	var screen = game.camera.unproject_position(game.patches[0].pos)
 	check(game.ground_point(screen).distance_to(game.patches[0].pos) < 0.01, "3D picking projection")
 	game.selected = 0
@@ -72,7 +72,7 @@ func run() -> void:
 	game.selected = 0
 	game.assign_worker()
 	advance(game, 50)
-	check(game.ended and game.end_label.text.begins_with("LA MAISON"), "Full economy loop reaches victory")
+	check(not game.ended and game.elapsed >= 100, "Legacy shelter milestones no longer end the ongoing colony simulation")
 	# Let the renderer initialize shader RIDs before tearing down visual scenes.
 	await process_frame
 	await process_frame
@@ -95,8 +95,10 @@ func run() -> void:
 	root.add_child(starving)
 	starving.set_process(false)
 	starving.stock.food = 0
-	advance(starving, 36)
-	check(starving.ended, "Prolonged starvation ends game")
+	starving.start_panel.hide()
+	starving.workers[0].nutrition = 10.0
+	advance(starving, 55)
+	check(not starving.ended and starving.workers[0].nutrition > 35, "A hungry resident self-supplies instead of triggering the obsolete global famine timer")
 	await process_frame
 	await process_frame
 	starving.queue_free()

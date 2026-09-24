@@ -50,6 +50,13 @@ var waiting_bridge := false
 var bridge_crossings := 0
 var exploring := false
 var exploration_time := 0.0
+var rest_bed := -1
+var furniture_order := -1
+var rest_recall := false
+var personal_recall := false
+var needs_supply := -1
+var need_interrupt := false
+var consumption_time := 0.0
 
 func setup(world: Node3D, data: Dictionary, index: int, transactions: DeliveryLedger) -> void:
 	game = world
@@ -71,7 +78,10 @@ func pose(clip: String, time: float) -> void:
 	actor.player.seek(time, true)
 	actor.player.advance(0)
 	actor.skeleton.force_update_all_bone_transforms()
-	cargo_socket.transform = actor.skeleton.get_bone_global_pose(actor.skeleton.find_bone("socket_carry"))
+	# Manual animation sampling must also refresh props while the game is paused.
+	for socket in actor.skeleton.get_children():
+		if socket is BoneAttachment3D:
+			socket.transform = actor.skeleton.get_bone_global_pose(actor.skeleton.find_bone(socket.bone_name))
 
 func change(next: String) -> void:
 	state = next
@@ -83,6 +93,9 @@ func change(next: String) -> void:
 	retry_time = 0.0
 
 func cancel() -> void:
+	# A ration already withdrawn is consumed once; recall cannot duplicate or discard it.
+	if game.needs.consuming(self): return
+	needs_supply = -1
 	exploring = false
 	exploration_time = 0
 	if bridge_active:
@@ -98,6 +111,10 @@ func cancel() -> void:
 	game.refuge.release(owner)
 	waiting_door = false
 	if inside_refuge:
+		if state == "floor_sleep":
+			actor.position = game.refuge.slot(owner)
+			actor.rotation.y = 0
+			pose("idle", 0)
 		change("idle")
 		return
 	if climbing:
@@ -106,6 +123,7 @@ func cancel() -> void:
 	game.ladder.release(owner)
 	waiting_ladder = false
 	navigation_issue = ""
+	if game.sleeping.interrupt(self): return
 	if state == "putdown": return # Complete an unloading already in progress.
 	if job < 0: return
 	if ledger.cancel(job):
@@ -129,7 +147,7 @@ func move(target: Vector3, dt: float, loaded: bool) -> bool:
 	if not plan_route(target):
 		pose("pick_up" if loaded else "idle", 1.8 if loaded else fposmod(timer, 4.0))
 		return false
-	var velocity: float = 1.7 + game.workshops * 0.35
+	var velocity: float = (1.7 + game.workshops * 0.35) * game.needs.movement_factor(worker)
 	var budget := dt * velocity
 	var travel := 0.0
 	while budget > 0 and route_index < route.size():
@@ -203,6 +221,8 @@ func depot_reachable() -> bool:
 	return depot_accessible
 
 func tick(dt: float) -> void:
+	game.sleeping.update_need(self, dt)
+	game.needs.update(self, dt)
 	if bridge_active:
 		advance_bridge(dt)
 		return
@@ -217,20 +237,24 @@ func tick(dt: float) -> void:
 		ladder_exit = Vector3.INF
 	timer += dt
 	retry_time = maxf(0, retry_time - dt)
+	if game.needs.tick(self, dt): return
+	if needs_supply < 0 and not (need_interrupt and state == "return_home"):
+		if game.sleeping.tick(self, dt): return
 	match state:
 		"idle":
 			pose("idle", fposmod(timer, 4.0))
 			if inside_refuge:
 				actor.rotation.y = rotate_toward(actor.rotation.y, 0, dt * 2)
-				if not game.hiding and (exit_requested or worker.patch >= 0 or exploring): change("leave_home")
+				if not game.hiding and (exit_requested or worker.patch >= 0 or exploring or needs_supply >= 0): change("leave_home")
 				return
 			if exploring and not game.hiding:
 				change("explore")
 				return
-			if game.hiding or worker.patch < 0: return
-			source_position = game.patches[worker.patch].pos + Vector3(0.9, GROUND_Y, 0.2)
+			var patch: int = needs_supply if needs_supply >= 0 else worker.patch
+			if game.hiding or patch < 0: return
+			source_position = game.patches[patch].pos + Vector3(0.9, GROUND_Y, 0.2)
 			if not plan_route(source_position): return
-			job = ledger.reserve(owner, worker.patch, 3 + game.workshops)
+			job = ledger.reserve(owner, patch, 3 + game.workshops)
 			if job < 0: return
 			worker.kind = ledger.jobs[job].kind
 			actor.cargo.reparent(game, true)
@@ -327,6 +351,10 @@ func tick(dt: float) -> void:
 					change("return_home")
 
 func description() -> String:
+	var vital_description: String = game.needs.description(self)
+	if not vital_description.is_empty() and not climbing and not bridge_active and not door_active: return vital_description
+	var need_description: String = game.sleeping.description(self)
+	if not need_description.is_empty() and not climbing and not bridge_active and not door_active: return need_description
 	if bridge_active: return "Traverse la passerelle"
 	if waiting_bridge: return "Attend la passerelle"
 	if exploring and not climbing and not door_active: return navigation_issue if not navigation_issue.is_empty() else "Reconnaît la réserve de l’Est"

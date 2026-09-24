@@ -21,6 +21,11 @@ var resident_card: PanelContainer
 var resident_name: Label
 var resident_task: Label
 var resident_cargo: Label
+var resident_needs: Label
+var need_bars: Dictionary = {}
+var rest_button: Button
+var bed_list: VBoxContainer
+var bed_controls: Array[Dictionary] = []
 var resident_recall: Button
 var resident_assign: Button
 var assignment_target := -1
@@ -113,6 +118,7 @@ func button_style(state: String) -> StyleBoxFlat:
 	return box
 
 func icon(key: String) -> Texture2D:
+	if key == "water": return preload("res://assets/icons/water.svg")
 	if not icon_cache.has(key):
 		var index: int = ICON_MAP[key]
 		var tile := ICONS.get_size() / Vector2(4, 3)
@@ -188,7 +194,7 @@ func _make_header() -> void:
 	availability = label(info, "4 disponibles", 16, GOLD)
 	top_resources = frame(self)
 	var resources := row(top_resources, 16)
-	for key in ["food", "wood", "fiber"]:
+	for key in ["food", "wood", "fiber", "water"]:
 		var cell := row(resources, 8)
 		cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		picture(cell, icon(key), Vector2(36, 38))
@@ -277,7 +283,7 @@ func tray(key: String, title: String) -> VBoxContainer:
 
 func _make_trays() -> void:
 	var build := tray("build", "Bâtir le refuge")
-	for spec in [["shelter", "Abri", "8 bois · 4 fibres", "Un nouvel habitant rejoint la colonie.", "1"], ["workshop", "Atelier", "10 bois · 6 fibres", "Transport plus rapide et charges plus grandes.", "2"]]:
+	for spec in [["bed", "Lit", "4 bois · 3 fibres", "12 s de fabrication. Couchage personnel, sans intimité.", "1"], ["private_bed", "Alcôve", "6 bois · 5 fibres", "20 s de fabrication. Lit et cloisons individuelles ; meilleur repos.", "3"], ["workshop", "Atelier", "10 bois · 6 fibres", "Transport plus rapide et charges plus grandes.", "2"]]:
 		var kind: String = spec[0]
 		var building_row := row(build)
 		picture(building_row, icon("refuge" if kind == "shelter" else "work"), Vector2(58, 58))
@@ -287,6 +293,16 @@ func _make_trays() -> void:
 		build_buttons[kind] = control
 		wrapped(details, spec[3], 16, MUTED)
 	wrapped(build, "Choisissez un bâtiment, puis un emplacement libre. Clic droit pour annuler.", 16, MUTED)
+	button(build, "Gérer les couchages", func(): game._show_tray("beds"))
+	var beds := tray("beds", "Couchages & intimité")
+	wrapped(beds, "Un lit personnel par habitant. Les cloisons améliorent le confort et la récupération. Elles ne protègent pas du passage des humains : H reste prioritaire.", 16, MUTED)
+	var bed_scroll := ScrollContainer.new()
+	bed_scroll.custom_minimum_size.y = 230
+	bed_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	beds.add_child(bed_scroll)
+	bed_list = column(bed_scroll, 12)
+	bed_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button(beds, "Fabriquer un couchage", func(): game._show_tray("build"))
 	var people := tray("people", "Habitants & affectations")
 	game.patch_picker = OptionButton.new()
 	game.patch_picker.focus_mode = Control.FOCUS_NONE
@@ -312,6 +328,7 @@ func _make_trays() -> void:
 	people_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	wrapped(people, "Cliquez sur un habitant pour l’inspecter. [H] rappelle toute la colonie en conservant ses tâches.", 16, MUTED)
 	var work := tray("work", "Travaux en cours")
+	button(work, "Chantiers et attribution des lits", func(): game._show_tray("beds"))
 	var work_scroll := ScrollContainer.new()
 	work_scroll.custom_minimum_size.y = 225
 	work_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -333,7 +350,7 @@ func _make_trays() -> void:
 		refresh(), "Rappeler les habitants, livrer les charges, puis enregistrer la colonie")
 	load_button = button(goals, "Charger la sauvegarde [F9]", ask_load)
 	var help := tray("help", "Les gestes essentiels")
-	wrapped(help, "Flèches / WASD : déplacer la caméra\nMolette : zoom · Bouton central : rotation\nB : construire · C : habitants · T : travaux\nI : stocks · O : objectifs · H : au refuge\nN : trajet · V : vue intérieure du refuge\nF5 : sauvegarder au refuge · F9 : charger\nEspace : pause · F11 : plein écran\n1 / 2 : construire un abri / un atelier\nÉchap : fermer / annuler · R : recommencer\n\nLes panneaux n’arrêtent pas le temps. Utilisez Espace pour planifier tranquillement.", 17)
+	wrapped(help, "Flèches / WASD : déplacer la caméra\nMolette : zoom · Bouton central : rotation\nB : construire · C : habitants · T : travaux\nI : stocks · O : objectifs · H : au refuge\nN : trajet · V : vue intérieure du refuge\nF5 : sauvegarder au refuge · F9 : charger\nEspace : pause · F11 : plein écran\n1 : lit · 2 : atelier · 3 : alcôve individuelle\nÉchap : fermer / annuler · R : recommencer\n\nLes panneaux n’arrêtent pas le temps. Utilisez Espace pour planifier tranquillement.", 17)
 
 func _make_resident() -> void:
 	resident_card = frame(self, true, true)
@@ -345,9 +362,26 @@ func _make_resident() -> void:
 	resident_name = label(info, "Habitant 1", 23, INK, true)
 	resident_task = label(info, "Disponible", 18)
 	resident_cargo = label(info, "Sans affectation", 16, MUTED)
+	resident_needs = label(info, "", 16, MUTED)
+	for spec in [["energy", "Énergie"], ["nutrition", "Satiété"], ["hydration", "Hydratation"]]:
+		var meter_row := row(info, 6)
+		label(meter_row, spec[1], 15, MUTED).custom_minimum_size.x = 86
+		var meter := ProgressBar.new()
+		meter.custom_minimum_size = Vector2(110, 17)
+		meter.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		meter.show_percentage = false
+		meter.add_theme_stylebox_override("background", flat(Color("b9a484"), MUTED))
+		meter.add_theme_stylebox_override("fill", flat(Color("69835b"), Color("84966a")))
+		meter_row.add_child(meter)
+		var value := label(meter_row, "100", 15, MUTED)
+		value.custom_minimum_size.x = 28
+		need_bars[spec[0]] = {"bar": meter, "value": value}
 	var actions := row(info, 6)
 	resident_assign = button(actions, "Affecter", func(): assignment_target = resident_index; game._show_tray("people"), "Choisir un gisement pour cet habitant")
 	resident_recall = button(actions, "Rappeler", _recall_resident, "Libérer cet habitant et le faire rentrer avec sa charge")
+	var rest_actions := row(info, 6)
+	rest_button = button(rest_actions, "Se reposer", func(): game.sleeping.request_rest(resident_index), "Déposer sa charge puis rejoindre son lit ; au sol s’il n’y a pas de lit disponible")
+	button(rest_actions, "Couchages", func(): game._show_tray("beds"))
 	resident_card.tooltip_text = "Habitant sélectionné : cliquez sur un autre habitant dans la colonie ou dans la liste."
 
 func _recall_resident() -> void:
@@ -375,7 +409,7 @@ func _make_modals() -> void:
 	picture(intro, icon("refuge"), Vector2(0, 84))
 	label(intro, "Sous le Plancher", 36, INK, true).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label(intro, "Une petite civilisation, une grande maison.", 19, MUTED).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	wrapped(intro, "Quatre habitants. Quelques miettes. Tout à construire.\n\n1. Affectez vos habitants aux ressources.\n2. Construisez deux abris et un atelier.\n3. Conservez 35 miettes et survivez au premier cycle.\n\nLes humains passent entre 68 et 88 secondes de chaque cycle. Rappelez vos habitants avec H avant leur arrivée.", 20)
+	wrapped(intro, "Quatre habitants. Quelques miettes. Tout à construire.\n\n1. Affectez vos habitants aux ressources.\n2. Faites fabriquer des lits et des cloisons.\n3. Veillez aux réserves de nourriture et d’eau.\nIls mangent, boivent et dorment seuls selon leurs besoins.\n\nLes humains passent entre 68 et 88 secondes de chaque cycle. Rappelez vos habitants avec H avant leur arrivée.", 20)
 	button(intro, "Fonder la colonie", func(): game.start_panel.hide(); game.paused = false; refresh()).custom_minimum_size.y = 48
 	continue_button = button(intro, "Reprendre la sauvegarde", ask_load)
 	game.end_panel = frame(self, true, true)
@@ -409,12 +443,12 @@ func _layout() -> void:
 	top_population.size = Vector2(236, 92)
 	top_time.position = Vector2(size.x - 366, 14)
 	top_time.size = Vector2(350, 92)
-	top_resources.position = Vector2((size.x - 560) / 2 - 30, 14)
-	top_resources.size = Vector2(560, 76)
+	top_resources.position = Vector2((size.x - 700) / 2 - 40, 14)
+	top_resources.size = Vector2(700, 76)
 	dock.position = Vector2(8, size.y - 120)
 	dock.size = Vector2(size.x - 16, 112)
-	resident_card.position = Vector2(16, size.y - 306)
-	resident_card.size = Vector2(396, 172)
+	resident_card.position = Vector2(16, size.y - 434)
+	resident_card.size = Vector2(450, 300)
 	game.news_label.position = Vector2(270, 112)
 	game.news_label.size = Vector2(size.x - 540, 28)
 	game.news_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -454,14 +488,14 @@ func refresh() -> void:
 	continue_button.tooltip_text = game.save_status
 	_update_roster()
 	var idle := 0
-	var carrying := {"food": 0, "wood": 0, "fiber": 0}
+	var carrying := {"food": 0, "wood": 0, "fiber": 0, "water": 0}
 	for i in range(game.workers.size()):
 		var worker: Dictionary = game.workers[i]
 		if worker.patch < 0 and worker.carrying == 0 and worker.delivery.state == "idle": idle += 1
 		carrying[worker.kind] += worker.carrying
-		worker_rows[i].text = "Habitant %d · %s%s" % [i + 1, worker.delivery.description(), " (%d)" % worker.carrying if worker.carrying > 0 else ""]
+		worker_rows[i].text = "H%d · Énergie %d · %s%s" % [i + 1, roundi(worker.energy), worker.delivery.description(), " (%d)" % worker.carrying if worker.carrying > 0 else ""]
 	for key in resource_values:
-		resource_values[key].text = str(game.stock[key])
+		resource_values[key].text = str(game.stock.get(key, 0))
 	population.text = "%d habitants" % game.workers.size()
 	availability.text = "%d disponible%s" % [idle, "s" if idle != 1 else ""]
 	game.dock_buttons.people.tooltip_text = "%d habitant(s) disponible(s). Affectations [C]" % idle
@@ -477,12 +511,15 @@ func refresh() -> void:
 	if phase < 68: game.time_label.text = "Passage dans %d s" % ceili(68 - phase)
 	elif phase < 88: game.time_label.text = "Cachez-vous ! %d s" % ceili(88 - phase)
 	else: game.time_label.text = "Le calme est revenu"
-	if game.hunger > 0: game.time_label.text = "Famine : récoltez des miettes !"
-	var danger: bool = (phase >= 58 and phase < 88) or game.hunger > 0
+	var critical := 0
+	for worker in game.workers:
+		if minf(worker.nutrition, worker.hydration) < 15: critical += 1
+	if critical > 0 and not (phase >= 58 and phase < 88): game.time_label.text = "%d besoin(s) vital(aux) urgent(s)" % critical
+	var danger: bool = (phase >= 58 and phase < 88) or critical > 0
 	game.time_label.add_theme_color_override("font_color", Color("ffb18b") if danger else GOLD)
 	game.alert_bar.value = game.suspicion
 	game.alert_bar.tooltip_text = "Soupçons : %d / 100" % int(game.suspicion)
-	game.objective_label.text = "%s  Deux abris (%d/2)\n\n%s  Un atelier (%d/1)\n\n%s  35 miettes en réserve (%d/35)\n\n%s  Premier cycle traversé" % ["✓" if game.shelters >= 2 else "○", game.shelters, "✓" if game.workshops > 0 else "○", game.workshops, "✓" if game.stock.food >= 35 else "○", game.stock.food, "✓" if game.elapsed >= 100 else "○"]
+	game.objective_label.text = "Installer la vie quotidienne\n\n%d/%d lits terminés\n%d/%d couchages avec intimité\n\nRécolter, fabriquer, dormir, reprendre ses tâches. La colonie continue après le premier cycle." % [game.sleeping.ready_count(), game.workers.size(), game.sleeping.ready_count(true), game.workers.size()]
 	game.patch_picker.select(game.selected + 1)
 	# Compute first, then apply once: disabling a held button cancels its click.
 	var can_assign := false
@@ -505,12 +542,12 @@ func refresh() -> void:
 	game.assign_button.disabled = not can_assign
 	game.release_button.disabled = not can_release
 	work_label.text = "RÉCOLTE & TRANSPORT\n"
-	for key in ["food", "wood", "fiber"]:
+	for key in ["food", "wood", "fiber", "water"]:
 		var count := 0
 		for worker in game.workers:
 			if worker.patch >= 0 and game.patches[worker.patch].kind == key: count += 1
 		work_label.text += "\n%s : %d affecté(s) · %d en transport" % [game.NAMES[key], count, carrying[key]]
-	work_label.text += "\n\nBÂTIMENTS\n%d abri(s) · %d atelier(s)\n\n%s" % [game.shelters, game.workshops, "Rappel au refuge en cours." if game.hiding else "Les habitants suivent leurs affectations."]
+	work_label.text += "\n\nHABITAT\n%d lits prêts · %d chantier(s) · %d atelier(s)\n\n%s" % [game.sleeping.ready_count(), game.sleeping.beds.size() - game.sleeping.ready_count(), game.workshops, "Rappel au refuge en cours." if game.hiding else "Besoins autonomes, puis fabrication et récolte."]
 	routes_button.text = "Masquer le trajet [N]" if game.show_paths else "Afficher le trajet sélectionné [N]"
 	var blocked := 0
 	for worker in game.workers:
@@ -527,9 +564,9 @@ func refresh() -> void:
 	work_label.text += "\nREFUGE · %d/%d à l’abri · %d attendent la porte" % [sheltered, game.workers.size(), game.refuge.queue.size()]
 	if blocked > 0: work_label.text += "\n%d trajet(s) bloqué(s) : consultez les habitants." % blocked
 	stocks_label.text = "AU DÉPÔT          EN TRANSPORT\n"
-	for key in ["food", "wood", "fiber"]:
-		stocks_label.text += "\n%s : %d          +%d" % [game.NAMES[key], game.stock[key], carrying[key]]
-	stocks_label.text += "\n\nProchain repas dans %d s\nConsommation : %d miettes par repas" % [ceili(18.0 - game.meal_timer), game.workers.size()]
+	for key in ["food", "wood", "fiber", "water"]:
+		stocks_label.text += "\n%s : %d          +%d" % [game.NAMES[key], game.stock.get(key, 0), carrying[key]]
+	stocks_label.text += "\n\nChaque habitant mange et boit selon ses besoins.\nUne portion = 1 miette · Une boisson = 1 eau.\nSi une réserve est vide, les habitants cherchent une ressource accessible."
 	for kind in build_buttons:
 		var affordable: bool = not game.ended and not game.start_panel.visible
 		for key in game.COSTS[kind]:
@@ -540,6 +577,16 @@ func refresh() -> void:
 	var resident: Dictionary = game.workers[resident_index]
 	resident_name.text = "Habitant %d" % (resident_index + 1)
 	resident_task.text = resident.delivery.description()
+	var bed_index: int = game.sleeping.owned_bed(resident_index)
+	resident_needs.text = "%s · Confort %d · Intimité %d" % ["Sans lit" if bed_index < 0 else "Lit %d" % (bed_index + 1), int(resident.comfort), int(resident.privacy)]
+	for key in need_bars:
+		need_bars[key].bar.value = resident[key]
+		need_bars[key].value.text = str(roundi(resident[key]))
+		need_bars[key].bar.modulate = Color("ffae81") if resident[key] <= 35 else Color.WHITE
+		need_bars[key].bar.tooltip_text = "Besoin autonome : %d / 100" % roundi(resident[key])
+	resident_needs.add_theme_color_override("font_color", Color("a33825") if resident.energy <= 25 else MUTED)
+	rest_button.disabled = game.ended or game.pending_save or resident.sleep_requested or resident.delivery.state in ["sleep", "floor_sleep", "bed_enter", "bed_exit"]
+	_refresh_beds()
 	resident_cargo.text = "Charge : %d · %s" % [resident.carrying, game.NAMES[resident.kind]] if resident.carrying > 0 else (game.NAMES[game.patches[resident.patch].kind] if resident.patch >= 0 else "Sans affectation")
 	resident_recall.disabled = game.ended or (resident.patch < 0 and resident.carrying == 0 and (resident.delivery.inside_refuge or resident.delivery.state == "return_home"))
 	resident_assign.disabled = game.ended or game.hiding or resident.patch >= 0 or resident.carrying > 0 or resident.delivery.state != "idle"
@@ -548,9 +595,39 @@ func refresh() -> void:
 	for i in range(game.patches.size()):
 		var patch: Dictionary = game.patches[i]
 		game.patch_picker.set_item_disabled(i + 1, not patch.discovered)
-		if i == game.patches.size() - 1: game.patch_picker.set_item_text(i + 1, "Réserve de l’Est · Bois" if patch.discovered else "Réserve inexplorée")
+		if i == 6: game.patch_picker.set_item_text(i + 1, "Réserve de l’Est · Bois" if patch.discovered else "Réserve inexplorée")
 		patch.label.text = ("▸ " if i == game.selected else "") + game.NAMES[patch.kind] + " · %d" % patch.amount + (" · Palier" if patch.pos.y > 1 else "")
 		patch.label.modulate = Color("fff1c8") if i == game.selected else Color("eac37e")
+
+func _refresh_beds() -> void:
+	if bed_controls.size() != game.sleeping.beds.size():
+		for child in bed_list.get_children():
+			bed_list.remove_child(child)
+			child.queue_free()
+		bed_controls.clear()
+		for i in range(game.sleeping.beds.size()):
+			var index := i
+			var box := column(bed_list, 3)
+			var status := label(box, "", 17)
+			var actions := row(box, 8)
+			var owner := OptionButton.new()
+			owner.focus_mode = Control.FOCUS_NONE
+			owner.add_item("Lit libre")
+			for j in range(game.workers.size()): owner.add_item("Habitant %d" % (j + 1))
+			owner.item_selected.connect(func(value: int):
+				game.sleeping.assign(index, value - 1)
+				refresh())
+			actions.add_child(owner)
+			var cancel := button(actions, "Annuler", func(): game.sleeping.cancel_order(index); refresh(), "Annuler le chantier et récupérer ses matériaux")
+			bed_controls.append({"label": status, "owner": owner, "cancel": cancel})
+	for i in range(bed_controls.size()):
+		var controls := bed_controls[i]
+		var bed: Dictionary = game.sleeping.beds[i]
+		controls.label.text = "%s %d · %s" % ["Alcôve" if bed.private else "Lit", i + 1, "Terminé" if bed.built else "Fabrication %d %%" % int(100 * bed.work / bed.required)]
+		controls.owner.select(bed.owner + 1)
+		controls.owner.disabled = bed.occupant >= 0 or game.ended
+		controls.cancel.visible = not bed.built
+		controls.cancel.disabled = game.ended
 
 func ask_load() -> void:
 	game._refresh_save_state()

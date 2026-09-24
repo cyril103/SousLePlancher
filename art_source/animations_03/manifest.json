@@ -2,6 +2,48 @@
   "source": "art_source/reference_01/resident_reference.blend",
   "fps": 30,
   "clips": {
+    "eat": {
+      "frames": 60,
+      "loop": true,
+      "speed": 0,
+      "duration": 2.0,
+      "maximum_reach_clamp": 0
+    },
+    "drink": {
+      "frames": 60,
+      "loop": true,
+      "speed": 0,
+      "duration": 2.0,
+      "maximum_reach_clamp": 0
+    },
+    "sleep": {
+      "frames": 120,
+      "loop": true,
+      "speed": 0,
+      "duration": 4.0,
+      "maximum_reach_clamp": 0
+    },
+    "bed_enter": {
+      "frames": 54,
+      "loop": false,
+      "speed": 0,
+      "duration": 1.8,
+      "maximum_reach_clamp": 0
+    },
+    "bed_exit": {
+      "frames": 54,
+      "loop": false,
+      "speed": 0,
+      "duration": 1.8,
+      "maximum_reach_clamp": 0
+    },
+    "floor_rest": {
+      "frames": 120,
+      "loop": true,
+      "speed": 0,
+      "duration": 4.0,
+      "maximum_reach_clamp": 0
+    },
     "idle": {
       "frames": 120,
       "loop": true,

@@ -25,6 +25,9 @@ static func age_materials(node: Node) -> void:
 		for surface in range(node.mesh.get_surface_count()):
 			var source := node.mesh.surface_get_material(surface) as StandardMaterial3D
 			if source == null: continue
+			# Authored PBR assets already contain wear, print and fabric detail.
+			# The prototype weather shader has no texture inputs and would erase them.
+			if source.albedo_texture != null: continue
 			if "soie" in source.resource_name.to_lower():
 				node.set_surface_override_material(surface, cached_material("cobweb", COBWEB))
 				node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

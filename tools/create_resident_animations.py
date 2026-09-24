@@ -261,7 +261,45 @@ def descent_pose(clip,t):
         transition_pose('climb_exit' if clip=='descend_enter' else 'climb_enter',1-t)
 
 
+def sleep_pose(clip,t):
+    # Root motion starts at the unobstructed foot of the bed (Godot Z +1.7).
+    # The gameplay controller owns the bed origin throughout these transitions.
+    pose('idle',0)
+    if clip=='floor_rest':
+        rig.pose.bones['root'].matrix=Matrix.Translation((0,0,-.42)) @ REST['root']
+        update()
+        for s,side in [(-1,'L'),(1,'R')]:
+            solve_limb(side+'_thigh',side+'_shin',(s*.14,-.05,.30),(s*.16,-1,.25),clip)
+            orient_bone(side+'_foot',REST[side+'_foot'].to_quaternion())
+            solve_limb(side+'_upper_arm',side+'_forearm',(s*.14,-.21,.52),(s*.6,-.2,.68),clip)
+        rig.pose.bones['root'].matrix=Matrix.Translation((0,-.55,.29)) @ Matrix.Rotation(-math.pi/2,4,'X') @ rig.pose.bones['root'].matrix
+        update()
+        return
+    u=smooth(t) if clip=='bed_enter' else 1-smooth(t) if clip=='bed_exit' else 1
+    for s,side in [(-1,'L'),(1,'R')]:
+        solve_limb(side+'_upper_arm',side+'_forearm',(s*.14,-.21,.9),(s*.48,.05,.88),clip)
+    root=Matrix.Translation((0,-(1.7-.9*u),.57*u+.003*math.sin(t*2*math.pi)*u))
+    rig.pose.bones['root'].matrix=root @ Matrix.Rotation(-math.pi/2*u,4,'X') @ REST['root']
+    update()
+
+
+def consume_pose(clip,t):
+    pose('idle',0)
+    lift=math.sin(math.pi*t)**2
+    wrist=(.23-.16*lift,-.23+.025*lift,1.02+.33*lift)
+    solve_limb('R_upper_arm','R_forearm',wrist,(.46,-.1,1.06),clip)
+    orient_bone('R_hand',REST['R_hand'].to_quaternion())
+    orient_bone('head',Quaternion((1,0,0),.06*lift) @ REST['head'].to_quaternion())
+    update()
+
+
 CLIPS={
+    'eat':{'frames':60,'loop':True,'speed':0},
+    'drink':{'frames':60,'loop':True,'speed':0},
+    'sleep':{'frames':120,'loop':True,'speed':0},
+    'bed_enter':{'frames':54,'loop':False,'speed':0},
+    'bed_exit':{'frames':54,'loop':False,'speed':0},
+    'floor_rest':{'frames':120,'loop':True,'speed':0},
     'idle':{'frames':120,'loop':True,'speed':0},
     'walk':{'frames':36,'loop':True,'speed':.4/(.60*1.2),'stance':.60,'distance_per_cycle':.4/.60},
     'carry_walk':{'frames':42,'loop':True,'speed':.34/(.66*1.4),'stance':.66,'distance_per_cycle':.34/.66},
@@ -283,7 +321,11 @@ for clip,info in CLIPS.items():
     for frame in range(info['frames']+1):
         rig.animation_data.action=None
         scene.frame_set(frame)
-        if clip.startswith('carry_turn_'):
+        if clip in ['eat','drink']:
+            consume_pose(clip,frame/info['frames'])
+        elif clip in ['sleep','bed_enter','bed_exit','floor_rest']:
+            sleep_pose(clip,frame/info['frames'])
+        elif clip.startswith('carry_turn_'):
             pivot_pose(clip,frame/info['frames'])
         elif clip in ['climb_down','descend_enter','descend_exit']:
             descent_pose(clip,frame/info['frames'])

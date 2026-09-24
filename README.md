@@ -13,13 +13,17 @@ La barre d'icônes en bas donne accès aux constructions, affectations, objectif
 **B** ouvre les constructions, **C** les affectations, **O** les objectifs. Un clic sur un gisement ouvre directement ses affectations ; le menu déroulant permet aussi de choisir un autre gisement. Le nombre sur l'icône des habitants indique ceux sans tâche.
 
 - Cliquer sur un gisement, puis « Affecter un habitant ». Il récolte et rapporte automatiquement ses ressources au refuge.
-- Construire un abri (8 bois, 4 fibres) pour accueillir un habitant supplémentaire ; l'affecter à une tâche.
+- Faire fabriquer un lit (4 bois, 3 fibres) ou une alcôve individuelle avec cloisons (6 bois, 5 fibres). Les habitants y récupèrent leur énergie ; aucun nouvel habitant n’apparaît à la construction.
 - Construire un atelier (10 bois, 6 fibres) pour améliorer tous les transports.
 - Avant le passage humain, appuyer sur H pour rappeler les habitants. Appuyer à nouveau après le danger pour reprendre les tâches.
-- Objectif : deux abris, un atelier, au moins 35 miettes et un premier cycle de 100 secondes traversé.
-- La colonie consomme une miette par habitant toutes les 18 secondes. Une famine continue de 35 secondes ou des soupçons à 100 terminent la partie.
+- Développer les couchages et maintenir les réserves. La partie continue après le premier cycle, sans l’ancienne victoire automatique.
+- Les habitants mangent et boivent selon leurs jauges individuelles, et collectent une ressource accessible si le dépôt est vide. Les besoins critiques ralentissent les déplacements. Des soupçons à 100 terminent la partie.
 
-Caméra : flèches ou ZQSD sur clavier français (WASD physique), molette pour zoomer, bouton central maintenu pour tourner. Espace : pause. 1/2 : construction. Échap/clic droit : annuler. R : recommencer.
+Caméra : flèches ou ZQSD sur clavier français (WASD physique), molette pour zoomer, bouton central maintenu pour tourner. Espace : pause. 1 : lit ; 2 : atelier ; 3 : alcôve. Échap/clic droit : annuler. R : recommencer.
+
+Le **lot 12** introduit le sommeil, les propriétaires de lits, la fabrication et l’intimité. Voir [le détail du lot](docs/conception/gameplay-lot-12.md). `-- --demo-sleep` prépare deux couchages occupés et un chantier ; Espace reprend la démo. **Couchages** gère les propriétaires et les annulations de travaux, **Se reposer** déclenche un repos anticipé. F5 sauvegarde après rappel au refuge ; F9 recharge. Les besoins et les chantiers sont conservés, et les anciennes sauvegardes restent lisibles.
+
+Le **lot 13** ajoute les besoins autonomes de faim et de soif au sommeil : trois jauges individuelles, repas et boissons au refuge, collecte d’urgence de nourriture et d’eau, réveil en cas de besoin critique. La démo `-- --demo-needs` montre ces comportements. Voir [les règles et limites](docs/conception/gameplay-lot-13.md).
 
 ## Assets Blender
 
@@ -51,7 +55,7 @@ Le décor comporte un bord de plancher supérieur en coupe, des poutres, des fon
 & 'D:\Program\blender2.93\blender.exe' --background --python tools/create_atmosphere.py
 ```
 
-`scripts/atmosphere.gd` gère la lumière ambiante faible, trois ouvertures de lumière, la poussière en suspension et les torches animées. Chaque bâtiment construit reçoit une torche. Le passage des humains atténue momentanément l'éclairage venant du dessus.
+`scripts/atmosphere.gd` gère la lumière ambiante faible, trois ouvertures de lumière, la poussière en suspension et les torches animées. Les bâtiments anciens reçoivent une torche ; les lits et cloisons n’en ajoutent pas. Le passage des humains atténue momentanément l'éclairage venant du dessus.
 
 Les shaders de `shaders/` produisent l'usure et la saleté du bois, les rais de lumière, les flammes et la poussière. Le plafond est ouvert au-dessus de la zone jouable pour conserver la visibilité. Les faisceaux utilisent une intégration volumétrique locale de 24 échantillons par pixel, limitée par la profondeur de la scène. Leur densité varie avec un bruit 3D lent ; chaque ouverture possède sa largeur, son inclinaison, sa diffusion et son intensité. Les anciens plans croisés et bandes lumineuses au sol sont supprimés. Le rendu reste compatible avec Compatibility.
 
@@ -66,11 +70,11 @@ Les effets visuels sont désactivés dans le moteur de rendu factice `--headless
 & 'D:\godot\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe' --headless --path . --script res://tests/smoke.gd
 ```
 
-Le test couvre récolte/livraison, affectation, coût et placement de construction, rappel, victoire après développement de la colonie et défaites par faim/détection. Le paramètre utilisateur `-- --capture` en mode graphique enregistre une capture de la scène dans `artifacts/prototype.png`.
+Le test couvre récolte/livraison, affectation, coût et placement de construction, rappel, poursuite de la colonie après les anciens objectifs et défaite par détection. `tests/sleep.gd` vérifie les lits, travaux et leur persistance ; `tests/needs.gd` vérifie les besoins autonomes, la consommation et la migration des sauvegardes. Le paramètre utilisateur `-- --capture` en mode graphique enregistre une capture de la scène dans `artifacts/prototype.png`.
 
 ## Périmètre
 
 Revue visuelle : lancer Godot avec `--script res://tests/visual_review.gd` pour enregistrer trois vues (ensemble, rotation, détail) et mesurer les intervalles de rendu. Mesure indicative sur la scène initiale : 16,61 ms de moyenne, 16,94 ms au 95e percentile, en 1920 × 1080 sur GTX 1650 avec synchronisation verticale. Cette mesure ne couvre pas une colonie développée.
 
-Première boucle jouable, graphismes stylisés de prototype, habitants avec animation squelettique et livraisons suivies. Les déplacements restent directs, sans évitement des bâtiments. Pas encore de sauvegarde, d'audio ni de grands humains modélisés ; leur présence est simulée par un cycle et une jauge de soupçons. Prochaines étapes : navigation, accès verticaux, silhouettes/ombres et bruits humains, progression de la colonie, menus et sauvegardes.
+Prototype jouable : habitants animés, livraisons, navigation autour des bâtiments, accès verticaux, exploration d’une réserve, sauvegarde au refuge et premiers besoins de sommeil. Le cahier des charges complet reste à développer. Pas encore d’audio ni de grands humains modélisés ; leur présence est simulée par un cycle et une jauge de soupçons. Les horaires, métiers, pièces modulaires, chaînes de production et territoires procéduraux restent des étapes futures.
 
