@@ -27,7 +27,9 @@ Le **lot 13** ajoute les besoins autonomes de faim et de soif au sommeil : trois
 
 ## Suite de production
 
-Le **lot 16**, validé par le joueur, ajoute les torches individuelles : fabrication à l’atelier après livraison de 2 bois et 1 fibre, équipement, destination au sol, combustible et retour anticipé. **Travaux → Torches et éclaireurs** gère ces actions. Démo en pause : `-- --demo-torches`, puis **Espace**. Torche en main : ni caisse ni échelle. Voir [les règles, essais et limites](docs/conception/gameplay-lot-16.md).
+Le **lot 17**, validé par le joueur, ajoute la lanterne de ceinture : 4 bois, 3 fibres, 16 secondes de fabrication et 180 secondes d’autonomie. Elle libère les mains pour l’échelle et les caisses. Démo : `-- --demo-lanterns`, puis **Espace** pour explorer la réserve. Après le retour, **Équiper**, puis **Rapporter du bois** teste une livraison éclairée avec la seconde lanterne. Voir [les règles et limites](docs/conception/gameplay-lot-17.md).
+
+Le **lot 16**, validé par le joueur, ajoute les torches individuelles : fabrication à l’atelier après livraison de 2 bois et 1 fibre, équipement, destination au sol, combustible et retour anticipé. **Travaux → Éclairage et éclaireurs** gère ces actions. Démo en pause : `-- --demo-torches`, puis **Espace**. Torche en main : ni caisse ni échelle. Voir [les règles, essais et limites](docs/conception/gameplay-lot-16.md).
 
 Le **lot 15**, validé par le joueur, ajoute les dépôts locaux : 12 places par casier, filtres, réservations de capacité, approvisionnement des lits et repas sur place. Le refuge possède son propre stock et le bandeau affiche le total de la colonie. Démo en pause : `-- --demo-depots`. Cliquer sur le casier pour le gérer ; **Espace** reprend. Le placement du casier reste provisoirement gratuit et instantané. Voir [le détail et les limites](docs/conception/gameplay-lot-15.md).
 

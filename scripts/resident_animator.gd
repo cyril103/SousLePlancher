@@ -16,6 +16,10 @@ var torch_light: OmniLight3D
 var torch_flame: MeshInstance3D
 var torch_material: ShaderMaterial
 var torch_sparks: Array[MeshInstance3D] = []
+var lantern: Node3D
+var lantern_light: OmniLight3D
+var lantern_flame: MeshInstance3D
+var lantern_material: ShaderMaterial
 var current := "idle"
 
 func _ready() -> void:
@@ -80,6 +84,35 @@ func _ready() -> void:
 		torch.add_child(ember)
 		ember.hide()
 		torch_sparks.append(ember)
+	lantern = attach("hips", "res://assets/models/lanterns_17/belt_lantern.glb")
+	lantern.position = Vector3(-.245, .10, -.16)
+	lantern.hide()
+	# Mica and shell must not shadow the lamp from inside its own casing.
+	for part in lantern.find_children("*", "MeshInstance3D", true, false):
+		part.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	lantern_flame = MeshInstance3D.new()
+	var lantern_mesh := SphereMesh.new()
+	lantern_mesh.radius = .018
+	lantern_mesh.height = .065
+	lantern_mesh.radial_segments = 12
+	lantern_mesh.rings = 6
+	lantern_flame.mesh = lantern_mesh
+	lantern_flame.position.y = -.19
+	lantern_flame.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	lantern_material = ShaderMaterial.new()
+	lantern_material.shader = preload("res://shaders/carried_flame.gdshader")
+	lantern_flame.material_override = lantern_material
+	lantern.add_child(lantern_flame)
+	lantern_flame.hide()
+	lantern_light = OmniLight3D.new()
+	lantern_light.position.y = -.19
+	lantern_light.light_color = Color("ffd294")
+	lantern_light.omni_range = 4.5
+	lantern_light.omni_attenuation = 1.3
+	lantern_light.shadow_enabled = true
+	lantern_light.shadow_bias = .03
+	lantern.add_child(lantern_light)
+	lantern_light.hide()
 	set_action("idle", 0.0)
 
 func attach(bone: String, path: String) -> Node3D:

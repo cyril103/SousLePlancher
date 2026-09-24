@@ -4,7 +4,7 @@ Révision du 24 septembre 2026. Base publiée : `3d1c9a3`, lots 12–13. **Étap
 
 Ce plan complète le [cahier des charges](cahier-des-charges.md) et applique les [décisions de l'entretien](retours-et-decisions.md). Les jalons J0–J7 désignent des objectifs de produit ; les étapes ci-dessous sont les livraisons successives, plus petites. Les nombres proposés restent ajustables après essai.
 
-**Suivi :** étape 1 publiée dans `058345b`. Étape 2 validée et publiée dans `de71c70` ([lot 14](gameplay-lot-14.md)). Étape 3 validée et publiée dans `930dfb3` ([lot 15](gameplay-lot-15.md)). Étape 4 validée dans le [lot 16](gameplay-lot-16.md), publication autorisée. La lanterne de ceinture est approuvée comme prochaine démonstration (4 bis). Les étapes 4 bis et 5 et suivantes ne sont pas commencées.
+**Suivi :** étape 1 publiée dans `058345b`. Étape 2 validée et publiée dans `de71c70` ([lot 14](gameplay-lot-14.md)). Étape 3 validée et publiée dans `930dfb3` ([lot 15](gameplay-lot-15.md)). Étape 4 validée et publiée dans `7c81e89` ([lot 16](gameplay-lot-16.md)). Étape 4 bis validée par le joueur dans le [lot 17](gameplay-lot-17.md), publication autorisée. Les étapes 5 et suivantes ne sont pas commencées.
 
 ## Notre fonctionnement
 
@@ -86,7 +86,7 @@ Les torches et la première liaison arrivent avant l'extension de l'habitat : el
 
 **Décision validée après essai du lot 16.** La torche reste réservée aux parcours sans échelle. Une lanterne fermée fixée à la ceinture permettra de garder les deux mains libres. Elle se fabrique à l’atelier et conserve une autonomie surveillée, avec refus de départ impossible et retour anticipé. Coût et durée seront proposés avec la démonstration.
 
-**Démonstration suivante.** Fabriquer et équiper une lanterne, cliquer la réserve à l’étage, monter l’échelle, traverser la passerelle puis rentrer. Vérifier ensuite le port d’une caisse avec la lanterne, les besoins, le rappel et la sauvegarde. Contrôler dans Blender et Godot les attaches, les barreaux, les vêtements et le sac pendant les animations. L’éclairage fixe construit viendra ensuite pour les trajets réguliers. Cette étape n’est pas encore implémentée et demandera sa propre validation avant publication.
+**Démonstration suivante.** Fabriquer et équiper une lanterne, cliquer la réserve à l’étage, monter l’échelle, traverser la passerelle puis rentrer. Vérifier ensuite le port d’une caisse avec la lanterne, les besoins, le rappel et la sauvegarde. Contrôler dans Blender et Godot les attaches, les barreaux, les vêtements et le sac pendant les animations. L’éclairage fixe construit viendra ensuite pour les trajets réguliers. Cette étape est implémentée et validée par le joueur ; publication autorisée. Proposition : 4 bois + 3 fibres, 16 s de travail, 180 s d’autonomie et 24 s de marge. La démonstration inclut un aller-retour de reconnaissance puis une caisse récoltée et livrée avec lanterne ; les trajets réguliers restent une étape ultérieure.
 
 ## 5 — Une fissure qui devient un passage
 

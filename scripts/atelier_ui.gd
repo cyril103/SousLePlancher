@@ -47,6 +47,10 @@ var torch_summary: Label
 var torch_fuel: ProgressBar
 var torch_equip: Button
 var torch_depart: Button
+var light_kind: OptionButton
+var light_recipe: Label
+var lantern_east: Button
+var lantern_haul: Button
 var depot_picker: OptionButton
 var depot_summary: Label
 var depot_filters: Dictionary = {}
@@ -338,7 +342,7 @@ func _make_trays() -> void:
 	wrapped(people, "Cliquez sur un habitant pour l’inspecter. [H] rappelle toute la colonie en conservant ses tâches.", 16, MUTED)
 	var work := tray("work", "Travaux en cours")
 	button(work, "Chantiers et attribution des lits", func(): game._show_tray("beds"))
-	button(work, "Torches et éclaireurs", func(): game._show_tray("torches"))
+	button(work, "Éclairage et éclaireurs", func(): game._show_tray("torches"))
 	_make_torches()
 	var work_scroll := ScrollContainer.new()
 	work_scroll.custom_minimum_size.y = 225
@@ -569,7 +573,7 @@ func refresh() -> void:
 	if assignment_target >= 0:
 		var target: Dictionary = game.workers[assignment_target]
 		game.assign_button.text = "Affecter n° %d" % (assignment_target + 1)
-		can_assign = can_assign and target.patch < 0 and target.carrying == 0 and target.delivery.state == "idle"
+		can_assign = game.selected >= 0 and game.patches[game.selected].discovered and game.patches[game.selected].amount > 0 and not game.ended and not game.hiding and target.patch < 0 and target.carrying == 0 and target.delivery.state == "idle" and (not game.torches.occupied(assignment_target) or game.torches.can_haul(assignment_target))
 	else:
 		game.assign_button.text = "+ Affecter"
 	game.assign_button.disabled = not can_assign
@@ -625,7 +629,8 @@ func refresh() -> void:
 
 	resident_cargo.text = "Charge : %d · %s" % [resident.carrying, game.NAMES[resident.kind]] if resident.carrying > 0 else (game.NAMES[game.patches[resident.patch].kind] if resident.patch >= 0 else "Sans affectation")
 	resident_recall.disabled = game.ended or (resident.patch < 0 and resident.carrying == 0 and (resident.delivery.inside_refuge or resident.delivery.state == "return_home"))
-	resident_assign.disabled = game.ended or game.hiding or resident.patch >= 0 or resident.carrying > 0 or resident.delivery.state != "idle" or game.torches.occupied(resident_index)
+	resident_assign.disabled = game.ended or game.hiding or resident.patch >= 0 or resident.carrying > 0 or resident.delivery.state != "idle" or (game.torches.occupied(resident_index) and not game.torches.can_haul(resident_index))
+	resident_assign.tooltip_text = "Rapporter une seule caisse avec la lanterne, puis rentrer au refuge" if game.torches.can_haul(resident_index) else "Choisir un gisement à récolter"
 	resident_card.visible = game.active_tray == "" and not game.start_panel.visible and not game.ended and game.build_mode == ""
 	modal_shade.visible = game.start_panel.visible or game.end_panel.visible or load_panel.visible
 	for i in range(game.patches.size()):
@@ -701,9 +706,16 @@ func cancel_load() -> void:
 	refresh()
 
 func _make_torches() -> void:
-	var box := tray("torches", "Torches & éclaireurs")
-	wrapped(box, "2 bois · 1 fibre · 8 s à l’atelier\n90 s d’autonomie · retour avec 12 s de marge", 16)
-	button(box, "Fabriquer une torche", func(): game.torches.request_craft(); refresh())
+	var box := tray("torches", "Éclairage & éclaireurs")
+	light_recipe = wrapped(box, "", 16)
+	var recipe_row := row(box)
+	light_kind = OptionButton.new()
+	light_kind.add_item("Torche à main")
+	light_kind.add_item("Lanterne de ceinture")
+	light_kind.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	recipe_row.add_child(light_kind)
+	light_kind.item_selected.connect(func(_index: int): refresh())
+	button(recipe_row, "Fabriquer", func(): game.torches.request_craft(selected_light()); refresh())
 	torch_picker = OptionButton.new()
 	box.add_child(torch_picker)
 	torch_picker.item_selected.connect(func(index: int): resident_index = index; refresh())
@@ -724,16 +736,22 @@ func _make_torches() -> void:
 	torch_fuel.add_theme_stylebox_override("fill", fuel_fill)
 	fuel_row.add_child(torch_fuel)
 	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size.y = 145
+	scroll.custom_minimum_size.y = 100
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	box.add_child(scroll)
 	torch_summary = wrapped(scroll, "", 16)
 	torch_summary.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var actions := row(box)
-	torch_equip = button(actions, "Équiper", func(): game.torches.equip(resident_index); refresh())
+	torch_equip = button(actions, "Équiper", func(): game.torches.equip(resident_index, selected_light()); refresh())
 	torch_depart = button(actions, "Destination…", func(): game.torches.choose_target(resident_index))
+	var reserve_actions := row(box)
+	lantern_east = button(reserve_actions, "Réserve Est", func(): game.torches.depart(resident_index, game.Bridge.SCOUT_POINT); refresh())
+	lantern_haul = button(reserve_actions, "Rapporter du bois", func(): game.torches.start_haul(resident_index, 6); refresh())
 	button(box, "Rappeler / ranger au refuge", func(): game.torches.recall(game.workers[resident_index].delivery); refresh())
-	wrapped(box, "Torche en main : ni caisse, ni échelle. Une torche épuisée se remplace par une nouvelle fabrication. Les besoins interrompent la sortie.", 15)
+	wrapped(box, "Lanterne : échelle et caisse autorisées. Torche : sol uniquement, mains occupées. Retour automatique selon les besoins et le combustible.", 15)
+
+func selected_light() -> String:
+	return "lantern" if light_kind.selected == 1 else "torch"
 
 func _refresh_torches() -> void:
 	if torch_picker == null: return
@@ -742,19 +760,27 @@ func _refresh_torches() -> void:
 		for i in range(game.workers.size()): torch_picker.add_item("Habitant %d" % (i + 1))
 	torch_picker.select(resident_index)
 	var c: WorkerDelivery = game.workers[resident_index].delivery
+	var kind := selected_light()
+	var cost: Dictionary = game.torches.RECIPES[kind]
+	light_recipe.text = "%d bois · %d fibres · %.0f s à l’atelier\n%.0f s d’autonomie · %.0f s de marge de retour" % [cost.wood, cost.fiber, game.torches.WORK[kind], game.torches.CAPACITIES[kind], 24.0 if kind == "lantern" else 12.0]
 	var index: int = game.torches.held(resident_index)
 	var usable := 0
 	var empty := 0
 	for item in game.torches.items:
+		if item.kind != kind: continue
 		if item.fuel <= 0: empty += 1
 		elif item.owner < 0 and item.reserved < 0: usable += 1
+	torch_fuel.max_value = game.torches.CAPACITIES[game.torches.items[index].kind if index >= 0 else kind]
 	torch_fuel.value = game.torches.items[index].fuel if index >= 0 else 0
-	torch_summary.text = "%d torche(s) rangée(s) utilisable(s) · %d épuisée(s)\n%s" % [usable, empty, c.description()]
+	torch_summary.text = "%s : %d disponible(s) · %d épuisé(s)\n%s" % [game.torches.NAMES[kind], usable, empty, c.description()]
 	if index >= 0:
 		var item: Dictionary = game.torches.items[index]
-		torch_summary.text += "\n%s · %.1f / 90 s" % ["Allumée" if item.lit else "Équipée, éteinte", item.fuel]
+		torch_summary.text += "\n%s %s · %.1f / %.0f s" % [game.torches.NAMES[item.kind], "allumée" if item.lit else "éteinte", item.fuel, game.torches.CAPACITIES[item.kind]]
 	for order in game.torches.orders:
 		if order.built: continue
-		torch_summary.text += "\nAtelier : bois %d/2 · fibres %d/1 · %.0f %%" % [order.materials.wood, order.materials.fiber, order.work / order.required * 100]
+		var recipe: Dictionary = game.torches.RECIPES[order.kind]
+		torch_summary.text += "\n%s : bois %d/%d · fibres %d/%d · %.0f %%" % [game.torches.NAMES[order.kind], order.materials.wood, recipe.wood, order.materials.fiber, recipe.fiber, order.work / order.required * 100]
 	torch_equip.disabled = game.torches.occupied(resident_index) or usable == 0 or game.hiding
 	torch_depart.disabled = not game.torches.missions.has(resident_index) or game.torches.missions[resident_index].phase != "ready"
+	lantern_east.disabled = not game.torches.can_haul(resident_index) or game.hiding
+	lantern_haul.disabled = lantern_east.disabled or not game.east_discovered

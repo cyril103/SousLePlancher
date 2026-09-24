@@ -78,7 +78,7 @@ func setup(world: Node3D, data: Dictionary, index: int, transactions: DeliveryLe
 	destination_position = game.HOME + Vector3(1.6, GROUND_Y, 0.25)
 
 func pose(clip: String, time: float) -> void:
-	if game.torches.held(owner) >= 0 and clip in ["idle", "walk"]: clip = "torch_" + clip
+	if game.torches.hands_occupied(owner) and clip in ["idle", "walk"]: clip = "torch_" + clip
 	if actor.current != clip: actor.set_action(clip, 0.0)
 	actor.player.seek(time, true)
 	actor.player.advance(0)
@@ -97,8 +97,8 @@ func change(next: String) -> void:
 	route_revision = -1
 	retry_time = 0.0
 
-func cancel() -> void:
-	if game.torches.recall(self):
+func cancel(skip_light: bool = false) -> void:
+	if not skip_light and game.torches.recall(self):
 		if door_active: recall_after_door = true
 		return
 	# A ration already withdrawn is consumed once; recall cannot duplicate or discard it.

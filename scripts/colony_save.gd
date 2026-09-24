@@ -1,6 +1,6 @@
 extends RefCounted
 ## Plain, versioned data only. Transient jobs must settle before capture.
-const VERSION := 6
+const VERSION := 7
 const DEFAULT_PATH := "user://saves/colony_v1.json"
 const KINDS := ["food", "food", "wood", "wood", "fiber", "fiber", "wood", "water"]
 
@@ -143,11 +143,21 @@ static func validate(data: Variant) -> String:
 		var active_orders: Array = []
 		for site in data.torches.orders:
 			if not fields(site, ["pos", "materials", "work"]) or not valid_vector(site.pos) or not site.pos in locations or site.pos in active_orders: return "Atelier de torche invalide."
+			if data.version >= 7 and not site.has("kind"): return "Type d’éclairage manquant."
+			var kind = site.get("kind", "torch")
+			if not kind is String or not kind in ["torch", "lantern"] or (data.version < 7 and kind != "torch"): return "Type d’éclairage invalide."
+			var wood := 4 if kind == "lantern" else 2
+			var fiber := 3 if kind == "lantern" else 1
+			var duration := 16.0 if kind == "lantern" else 8.0
 			active_orders.append(site.pos)
-			if not fields(site.materials, ["wood", "fiber"]) or not number(site.materials.wood, 0, 2, true) or not number(site.materials.fiber, 0, 1, true) or not number(site.work, 0, 7.999999): return "Fabrication de torche invalide."
-			if site.work > 0 and (site.materials.wood != 2 or site.materials.fiber != 1): return "Torche fabriquée sans matériaux."
+			if not fields(site.materials, ["wood", "fiber"]) or not number(site.materials.wood, 0, wood, true) or not number(site.materials.fiber, 0, fiber, true) or not number(site.work, 0, duration - .000001): return "Fabrication d’éclairage invalide."
+			if site.work > 0 and (site.materials.wood != wood or site.materials.fiber != fiber): return "Éclairage fabriqué sans matériaux."
 		for item in data.torches.items:
-			if not fields(item, ["pos", "fuel"]) or not valid_vector(item.pos) or not number(item.fuel, 0, 90): return "Combustible invalide."
+			if not fields(item, ["pos", "fuel"]) or not valid_vector(item.pos): return "Éclairage incomplet."
+			if data.version >= 7 and not item.has("kind"): return "Type d’éclairage manquant."
+			var kind = item.get("kind", "torch")
+			if not kind is String or not kind in ["torch", "lantern"] or (data.version < 7 and kind != "torch"): return "Type d’éclairage invalide."
+			if not number(item.fuel, 0, 180 if kind == "lantern" else 90): return "Combustible invalide."
 			var valid_place := Vector3(item.pos[0], item.pos[1], item.pos[2]).is_equal_approx(Vector3(-1.4, -.0105, 1.25))
 			for pos in locations:
 				if Vector3(item.pos[0], item.pos[1], item.pos[2]).is_equal_approx(Vector3(pos[0], -.0105, pos[2] + 1.15)): valid_place = true

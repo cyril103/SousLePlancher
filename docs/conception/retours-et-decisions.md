@@ -118,3 +118,6 @@ La version 0.2 devra harmoniser les chapitres, les statistiques provisoires, les
 
 
 **Lot 16 — torches individuelles validé.** Le joueur autorise cette étape par « ok c’est parti », après publication du lot 15 (`930dfb3`). Fabrication avec livraisons à l’atelier, équipement, autonomie, sortie au sol, rappel et assistance à un éclaireur en panne, sauvegarde v6. Voir `gameplay-lot-16.md`. Après essai et correction du clic à l’étage, le joueur confirme « ok je valide ». Publication du lot autorisée selon le fonctionnement convenu. Il approuve aussi la progression torche à main → lanterne de ceinture → éclairage fixe. La lanterne constitue la prochaine étape 4 bis, à réaliser et à présenter séparément.
+
+
+**Lot 17 — lanterne de ceinture validée.** Le joueur engage la suite par « ok passe à la suite ». Source Blender, éclairage porté, reconnaissance à l’étage et récolte d’une caisse avec mains libres. Recette proposée : 4 bois + 3 fibres, 16 s d’assemblage, 180 s d’autonomie. Sauvegarde v7 compatible avec les anciennes torches. Après la démonstration, le joueur confirme « je valide ». Commit et push autorisés selon le fonctionnement convenu. Voir `gameplay-lot-17.md`.

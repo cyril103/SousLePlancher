@@ -194,6 +194,7 @@ func _ready() -> void:
 	if "--demo-construction" in OS.get_cmdline_user_args(): prepare_construction_demo()
 	if "--demo-depots" in OS.get_cmdline_user_args(): prepare_depots_demo()
 	if "--demo-torches" in OS.get_cmdline_user_args(): prepare_torches_demo()
+	if "--demo-lanterns" in OS.get_cmdline_user_args(): prepare_lanterns_demo()
 	if "--demo-needs" in OS.get_cmdline_user_args(): prepare_needs_demo()
 
 func prepare_needs_demo() -> void:
@@ -597,8 +598,9 @@ func assign_worker(worker_index: int = -1) -> bool:
 	for i in range(workers.size()):
 		if worker_index >= 0 and i != worker_index: continue
 		if torches.occupied(i):
+			if worker_index >= 0 and torches.can_haul(i): return torches.start_haul(i, selected)
 			if worker_index >= 0:
-				_news("Torche en main : rentrez la ranger avant de porter une caisse.")
+				_news("Éclairage déjà engagé : terminez le trajet ou rappelez l’habitant avant une nouvelle affectation.")
 				return false
 			continue
 		var worker := workers[i]
@@ -1016,3 +1018,36 @@ func prepare_torches_demo() -> void:
 	_update_camera()
 	_refresh_ui()
 	_news("Démo torches : Espace lance la sortie. H rappelle tout le monde. Travaux → Torches pour fabriquer et équiper.")
+
+func prepare_lanterns_demo() -> void:
+	get_window().title = "Sous le plancher — Lanterne de ceinture (démo)"
+	start_panel.hide()
+	stock.wood = 28
+	stock.fiber = 16
+	depots.sites[0].capacity = 128
+	build_mode = "workshop"
+	_place_build(Vector3(0, 0, -3))
+	for count in range(2):
+		torches.request_craft("lantern")
+		for step in range(2200):
+			simulate(.05)
+			suspicion = 0
+			if torches.items.size() == count + 1 and construction.jobs.is_empty(): break
+	torches.equip(0, "lantern")
+	for step in range(800):
+		simulate(.05)
+		suspicion = 0
+		if torches.held(0) >= 0: break
+	torches.depart(0, Bridge.SCOUT_POINT)
+	elapsed = 0
+	event_index = -1
+	suspicion = 0
+	focus = Vector3(4, .5, -2)
+	zoom = 20
+	paused = true
+	hud.resident_index = 0
+	hud.light_kind.select(1)
+	_show_tray("torches")
+	_update_camera()
+	_refresh_ui()
+	_news("Espace : H1 explore l’étage. Après son retour, Équiper puis Rapporter du bois teste la caisse avec lanterne.")

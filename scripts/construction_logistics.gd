@@ -6,7 +6,7 @@ var recovery: Array[Dictionary] = []
 var next_id := 1
 
 func cost(bed: Dictionary) -> Dictionary:
-	if bed.get("torch_site", false): return game.torches.COST
+	if bed.get("torch_site", false): return game.torches.RECIPES[bed.get("kind", "torch")]
 	return game.COSTS["private_bed" if bed.private else "bed"]
 
 func sites() -> Array:

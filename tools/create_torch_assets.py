@@ -15,7 +15,7 @@ for i in range(13):
     z=.255+i*.009
     points=[(.043*math.cos(j*math.tau/20),.043*math.sin(j*math.tau/20),z+j*.0003) for j in range(21)]
     r.line('Bound cotton wick',points,.009,r.ivory)
-charcoal=r.material('Burnt cotton charcoal',(.035,.025,.016,1),.98)
+charcoal=r.material('Burnt cotton charcoal',(.035,.025,.016),.98)
 r.cube('Charred tip',(0,0,.375),(.065,.065,.04),charcoal,.012)
 r.save_asset('hand_torch')
 print('TORCH_ASSET_OK')
