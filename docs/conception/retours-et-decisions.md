@@ -78,6 +78,8 @@ La version 0.2 devra harmoniser les chapitres, les statistiques provisoires, les
 
 ## Validation de la reprise
 
+**Lot 11 — sauvegarde au refuge et reprise validées.** Suite engagée à la demande « on passe à la suite ». Point manuel après rappel et livraison, persistance de la colonie et des découvertes, validation au chargement et copie de secours. Voir `gameplay-lot-11.md`. Le joueur confirme « validé, tu peux commit pousser » après la démonstration ; publication autorisée.
+
 **Lot 10 — passerelle et reconnaissance validées.** Suite engagée à la demande « on passe à la suite ». Réserve orientale à découvrir, passage réservé, affectations après reconnaissance et livraisons par plusieurs accès. Voir `gameplay-lot-10.md`. Le joueur confirme « je valide et tu peux commit et pousser » après la démonstration ; publication autorisée.
 
 **Lot 09 — porte et intérieur du refuge validés.** Suite engagée à la demande « ok on passe à la suite ». Entrées et sorties réservées, six places intérieures, protection effective, reprise des tâches et vue en coupe. Voir `gameplay-lot-09.md`. Le joueur confirme « ok validé, commit et pousse » après la démonstration ; publication autorisée.

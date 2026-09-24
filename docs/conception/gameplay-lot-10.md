@@ -45,3 +45,5 @@ Cette zone est fixe et son pont est déjà installé. Il s’agit d’une premi�
 Les réservations protègent les accès étroits, mais l’évitement physique global entre piétons sur les plateformes reste à développer. La reconnaissance réutilise l’attente animée existante, sans clip spécifique de fouille ni sac d’expédition.
 
 Après retour : transformer les connexions en données réutilisables pour plusieurs zones, puis introduire une première découverte utile à la progression (matériau, outil ou savoir-faire). La sauvegarde des zones découvertes devra précéder l’exploration durable d’une carte plus grande.
+
+La persistance préalable à l’extension de la carte est traitée dans [le lot 11 — sauvegarde au refuge et reprise](gameplay-lot-11.md).

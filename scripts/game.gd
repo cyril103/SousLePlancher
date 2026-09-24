@@ -4,6 +4,7 @@ const Art = preload("res://scripts/world.gd")
 const Navigation = preload("res://scripts/ground_navigation.gd")
 const Ladder = preload("res://scripts/ladder_passage.gd")
 const Bridge = preload("res://scripts/bridge_passage.gd")
+const Save = preload("res://scripts/colony_save.gd")
 const Refuge = preload("res://scripts/refuge_access.gd")
 const HOME := Vector3(-3, 0, 1)
 const COSTS := {"shelter": {"wood": 8, "fiber": 4}, "workshop": {"wood": 10, "fiber": 6}}
@@ -11,6 +12,10 @@ const NAMES := {"food": "Miettes", "wood": "Bois", "fiber": "Fibres"}
 var stock := {"food": 24, "wood": 12, "fiber": 6}
 var patches: Array[Dictionary] = []
 var workers: Array[Dictionary] = []
+var save_path := Save.DEFAULT_PATH
+var pending_save := false
+var save_available := false
+var save_status := "Aucune sauvegarde."
 var delivery_ledger := DeliveryLedger.new()
 var buildings: Array[Dictionary] = []
 var camera: Camera3D
@@ -116,8 +121,10 @@ func _ready() -> void:
 	for i in range(4):
 		_add_worker()
 	_make_loading_stations()
+	_refresh_save_state()
 	_make_ui()
 	_refresh_ui()
+	if get_meta("restore_mode", false): return
 	if "--demo-deliveries" in OS.get_cmdline_user_args() or "--demo-navigation" in OS.get_cmdline_user_args():
 		start_panel.hide()
 		paused = false
@@ -186,6 +193,7 @@ func _add_worker() -> void:
 	var controller := WorkerDelivery.new()
 	workers[i].delivery = controller
 	controller.setup(self, workers[i], i, delivery_ledger)
+	if hiding: controller.change("return_home")
 
 func _make_loading_stations() -> void:
 	var controller: WorkerDelivery = workers[0].delivery
@@ -281,9 +289,14 @@ func ground_point(screen: Vector2) -> Variant:
 	return Plane(Vector3.UP, 0).intersects_ray(camera.project_ray_origin(screen), camera.project_ray_normal(screen))
 
 func _unhandled_input(event: InputEvent) -> void:
+	if hud.load_panel.visible:
+		if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE: hud.cancel_load()
+		return
 	if event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
 			KEY_F11: _toggle_fullscreen()
+			KEY_F5: request_checkpoint()
+			KEY_F9: hud.ask_load()
 			KEY_SPACE: _toggle_pause()
 			KEY_H: _toggle_hide()
 			KEY_ESCAPE: _cancel_build(); _show_tray("")
@@ -380,6 +393,7 @@ func _process(delta: float) -> void:
 			ghost.visible = _valid_site(ghost.position)
 	if not paused and not ended:
 		simulate(delta * speed)
+	_try_checkpoint()
 	_refresh_ui()
 	_update_routes(delta)
 
@@ -516,6 +530,9 @@ func _cancel_build() -> void:
 
 func _toggle_hide() -> void:
 	if ended or start_panel.visible: return
+	if hiding and pending_save:
+		pending_save = false
+		save_status = "Sauvegarde annulée par l’ordre de sortie."
 	hiding = not hiding
 	if hiding:
 		for worker in workers:
@@ -538,6 +555,10 @@ func _news(message: String) -> void:
 
 func _end(won: bool, message: String) -> void:
 	ended = true
+	if pending_save:
+		pending_save = false
+		save_status = "Partie terminée avant la sauvegarde ; le fichier précédent est conservé."
+		message += "\n\n" + save_status
 	_show_tray("")
 	_cancel_build()
 	end_label.text = ("LA MAISON DES PETITS" if won else "UNE COLONIE À RECONSTRUIRE") + "\n\n" + message
@@ -648,3 +669,110 @@ func discover_east() -> void:
 	east_stand.show()
 	east_label.text = "Réserve de l’Est"
 	_news("Réserve découverte : un gisement de bois est disponible dans les affectations.")
+
+func _refresh_save_state() -> void:
+	var result := Save.read_checkpoint(save_path)
+	save_available = result.ok
+	if result.ok:
+		save_status = ("Copie de secours : " if result.backup else "Sauvegarde : ") + result.data.saved_at.replace("T", " · ")
+	elif FileAccess.file_exists(save_path): save_status = result.error
+
+func request_checkpoint() -> bool:
+	if ended or start_panel.visible or pending_save: return false
+	pending_save = true
+	_cancel_build()
+	if not hiding: _toggle_hide()
+	save_status = "Rappel et livraisons en cours avant sauvegarde."
+	_news(save_status + (" Reprenez avec Espace pour laisser rentrer les habitants." if paused else ""))
+	_try_checkpoint()
+	return true
+
+func cancel_checkpoint() -> void:
+	pending_save = false
+	save_status = "Sauvegarde annulée. Le rappel au refuge reste actif."
+	_news(save_status)
+
+func checkpoint_ready() -> bool:
+	if ended or not hiding or not delivery_ledger.jobs.is_empty() or delivery_ledger.destination_owner != -1: return false
+	for patch in patches:
+		if patch.reserved != 0: return false
+	if not delivery_ledger.source_slots.is_empty() or not delivery_ledger.destination_queue.is_empty(): return false
+	if ladder.owner != -1 or bridge.owner != -1 or refuge.passage_owner != -1: return false
+	if not ladder.queue.is_empty() or not bridge.queue.is_empty() or not refuge.queue.is_empty() or refuge.opening > 0: return false
+	for worker in workers:
+		var controller: WorkerDelivery = worker.delivery
+		if worker.carrying != 0 or controller.job != -1 or not controller.inside_refuge or controller.state != "idle": return false
+		if controller.climbing or controller.bridge_active or controller.door_active or controller.exploring: return false
+	return true
+
+func _try_checkpoint() -> void:
+	if is_instance_valid(hud) and hud.load_panel.visible: return
+	if not pending_save or not checkpoint_ready(): return
+	var error := Save.write_checkpoint(save_path, Save.capture(self))
+	pending_save = false
+	if not error.is_empty():
+		save_status = error
+		_news(error)
+		return
+	paused = true
+	_refresh_save_state()
+	_news("Colonie sauvegardée et mise en pause. H prépare la sortie, Espace reprend le temps.")
+
+func apply_checkpoint(data: Dictionary) -> bool:
+	# Called on a fresh candidate scene. The active game is untouched until success.
+	if not Save.validate(data).is_empty(): return false
+	start_panel.hide()
+	stock = {"food": 1000000, "wood": 1000000, "fiber": 1000000}
+	for building in data.buildings:
+		build_mode = building.kind
+		var point := Vector3(building.pos[0], 0, building.pos[2])
+		if not _place_build(point): return false
+	for kind in ["food", "wood", "fiber"]: stock[kind] = int(data.stock[kind])
+	for i in range(patches.size()): patches[i].amount = int(data.patches[i].amount)
+	if data.patches[6].discovered: discover_east()
+	for i in range(workers.size()):
+		var controller: WorkerDelivery = workers[i].delivery
+		workers[i].patch = int(data.assignments[i])
+		controller.actor.position = refuge.slot(i)
+		controller.actor.rotation.y = 0
+		controller.inside_refuge = true
+		controller.pose("idle", 0)
+	elapsed = float(data.clock.elapsed)
+	meal_timer = float(data.clock.meal_timer)
+	suspicion = float(data.clock.suspicion)
+	hunger = float(data.clock.hunger)
+	event_index = int(data.clock.event_index)
+	speed = float(data.speed)
+	focus = Vector3(data.view.focus[0], data.view.focus[1], data.view.focus[2])
+	yaw = float(data.view.yaw)
+	zoom = float(data.view.zoom)
+	show_paths = data.view.paths
+	hud.resident_index = int(data.view.resident)
+	refuge.set_cutaway(data.view.cutaway)
+	hiding = true
+	paused = true
+	_update_camera()
+	_refresh_ui()
+	return checkpoint_ready()
+
+func load_checkpoint() -> Node3D:
+	var result := Save.read_checkpoint(save_path)
+	if not result.ok:
+		save_status = result.error
+		_news(result.error)
+		return null
+	var candidate := (load("res://scenes/main.tscn") as PackedScene).instantiate() as Node3D
+	candidate.save_path = save_path
+	candidate.set_meta("restore_mode", true)
+	get_tree().root.add_child(candidate)
+	if not candidate.apply_checkpoint(result.data):
+		candidate.queue_free()
+		camera.make_current()
+		save_status = "Sauvegarde incohérente : la partie actuelle est conservée."
+		_news(save_status)
+		return null
+	get_tree().current_scene = candidate
+	candidate._news(("Copie de secours chargée." if result.backup else "Colonie restaurée.") + " En pause : H prépare la sortie, Espace reprend le temps.")
+	set_process(false)
+	queue_free()
+	return candidate

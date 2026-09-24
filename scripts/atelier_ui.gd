@@ -28,6 +28,12 @@ var resident_index := 0
 var people_list: VBoxContainer
 var worker_rows: Array[Button] = []
 var work_label: Label
+var save_button: Button
+var load_button: Button
+var continue_button: Button
+var save_label: Label
+var load_panel: PanelContainer
+var load_was_paused := true
 var explore_button: Button
 var routes_button: Button
 var stocks_label: Label
@@ -320,8 +326,14 @@ func _make_trays() -> void:
 	wrapped(stocks, "Les matériaux sont disponibles pour construire après leur livraison au dépôt.", 16, MUTED)
 	var goals := tray("goals", "Votre premier foyer")
 	game.objective_label = wrapped(goals, "", 19)
+	save_label = wrapped(goals, "", 16, MUTED)
+	save_button = button(goals, "Sauvegarder au refuge [F5]", func():
+		if game.pending_save: game.cancel_checkpoint()
+		else: game.request_checkpoint()
+		refresh(), "Rappeler les habitants, livrer les charges, puis enregistrer la colonie")
+	load_button = button(goals, "Charger la sauvegarde [F9]", ask_load)
 	var help := tray("help", "Les gestes essentiels")
-	wrapped(help, "Flèches / WASD : déplacer la caméra\nMolette : zoom · Bouton central : rotation\nB : construire · C : habitants · T : travaux\nI : stocks · O : objectifs · H : au refuge\nN : trajet · V : vue intérieure du refuge\nEspace : pause · F11 : plein écran\n1 / 2 : construire un abri / un atelier\nÉchap : fermer / annuler · R : recommencer\n\nLes panneaux n’arrêtent pas le temps. Utilisez Espace pour planifier tranquillement.", 17)
+	wrapped(help, "Flèches / WASD : déplacer la caméra\nMolette : zoom · Bouton central : rotation\nB : construire · C : habitants · T : travaux\nI : stocks · O : objectifs · H : au refuge\nN : trajet · V : vue intérieure du refuge\nF5 : sauvegarder au refuge · F9 : charger\nEspace : pause · F11 : plein écran\n1 / 2 : construire un abri / un atelier\nÉchap : fermer / annuler · R : recommencer\n\nLes panneaux n’arrêtent pas le temps. Utilisez Espace pour planifier tranquillement.", 17)
 
 func _make_resident() -> void:
 	resident_card = frame(self, true, true)
@@ -365,14 +377,28 @@ func _make_modals() -> void:
 	label(intro, "Une petite civilisation, une grande maison.", 19, MUTED).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	wrapped(intro, "Quatre habitants. Quelques miettes. Tout à construire.\n\n1. Affectez vos habitants aux ressources.\n2. Construisez deux abris et un atelier.\n3. Conservez 35 miettes et survivez au premier cycle.\n\nLes humains passent entre 68 et 88 secondes de chaque cycle. Rappelez vos habitants avec H avant leur arrivée.", 20)
 	button(intro, "Fonder la colonie", func(): game.start_panel.hide(); game.paused = false; refresh()).custom_minimum_size.y = 48
+	continue_button = button(intro, "Reprendre la sauvegarde", ask_load)
 	game.end_panel = frame(self, true, true)
 	game.end_panel.custom_minimum_size.x = 560
 	var ending := column(game.end_panel, 24)
 	game.end_label = wrapped(ending, "", 23)
 	game.end_label.add_theme_font_override("font", DISPLAY_FONT)
 	button(ending, "Recommencer", game._restart)
+	button(ending, "Reprendre la sauvegarde [F9]", ask_load)
 	game.end_panel.hide()
-	for panel in [game.start_panel, game.end_panel]:
+	load_panel = frame(self, true, true)
+	load_panel.custom_minimum_size.x = 560
+	var loading := column(load_panel, 16)
+	label(loading, "Reprendre la sauvegarde ?", 28, INK, true)
+	wrapped(loading, "La partie actuelle sera remplacée. Les progrès réalisés depuis la sauvegarde seront perdus.", 20)
+	button(loading, "Charger", func():
+		load_panel.hide()
+		if game.load_checkpoint() == null:
+			game.paused = load_was_paused
+			refresh())
+	button(loading, "Continuer la partie", cancel_load)
+	load_panel.hide()
+	for panel in [game.start_panel, game.end_panel, load_panel]:
 		panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 		panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		panel.grow_vertical = Control.GROW_DIRECTION_BOTH
@@ -392,7 +418,7 @@ func _layout() -> void:
 	game.news_label.position = Vector2(270, 112)
 	game.news_label.size = Vector2(size.x - 540, 28)
 	game.news_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	for panel in [game.start_panel, game.end_panel]:
+	for panel in [game.start_panel, game.end_panel, load_panel]:
 		panel.offset_left = -280
 		panel.offset_right = 280
 		panel.offset_top = -panel.get_combined_minimum_size().y / 2
@@ -415,6 +441,17 @@ func _update_roster() -> void:
 
 func refresh() -> void:
 	if not is_instance_valid(game.start_panel): return
+	save_button.disabled = game.ended or game.start_panel.visible
+	save_button.text = "Annuler la sauvegarde en attente" if game.pending_save else "Sauvegarder au refuge [F5]"
+	save_label.text = game.save_status
+	if game.pending_save:
+		var sheltered := 0
+		for worker in game.workers:
+			if worker.delivery.at_refuge(): sheltered += 1
+		save_label.text += "\n%d/%d à l’abri.%s" % [sheltered, game.workers.size(), " Reprendre avec Espace." if game.paused else ""]
+	load_button.disabled = not game.save_available
+	continue_button.disabled = not game.save_available
+	continue_button.tooltip_text = game.save_status
 	_update_roster()
 	var idle := 0
 	var carrying := {"food": 0, "wood": 0, "fiber": 0}
@@ -507,10 +544,30 @@ func refresh() -> void:
 	resident_recall.disabled = game.ended or (resident.patch < 0 and resident.carrying == 0 and (resident.delivery.inside_refuge or resident.delivery.state == "return_home"))
 	resident_assign.disabled = game.ended or game.hiding or resident.patch >= 0 or resident.carrying > 0 or resident.delivery.state != "idle"
 	resident_card.visible = game.active_tray == "" and not game.start_panel.visible and not game.ended and game.build_mode == ""
-	modal_shade.visible = game.start_panel.visible or game.end_panel.visible
+	modal_shade.visible = game.start_panel.visible or game.end_panel.visible or load_panel.visible
 	for i in range(game.patches.size()):
 		var patch: Dictionary = game.patches[i]
 		game.patch_picker.set_item_disabled(i + 1, not patch.discovered)
 		if i == game.patches.size() - 1: game.patch_picker.set_item_text(i + 1, "Réserve de l’Est · Bois" if patch.discovered else "Réserve inexplorée")
 		patch.label.text = ("▸ " if i == game.selected else "") + game.NAMES[patch.kind] + " · %d" % patch.amount + (" · Palier" if patch.pos.y > 1 else "")
 		patch.label.modulate = Color("fff1c8") if i == game.selected else Color("eac37e")
+
+func ask_load() -> void:
+	game._refresh_save_state()
+	if not game.save_available:
+		game._news(game.save_status)
+		refresh()
+		return
+	if game.start_panel.visible or game.ended:
+		game.load_checkpoint()
+		return
+	load_was_paused = game.paused
+	game.paused = true
+	load_panel.show()
+	refresh()
+
+func cancel_load() -> void:
+	if not load_panel.visible: return
+	load_panel.hide()
+	game.paused = load_was_paused
+	refresh()
