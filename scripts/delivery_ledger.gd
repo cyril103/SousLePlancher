@@ -5,6 +5,7 @@ var patches: Array[Dictionary] = []
 var jobs: Dictionary = {}
 var source_slots: Dictionary = {}
 var destination_owner := -1
+var destination_queue: Array[int] = []
 var next_id := 1
 
 func reserve(owner: int, source: int, capacity: int) -> int:
@@ -37,7 +38,10 @@ func leave_source(id: int) -> void:
 
 func acquire_destination(id: int) -> bool:
 	if not jobs.has(id) or not jobs[id].collected: return false
-	if destination_owner not in [-1, id]: return false
+	if destination_owner == id: return true
+	if not destination_queue.has(id): destination_queue.append(id)
+	if destination_owner != -1 or destination_queue.front() != id: return false
+	destination_queue.pop_front()
 	destination_owner = id
 	return true
 
@@ -53,6 +57,7 @@ func deliver(id: int, stock: Dictionary) -> int:
 
 func release_destination(id: int) -> void:
 	if destination_owner == id: destination_owner = -1
+	destination_queue.erase(id)
 
 func cancel(id: int) -> bool:
 	if not jobs.has(id): return true

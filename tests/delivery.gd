@@ -71,7 +71,7 @@ func run() -> void:
 	check(game.stock.wood == before + 3 and controller.completed_deliveries == 1, "Recall delivers once")
 	check(controller.actor.cargo.get_instance_id() == cargo_id, "Same cargo object survives pickup and delivery")
 	check(game.delivery_ledger.jobs.is_empty() and game.delivery_ledger.destination_owner == -1, "No abandoned reservations")
-	check(controller.actor.position.distance_to(game.HOME) < 0.02, "Recall ends at home")
+	check(controller.actor.position.distance_to(game.home_position(0)) < 0.02, "Recall ends at accessible refuge slot")
 	await process_frame
 	game.queue_free()
 	await process_frame

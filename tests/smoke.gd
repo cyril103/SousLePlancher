@@ -49,7 +49,7 @@ func run() -> void:
 	var before: int = game.stock.wood
 	check(not game._place_build(game.HOME), "Reject occupied site")
 	check(game.stock.wood == before, "No cost for rejected construction")
-	check(game._place_build(Vector3(0, 0, 0)), "Build shelter")
+	check(game._place_build(Vector3(0, 0, -3)), "Build shelter away from residents and loading routes")
 	check(game.stock.wood == before - 8 and game.workers.size() == 5, "Cost and new inhabitant")
 	game.selected = 0
 	game.assign_worker()
@@ -58,7 +58,7 @@ func run() -> void:
 	advance(game, 33)
 	check(game.suspicion < 1, "Recall before human passage prevents detection")
 	for w in game.workers:
-		check(w.node.position.distance_to(game.HOME) < 0.4, "All inhabitants reach refuge")
+		check(w.delivery.at_refuge(), "All inhabitants reach their accessible refuge slots")
 	game._toggle_hide()
 	game._choose_build("workshop")
 	check(game._place_build(Vector3(-3, 0, -3)), "Build workshop from harvested resources")
@@ -68,7 +68,7 @@ func run() -> void:
 		if game.stock.wood >= 8 and game.stock.fiber >= 4: break
 		advance(game, 0.05)
 	game._choose_build("shelter")
-	check(game._place_build(Vector3(3, 0, 1)), "Build second shelter")
+	check(game._place_build(Vector3(-6, 0, -1)), "Build second shelter with accessible service routes")
 	game.selected = 0
 	game.assign_worker()
 	advance(game, 50)

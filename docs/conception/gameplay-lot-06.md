@@ -57,6 +57,8 @@ Le contrôle graphique produit quatre captures dans `artifacts/delivery_06/` : p
 
 ## Limites et prochaine étape
 
+**Mise à jour :** le lot 07 implémente la navigation au sol, les places d’attente et le contrôle des accès lors de la construction. Voir `gameplay-lot-07.md`. Les paragraphes ci-dessous décrivent le lot 06 initialement validé.
+
 Cette intégration concerne les trajets horizontaux. Les accès verticaux et les pivots à angle fixe validés restent dans la scène de revue ; les trajets libres du prototype peuvent demander n'importe quelle direction. Les rotations à l'arrivée et l'interruption des poses ne disposent pas encore de raccords adaptés à tous les cas.
 
 Les déplacements restent directs, sans recherche de chemin, collision ni évitement des autres habitants et des bâtiments. La file de déchargement garantit l'exclusivité logique du poste, pas un évitement physique. Le réglage de vitesse du prototype peut donner des pas rapides. Le contenu de chaque ressource est encore représenté par la même caisse générique.

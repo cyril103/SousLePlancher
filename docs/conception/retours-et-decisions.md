@@ -78,6 +78,12 @@ La version 0.2 devra harmoniser les chapitres, les statistiques provisoires, les
 
 ## Validation de la reprise
 
+**Lot 08 — échelle intégrée au gameplay validée.** Palier Blender, deux gisements en hauteur, réservation du passage, animations de montée/descente, livraison et rappel. Voir `gameplay-lot-08.md`. Le joueur confirme « ok validé, commit et pousse » après la démonstration du palier et des traversées. Publication autorisée avec le lot 07 de navigation au sol.
+
+**Lot 07 — navigation au sol validée avec le lot 08.** Recherche de chemin autour des obstacles, places de rassemblement et d’attente, file du dépôt, refus des constructions coupant les accès et affichage du trajet sélectionné. Voir `gameplay-lot-07.md`. Après avoir autorisé la poursuite vers les échelles, le joueur valide l’ensemble intégré et demande son commit et sa publication.
+
+**Interface Atelier miniature validée.** La proposition 2 est choisie, implémentée, puis le joueur confirme « c’est bon, ça fonctionne » après correction des clics d’affectation et de libération. Interface, assets, polices et correctif sont publiés dans le commit `f6c5a01`. Les affectations et les reprises après rappel disposent de tests souris avec rafraîchissement actif.
+
 **Lot 06 — livraisons intégrées au gameplay validées.** Le joueur confirme « ok je valide, tu peux commit et pousser » après lancement de la partie avec les habitants animés, les réservations, la prise, le transport et la dépose des caisses. Voir `gameplay-lot-06.md` pour les règles d'annulation/rappel, les contrôles et les limites de navigation restantes.
 
 **Lot 05 — pivots avec charge et descente validés.** Le joueur confirme « je valide, tu peux commit et pousser » après présentation des deux pivots, de l'entrée en descente, du cycle de descente et du retour au sol. Voir `assets-lot-05.md` pour les contrôles d'appui, les raccords et les limites d'intégration restantes.

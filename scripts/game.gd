@@ -1,6 +1,8 @@
 extends Node3D
 ## Première boucle de gestion : récolte, construction, discrétion et survie.
 const Art = preload("res://scripts/world.gd")
+const Navigation = preload("res://scripts/ground_navigation.gd")
+const Ladder = preload("res://scripts/ladder_passage.gd")
 const HOME := Vector3(-3, 0, 1)
 const COSTS := {"shelter": {"wood": 8, "fiber": 4}, "workshop": {"wood": 10, "fiber": 6}}
 const NAMES := {"food": "Miettes", "wood": "Bois", "fiber": "Fibres"}
@@ -46,6 +48,18 @@ var assign_button: Button
 var release_button: Button
 var speed_button: Button
 var notice_timer := 0.0
+var ladder := Ladder.new()
+var upper_navigation := Navigation.new()
+var upper_obstacles: Array[Rect2] = []
+var upper_stands: Array[Rect2] = []
+var navigation := Navigation.new()
+var navigation_obstacles: Array[Rect2] = []
+var navigation_stands: Array[Rect2] = []
+var home_slots: Array[Vector3] = []
+var depot_slots: Array[Vector3] = []
+var show_paths := false
+var route_mesh: MeshInstance3D
+var route_timer := 0.0
 
 func _ready() -> void:
 	Art.decorate(self)
@@ -60,25 +74,46 @@ func _ready() -> void:
 	_add_patch("food", Vector3(4, 0, -2), 70)
 	_add_patch("food", Vector3(-7, 0, -4), 50)
 	_add_patch("wood", Vector3(1, 0, 4), 65)
-	_add_patch("wood", Vector3(7, 0, 1), 50)
+	_add_patch("wood", Vector3(5.2, 2.04, -4.5), 50)
 	_add_patch("fiber", Vector3(-7, 0, 3), 45)
-	_add_patch("fiber", Vector3(4, 0, -5), 40)
+	_add_patch("fiber", Vector3(3.7, 2.04, -5.5), 40)
+	var landing := preload("res://assets/models/navigation_08/resource_landing.glb").instantiate() as Node3D
+	add_child(landing)
+	landing.position = Vector3(5, 0, -4.55)
+	var ladder_model := preload("res://assets/models/refuge_02/ladder_2m.glb").instantiate() as Node3D
+	add_child(ladder_model)
+	ladder_model.position = Ladder.BASE
 	delivery_ledger.patches = patches
+	_setup_navigation()
 	for i in range(4):
 		_add_worker()
 	_make_loading_stations()
 	_make_ui()
 	_refresh_ui()
-	if "--demo-deliveries" in OS.get_cmdline_user_args():
+	if "--demo-deliveries" in OS.get_cmdline_user_args() or "--demo-navigation" in OS.get_cmdline_user_args():
 		start_panel.hide()
 		paused = false
+		if "--demo-navigation" in OS.get_cmdline_user_args():
+			_choose_build("workshop")
+			_place_build(Vector3.ZERO)
+			show_paths = true
 		for patch in [0, 2, 4, 1]:
 			selected = patch
 			assign_worker()
 		selected = 2
 		_show_tray("")
 		_news("Livraisons en cours : C pour les affectations, H pour rappeler les porteurs.")
+		if show_paths: _news("Navigation : N affiche le trajet de l’habitant sélectionné. H rappelle la colonie.")
 		zoom = 18.0
+	if "--demo-ladders" in OS.get_cmdline_user_args():
+		start_panel.hide()
+		paused = false
+		for patch in [3, 5, 0, 2]:
+			selected = patch
+			assign_worker()
+		zoom = 18
+		focus = Vector3(2, 0, -2)
+		_news("Le palier est accessible : bois et fibres en hauteur. H rappelle les porteurs, N montre leur trajet.")
 	if "--capture" in OS.get_cmdline_user_args():
 		_capture.call_deferred()
 
@@ -96,7 +131,8 @@ func _exit_tree() -> void:
 
 func _add_worker() -> void:
 	var i := workers.size()
-	var node := Art.worker(self, HOME + Vector3(sin(i * 2.4), 0, cos(i * 2.4)), i)
+	if home_slots.size() <= i: _refresh_navigation_slots(i + 1)
+	var node := Art.worker(self, home_slots[i], i)
 	workers.append({"node": node, "patch": -1, "carrying": 0, "kind": "food", "work": 0.0})
 	var controller := WorkerDelivery.new()
 	workers[i].delivery = controller
@@ -111,10 +147,72 @@ func _make_loading_stations() -> void:
 		var stand := preload("res://assets/models/reference_01/salvage_crate.glb").instantiate() as Node3D
 		add_child(stand)
 		var top := station + controller.contact.origin
-		stand.position = Vector3(top.x, 0, top.z)
-		stand.scale = Vector3(0.70, top.y / 0.49, 0.70)
+		var floor_y := 2.04 if station.y > 1 else 0.0
+		stand.position = Vector3(top.x, floor_y, top.z)
+		stand.scale = Vector3(0.70, (top.y - floor_y) / 0.49, 0.70)
+		var stands: Array[Rect2] = upper_stands if floor_y > 1 else navigation_stands
+		stands.append(Navigation.footprint(stand.position, Vector2(0.22, 0.18)))
+	navigation.configure(navigation_obstacles, navigation_stands)
+	upper_navigation.configure(upper_obstacles, upper_stands)
+	_refresh_navigation_slots(workers.size())
+	for i in range(workers.size()): workers[i].node.position = home_position(i)
 	var depot_label := Art.caption(self, "DÉPÔT", controller.destination_position + Vector3(0, 0.95, 0.9), Color("eac37e"))
 	depot_label.pixel_size = 0.005
+
+func _setup_navigation() -> void:
+	navigation_obstacles = [Navigation.building(HOME, "heart")]
+	# Blender floor props (coordinates converted from Z-up to Godot Y-up).
+	navigation_obstacles.append(Navigation.footprint(Vector3(9, 0, 5.7), Vector2(0.94, 0.94)))
+	navigation_obstacles.append(Rect2(-9.92, 5.38, 2.54, 0.84))
+	for torch in [Vector3(-6.3, 0, 3.8), Vector3(3, 0, 4.9), HOME + Vector3(1.05, 0, 0.65)]:
+		navigation_obstacles.append(Navigation.footprint(torch, Vector2(0.12, 0.12)))
+	navigation_obstacles.append(Rect2(3, -6.05, 4, 3))
+	upper_navigation.area = Rect2(3, -6.05, 4, 3)
+	for patch in patches:
+		var obstacles: Array[Rect2] = upper_obstacles if patch.pos.y > 1 else navigation_obstacles
+		obstacles.append(Navigation.footprint(patch.pos, Vector2(0.55, 0.5)))
+	upper_navigation.configure(upper_obstacles)
+	navigation.configure(navigation_obstacles)
+	# Initial slots are replaced after the physical loading stands are registered.
+	_refresh_navigation_slots(4)
+
+func _refresh_navigation_slots(count: int) -> void:
+	home_slots = navigation.slots(HOME + Vector3(0, 0, 1.65), count)
+	depot_slots = navigation.slots(HOME + Vector3(3.2, 0, 1.2), count, home_slots)
+	assert(home_slots.size() == count and depot_slots.size() == count, "Not enough accessible colony slots")
+
+func home_position(index: int) -> Vector3:
+	return home_slots[index] + Vector3(0, WorkerDelivery.GROUND_Y, 0)
+
+func queue_position(index: int) -> Vector3:
+	return depot_slots[index] + Vector3(0, WorkerDelivery.GROUND_Y, 0)
+
+func _navigation_allows_build(pos: Vector3, kind: String) -> bool:
+	var trial := Navigation.new()
+	var footprints: Array[Rect2] = navigation_obstacles.duplicate()
+	footprints.append(Navigation.building(pos, kind))
+	footprints.append(Navigation.footprint(pos + Vector3(1.05, 0, 0.65), Vector2(0.12, 0.12)))
+	trial.configure(footprints, navigation_stands)
+	var depot: Vector3 = workers[0].delivery.destination_position
+	var destinations: Array[Vector3] = home_slots.duplicate()
+	destinations.append_array(depot_slots)
+	for patch in patches:
+		if patch.pos.y < 1: destinations.append(patch.pos + Vector3(0.9, 0, 0.2))
+	destinations.append(Ladder.LOWER)
+	for i in range(workers.size() + 1): destinations.append(ladder.waiting(i, false))
+	for worker in workers:
+		if worker.node.position.y < 0.1: destinations.append(worker.node.position)
+	for point in destinations:
+		if trial.path(depot, point).is_empty(): return false
+	# Reserve a reachable spawn and waiting slot before charging for a new shelter.
+	if kind == "shelter":
+		if upper_navigation.path(Ladder.UPPER, ladder.waiting(workers.size(), true)).is_empty(): return false
+		var homes := trial.slots(HOME + Vector3(0, 0, 1.65), workers.size() + 1)
+		var queues := trial.slots(HOME + Vector3(3.2, 0, 1.2), workers.size() + 1, homes)
+		if homes.size() <= workers.size() or queues.size() <= workers.size(): return false
+		for point in homes + queues:
+			if trial.path(depot, point).is_empty(): return false
+	return true
 
 func _update_camera() -> void:
 	camera.size = zoom
@@ -137,6 +235,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_T: _toggle_tray("work")
 			KEY_I: _toggle_tray("stocks")
 			KEY_F1: _toggle_tray("help")
+			KEY_N: show_paths = not show_paths
 			KEY_1: _choose_build("shelter")
 			KEY_2: _choose_build("workshop")
 			KEY_R: _restart()
@@ -158,13 +257,43 @@ func _unhandled_input(event: InputEvent) -> void:
 					selected = -1
 					hud.assignment_target = -1
 					for i in range(patches.size()):
-						if point.distance_to(patches[i].pos) < 1.1:
+						var hit = Plane(Vector3.UP, patches[i].pos.y).intersects_ray(camera.project_ray_origin(event.position), camera.project_ray_normal(event.position))
+						if hit != null and hit.distance_to(patches[i].pos) < 1.1:
 							selected = i
 					_show_tray("people" if selected >= 0 else "")
 	if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE):
 		yaw -= event.relative.x * 0.006
 	_update_camera()
 	_refresh_ui()
+
+func _update_routes(delta: float) -> void:
+	if route_mesh == null:
+		route_mesh = MeshInstance3D.new()
+		route_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		var material := StandardMaterial3D.new()
+		material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		material.albedo_color = Color("efd18a")
+		route_mesh.material_override = material
+		add_child(route_mesh)
+	route_mesh.visible = show_paths and not start_panel.visible and not ended
+	if not route_mesh.visible: return
+	route_timer -= delta
+	if route_timer > 0: return
+	route_timer = 0.1
+	var controller: WorkerDelivery = workers[hud.resident_index].delivery
+	var path: PackedVector3Array = controller.route
+	if path.is_empty() or controller.route_index >= path.size():
+		route_mesh.mesh = null
+		return
+	var mesh := ImmediateMesh.new()
+	mesh.surface_begin(Mesh.PRIMITIVE_LINES)
+	var previous := controller.actor.position
+	for i in range(controller.route_index, path.size()):
+		mesh.surface_add_vertex(previous + Vector3(0, .05, 0))
+		mesh.surface_add_vertex(path[i] + Vector3(0, .05, 0))
+		previous = path[i]
+	mesh.surface_end()
+	route_mesh.mesh = mesh
 
 func _toggle_fullscreen() -> void:
 	var window := get_window()
@@ -193,6 +322,7 @@ func _process(delta: float) -> void:
 	if not paused and not ended:
 		simulate(delta * speed)
 	_refresh_ui()
+	_update_routes(delta)
 
 func simulate(dt: float) -> void:
 	elapsed += dt
@@ -209,7 +339,7 @@ func simulate(dt: float) -> void:
 	for worker in workers:
 		var node: Node3D = worker.node
 		worker.delivery.update(dt)
-		if node.position.distance_to(HOME) > 1.8: exposed += 1
+		if not worker.delivery.at_refuge() and node.position.distance_to(HOME) > 1.8: exposed += 1
 	if active:
 		suspicion += dt * exposed * 0.8
 	else:
@@ -255,6 +385,16 @@ func _valid_site(pos: Vector3) -> bool:
 		if pos.distance_to(p.pos + Vector3(0.9, 0, 0.5)) < 1.4: return false
 	if pos.distance_to(Vector3(9, 0, 5.7)) < 2: return false
 	if pos.distance_to(Vector3(-8.7, 0, 5.8)) < 2: return false
+	var footprint := Navigation.building(pos, build_mode if build_mode != "" else "shelter").grow(Navigation.CLEARANCE)
+	if footprint.intersects(Rect2(3, -6.05, 4, 3)): return false
+	if footprint.has_point(Vector2(Ladder.LOWER.x, Ladder.LOWER.z)): return false
+	for i in range(workers.size() + 1):
+		var waiting: Vector3 = ladder.waiting(i, false)
+		if footprint.has_point(Vector2(waiting.x, waiting.z)): return false
+	for slot in home_slots + depot_slots:
+		if footprint.has_point(Vector2(slot.x, slot.z)): return false
+	for worker in workers:
+		if footprint.has_point(Vector2(worker.node.position.x, worker.node.position.z)): return false
 	return true
 
 func _choose_build(kind: String) -> void:
@@ -284,11 +424,18 @@ func _place_build(point: Vector3) -> bool:
 		if stock[key] < COSTS[build_mode][key]:
 			_news("Il manque des matériaux. Affectez des habitants au bois et aux fibres.")
 			return false
+	if not _navigation_allows_build(pos, build_mode):
+		_news("Ce bâtiment couperait un accès au refuge, au dépôt ou aux ressources.")
+		return false
 	for key in COSTS[build_mode]: stock[key] -= COSTS[build_mode][key]
 	Art.building(self, pos, build_mode)
 	buildings.append({"pos": pos, "kind": build_mode})
+	navigation_obstacles.append(Navigation.building(pos, build_mode))
+	navigation_obstacles.append(Navigation.footprint(pos + Vector3(1.05, 0, 0.65), Vector2(0.12, 0.12)))
+	navigation.configure(navigation_obstacles, navigation_stands)
 	if build_mode == "shelter":
 		shelters += 1
+		_refresh_navigation_slots(workers.size() + 1)
 		_add_worker()
 		_news("Un nouvel habitant rejoint la colonie ! Pensez à lui donner une tâche.")
 	else:
@@ -369,3 +516,23 @@ func _capture() -> void:
 	DirAccess.make_dir_recursive_absolute("res://artifacts")
 	get_viewport().get_texture().get_image().save_png("res://artifacts/prototype.png")
 	get_tree().quit()
+
+func travel_path(from: Vector3, to: Vector3, id: int = 0) -> PackedVector3Array:
+	var upper := from.y > 1
+	var nav: GroundNavigation = upper_navigation if upper else navigation
+	if upper == (to.y > 1): return nav.path(from, to)
+	var entry: Vector3 = Ladder.UPPER if upper else Ladder.LOWER
+	var exit: Vector3 = Ladder.LOWER if upper else Ladder.UPPER
+	var wait: Vector3 = ladder.waiting(id, upper)
+	var first := nav.path(from, wait)
+	var approach := nav.path(wait, entry)
+	var other: GroundNavigation = navigation if upper else upper_navigation
+	var last := other.path(exit, to)
+	if first.is_empty() or approach.is_empty() or last.is_empty(): return PackedVector3Array()
+	first.append_array(approach)
+	first.append(exit)
+	first.append_array(last)
+	return first
+
+func travel_revision() -> int:
+	return navigation.revision + upper_navigation.revision

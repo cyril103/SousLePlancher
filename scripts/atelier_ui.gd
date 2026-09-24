@@ -28,6 +28,7 @@ var resident_index := 0
 var people_list: VBoxContainer
 var worker_rows: Array[Button] = []
 var work_label: Label
+var routes_button: Button
 var stocks_label: Label
 var build_buttons: Dictionary = {}
 var modal_shade: ColorRect
@@ -285,7 +286,7 @@ func _make_trays() -> void:
 	game.patch_picker.custom_minimum_size.y = 40
 	game.patch_picker.add_item("Choisir un gisement…")
 	for i in range(game.patches.size()):
-		game.patch_picker.add_icon_item(icon(game.patches[i].kind), "%s · gisement %d" % [game.NAMES[game.patches[i].kind], i + 1])
+		game.patch_picker.add_icon_item(icon(game.patches[i].kind), "%s · gisement %d" % [game.NAMES[game.patches[i].kind], i + 1] + (" · Palier" if game.patches[i].pos.y > 1 else ""))
 	game.patch_picker.add_theme_constant_override("icon_max_width", 24)
 	game.patch_picker.get_popup().add_theme_constant_override("icon_max_width", 24)
 	game.patch_picker.item_selected.connect(func(index: int): game.selected = index - 1; refresh())
@@ -305,6 +306,7 @@ func _make_trays() -> void:
 	wrapped(people, "Cliquez sur un habitant pour l’inspecter. [H] rappelle toute la colonie en conservant ses tâches.", 16, MUTED)
 	var work := tray("work", "Travaux en cours")
 	work_label = wrapped(work, "", 18)
+	routes_button = button(work, "Afficher le trajet sélectionné [N]", func(): game.show_paths = not game.show_paths; refresh())
 	button(work, "Organiser les affectations", func(): game._show_tray("people"))
 	var stocks := tray("stocks", "Le garde-manger")
 	stocks_label = wrapped(stocks, "", 18)
@@ -465,6 +467,12 @@ func refresh() -> void:
 			if worker.patch >= 0 and game.patches[worker.patch].kind == key: count += 1
 		work_label.text += "\n%s : %d affecté(s) · %d en transport" % [game.NAMES[key], count, carrying[key]]
 	work_label.text += "\n\nBÂTIMENTS\n%d abri(s) · %d atelier(s)\n\n%s" % [game.shelters, game.workshops, "Rappel au refuge en cours." if game.hiding else "Les habitants suivent leurs affectations."]
+	routes_button.text = "Masquer le trajet [N]" if game.show_paths else "Afficher le trajet sélectionné [N]"
+	var blocked := 0
+	for worker in game.workers:
+		if not worker.delivery.navigation_issue.is_empty(): blocked += 1
+	work_label.text += "\n\nÉCHELLE · %s · %d en attente" % ["Passage occupé" if game.ladder.owner >= 0 else "Libre", game.ladder.queue.size()]
+	if blocked > 0: work_label.text += "\n%d trajet(s) bloqué(s) : consultez les habitants." % blocked
 	stocks_label.text = "AU DÉPÔT          EN TRANSPORT\n"
 	for key in ["food", "wood", "fiber"]:
 		stocks_label.text += "\n%s : %d          +%d" % [game.NAMES[key], game.stock[key], carrying[key]]
@@ -486,5 +494,5 @@ func refresh() -> void:
 	modal_shade.visible = game.start_panel.visible or game.end_panel.visible
 	for i in range(game.patches.size()):
 		var patch: Dictionary = game.patches[i]
-		patch.label.text = ("▸ " if i == game.selected else "") + game.NAMES[patch.kind] + " · %d" % patch.amount
+		patch.label.text = ("▸ " if i == game.selected else "") + game.NAMES[patch.kind] + " · %d" % patch.amount + (" · Palier" if patch.pos.y > 1 else "")
 		patch.label.modulate = Color("fff1c8") if i == game.selected else Color("eac37e")
