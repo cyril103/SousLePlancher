@@ -78,10 +78,53 @@
       ],
       "duration": 1.4,
       "maximum_reach_clamp": 0.000917
+    },
+    "carry_turn_right": {
+      "frames": 36,
+      "loop": false,
+      "speed": 0,
+      "root_yaw_degrees": 90,
+      "duration": 1.2,
+      "maximum_reach_clamp": 0
+    },
+    "carry_turn_left": {
+      "frames": 36,
+      "loop": false,
+      "speed": 0,
+      "root_yaw_degrees": -90,
+      "duration": 1.2,
+      "maximum_reach_clamp": 0
+    },
+    "climb_down": {
+      "frames": 54,
+      "loop": true,
+      "speed": -0.2833333333333333,
+      "rise_per_cycle": -0.51,
+      "duration": 1.8,
+      "maximum_reach_clamp": 0
+    },
+    "descend_enter": {
+      "frames": 42,
+      "loop": false,
+      "speed": 0,
+      "root_start_godot": [
+        0,
+        0.51,
+        0.45
+      ],
+      "duration": 1.4,
+      "maximum_reach_clamp": 0
+    },
+    "descend_exit": {
+      "frames": 36,
+      "loop": false,
+      "speed": 0,
+      "duration": 1.2,
+      "maximum_reach_clamp": 0
     }
   },
   "rig_bones": 21,
-  "motion": "cycles in place; climb_exit includes documented local root displacement",
+  "motion": "cycles in place; landing transitions and carrying pivots include documented root motion",
   "attachments": [
     "socket_carry",
     "socket_tool"

@@ -23,6 +23,8 @@ Caméra : flèches ou ZQSD sur clavier français (WASD physique), molette pour z
 
 ## Assets Blender
 
+Le **lot 05** complète `scenes/interaction_review.tscn` avec les pivots de transport et la descente : **1** livraison, **2** montée, **3** descente. Les appuis et raccords sont vérifiés ; voir `docs/conception/assets-lot-05.md` pour les limites et le contrat d'intégration.
+
 Les **interactions du lot 04** se testent dans `scenes/interaction_review.tscn` (**F6**) : **1** pour saisir, transporter et déposer une caisse ; **2** pour entrer sur l'échelle, monter et rejoindre le palier ; **R** pour recommencer. Détails et limites dans `docs/conception/assets-lot-04.md`.
 
 Le **lot d'animations** se teste dans `scenes/animation_review.tscn` (**F6**) : repos, marche, portage de caisse, travail au marteau et échelle. Touches **1–5** pour choisir, **Espace** pour suspendre, **−/+** pour ralentir/accélérer, **D** pour activer le déplacement. Sources Blender, vitesses et limites : `docs/conception/assets-lot-03.md`. Ces animations sont encore indépendantes de l'IA du prototype.

@@ -227,6 +227,40 @@ def transition_pose(clip,t):
         update()
 
 
+def pivot_pose(clip,t):
+    right=clip=='carry_turn_right'
+    angle=(math.pi/2 if right else -math.pi/2)
+    transition_pose('pick_up',1)
+    start={s:rig.pose.bones[s+'_foot'].head.copy() for s in ['L','R']}
+    pose('carry_walk',0)
+    walking={s:rig.pose.bones[s+'_foot'].head.copy() for s in ['L','R']}
+    if not right: start,walking=walking,start
+    # The upper body keeps the carrying pose; each boot transfers separately.
+    rotation=Quaternion((0,0,1),angle*smooth(t))
+    rig.pose.bones['root'].matrix=rotation.to_matrix().to_4x4() @ rig.pose.bones['root'].matrix
+    update()
+    for sign,side in [(-1,'L'),(1,'R')]:
+        first=(side=='R') if right else (side=='L')
+        begin,end=(.04,.48) if first else (.52,.96)
+        fraction=max(0,min(1,(t-begin)/(end-begin)))
+        amount=smooth(fraction)
+        target=start[side].lerp(Quaternion((0,0,1),angle) @ walking[side],amount)
+        target.z+=.075*math.sin(math.pi*fraction)
+        pole=rotation @ Vector((sign*.12,-1,.42))
+        solve_limb(side+'_thigh',side+'_shin',target,pole,clip)
+        orient_bone(side+'_foot',Quaternion((0,0,1),angle*amount) @ REST[side+'_foot'].to_quaternion())
+    update()
+
+
+def descent_pose(clip,t):
+    if clip=='climb_down':
+        pose('climb',(1-t)%1)
+        # Baked slower descent with a downward glance between matching endpoints.
+        orient_bone('head',Quaternion((1,0,0),.14*math.sin(math.pi*t)**2) @ rig.pose.bones['head'].matrix.to_quaternion())
+    else:
+        transition_pose('climb_exit' if clip=='descend_enter' else 'climb_enter',1-t)
+
+
 CLIPS={
     'idle':{'frames':120,'loop':True,'speed':0},
     'walk':{'frames':36,'loop':True,'speed':.4/(.60*1.2),'stance':.60,'distance_per_cycle':.4/.60},
@@ -237,6 +271,11 @@ CLIPS={
     'put_down':{'frames':54,'loop':False,'speed':0,'contact_seconds':1.08},
     'climb_enter':{'frames':36,'loop':False,'speed':0},
     'climb_exit':{'frames':42,'loop':False,'speed':0,'root_displacement_godot':[0,.51,.45]},
+    'carry_turn_right':{'frames':36,'loop':False,'speed':0,'root_yaw_degrees':90},
+    'carry_turn_left':{'frames':36,'loop':False,'speed':0,'root_yaw_degrees':-90},
+    'climb_down':{'frames':54,'loop':True,'speed':-.51/1.8,'rise_per_cycle':-.51},
+    'descend_enter':{'frames':42,'loop':False,'speed':0,'root_start_godot':[0,.51,.45]},
+    'descend_exit':{'frames':36,'loop':False,'speed':0},
 }
 for clip,info in CLIPS.items():
     action=bpy.data.actions.new(clip);action.use_fake_user=True
@@ -244,7 +283,11 @@ for clip,info in CLIPS.items():
     for frame in range(info['frames']+1):
         rig.animation_data.action=None
         scene.frame_set(frame)
-        if clip in ['pick_up','put_down','climb_enter','climb_exit']:
+        if clip.startswith('carry_turn_'):
+            pivot_pose(clip,frame/info['frames'])
+        elif clip in ['climb_down','descend_enter','descend_exit']:
+            descent_pose(clip,frame/info['frames'])
+        elif clip in ['pick_up','put_down','climb_enter','climb_exit']:
             transition_pose(clip,frame/info['frames'])
         else:pose(clip,frame/info['frames'])
         rig.animation_data.action=action
@@ -285,7 +328,7 @@ def save(path):
 
 save(SOURCE/'resident_animated.blend')
 report={'source':'art_source/reference_01/resident_reference.blend','fps':30,'clips':CLIPS,
-    'rig_bones':len(rig.data.bones),'motion':'cycles in place; climb_exit includes documented local root displacement',
+    'rig_bones':len(rig.data.bones),'motion':'cycles in place; landing transitions and carrying pivots include documented root motion',
     'attachments':['socket_carry','socket_tool'],'limits':['No finger rig','No navigation integration','Transitions authored for fixed staging geometry']}
 (SOURCE/'manifest.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
 

@@ -1,8 +1,8 @@
 class_name ResidentAnimator
 extends Node3D
 ## Baked Blender clips. The caller owns navigation and actual translation.
-const SPEEDS := {"idle": 0.0, "walk": 0.55555556, "carry_walk": 0.36796537, "work": 0.0, "climb": 0.31875}
-const ONE_SHOTS := ["pick_up", "put_down", "climb_enter", "climb_exit"]
+const SPEEDS := {"idle": 0.0, "walk": 0.55555556, "carry_walk": 0.36796537, "work": 0.0, "climb": 0.31875, "climb_down": -0.28333333}
+const ONE_SHOTS := ["pick_up", "put_down", "climb_enter", "climb_exit", "carry_turn_right", "carry_turn_left", "descend_enter", "descend_exit"]
 var manage_cargo_visibility := true
 var player: AnimationPlayer
 var skeleton: Skeleton3D
@@ -40,9 +40,9 @@ func set_action(clip: String, blend: float = 0.16) -> void:
 	current = clip
 	player.play(clip, blend)
 	if manage_cargo_visibility:
-		cargo.visible = clip == "carry_walk"
+		cargo.visible = clip == "carry_walk" or clip.begins_with("carry_turn_")
 	tool.visible = clip == "work"
 
 func sync_motion_speed(speed: float) -> void:
 	var nominal: float = SPEEDS.get(current, 0.0)
-	player.speed_scale = speed / nominal if nominal > 0.0 else 1.0
+	player.speed_scale = speed / nominal if not is_zero_approx(nominal) else 1.0

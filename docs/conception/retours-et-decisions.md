@@ -78,6 +78,8 @@ La version 0.2 devra harmoniser les chapitres, les statistiques provisoires, les
 
 ## Validation de la reprise
 
+**Lot 05 — pivots avec charge et descente validés.** Le joueur confirme « je valide, tu peux commit et pousser » après présentation des deux pivots, de l'entrée en descente, du cycle de descente et du retour au sol. Voir `assets-lot-05.md` pour les contrôles d'appui, les raccords et les limites d'intégration restantes.
+
 **Lot d'interactions 04 — première passe validée.** Le joueur valide la prise, le transport et la dépose de caisse ainsi que l'entrée et la sortie d'échelle, après correction du contact des deux pieds avec le palier (« ok, je valide, tu peux commit et pousser »). Voir `assets-lot-04.md` pour les vérifications et les limites d'intégration restantes.
 
 **Lot d'animations 03 — première passe validée.** Après présentation de `scenes/animation_review.tscn`, le joueur confirme « ok je valide, tu peux commit et pousser ». Les cycles de repos, marche, transport, travail au marteau et échelle sont retenus. Voir `assets-lot-03.md` pour les sources Blender, les contrôles et les transitions/navigation restant à intégrer.

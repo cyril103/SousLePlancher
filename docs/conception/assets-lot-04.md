@@ -11,6 +11,8 @@ Première passe validée par le joueur (« ok, je valide, tu peux commit et pous
 
 ## Essayer
 
+**Évolution du lot 05 :** la même scène ajoute désormais la touche **3** pour descendre, des pivots animés avec transferts d'appuis et une livraison sur trois cycles complets. Voir `assets-lot-05.md`. Les durées, distances et limites ci-dessous décrivent le lot 04 initialement validé.
+
 Ouvrir `scenes/interaction_review.tscn` puis F6. **1** lance la livraison, **2** lance l'échelle, **R** recommence la séquence courante, **Espace** suspend, **−/+** change la vitesse. Glisser pour tourner la caméra, molette pour zoomer, F11 pour le plein écran.
 
 La livraison prend la caisse sur un support, tourne, parcourt 1,8 unité et dépose la même caisse sur le second support. Les deux supports unis sont des gabarits techniques de hauteur, pas de nouveaux assets définitifs. La caisse est un seul objet : changement de parent au contact, maintien dans le repère de portage, puis retour dans le monde à la dépose. Les changements de vitesse et la pause affectent la chronologie entière.
