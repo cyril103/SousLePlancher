@@ -78,6 +78,8 @@ La version 0.2 devra harmoniser les chapitres, les statistiques provisoires, les
 
 ## Validation de la reprise
 
+**Lot d'animations 03 — première passe validée.** Après présentation de `scenes/animation_review.tscn`, le joueur confirme « ok je valide, tu peux commit et pousser ». Les cycles de repos, marche, transport, travail au marteau et échelle sont retenus. Voir `assets-lot-03.md` pour les sources Blender, les contrôles et les transitions/navigation restant à intégrer.
+
 **Kit de refuge — validation artistique acquise.** Après présentation et lancement de `scenes/refuge_review.tscn`, le joueur confirme « ok je valide ». Les murs, la fenêtre avec store, la porte ouvrante, l'échelle, la passerelle, l'établi et leur assemblage sont retenus comme référence visuelle. Voir `assets-lot-02.md` pour les livrables et les travaux d'intégration restants.
 
 - [x] Les cinq décisions critiques DEC-01, 02, 03, 04 et 08 ont été discutées.

@@ -1,0 +1,59 @@
+{
+  "source": "art_source/reference_01/resident_reference.blend",
+  "fps": 30,
+  "clips": {
+    "idle": {
+      "frames": 120,
+      "loop": true,
+      "speed": 0,
+      "duration": 4.0,
+      "maximum_reach_clamp": 0.003915
+    },
+    "walk": {
+      "frames": 36,
+      "loop": true,
+      "speed": 0.5555555555555556,
+      "stance": 0.6,
+      "distance_per_cycle": 0.6666666666666667,
+      "duration": 1.2,
+      "maximum_reach_clamp": 0.012114
+    },
+    "carry_walk": {
+      "frames": 42,
+      "loop": true,
+      "speed": 0.367965367965368,
+      "stance": 0.66,
+      "distance_per_cycle": 0.5151515151515151,
+      "duration": 1.4,
+      "maximum_reach_clamp": 0
+    },
+    "work": {
+      "frames": 36,
+      "loop": true,
+      "speed": 0,
+      "impact_seconds": 0.336,
+      "duration": 1.2,
+      "maximum_reach_clamp": 0.003915
+    },
+    "climb": {
+      "frames": 48,
+      "loop": true,
+      "speed": 0.31875,
+      "rise_per_cycle": 0.51,
+      "rung_spacing": 0.255,
+      "duration": 1.6,
+      "maximum_reach_clamp": 0
+    }
+  },
+  "rig_bones": 21,
+  "motion": "in place; actor translation uses documented speed",
+  "attachments": [
+    "socket_carry",
+    "socket_tool"
+  ],
+  "limits": [
+    "No finger rig",
+    "No navigation integration",
+    "Climb entry/exit transitions not authored"
+  ]
+}

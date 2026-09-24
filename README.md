@@ -23,6 +23,8 @@ Caméra : flèches ou ZQSD sur clavier français (WASD physique), molette pour z
 
 ## Assets Blender
 
+Le **lot d'animations** se teste dans `scenes/animation_review.tscn` (**F6**) : repos, marche, portage de caisse, travail au marteau et échelle. Touches **1–5** pour choisir, **Espace** pour suspendre, **−/+** pour ralentir/accélérer, **D** pour activer le déplacement. Sources Blender, vitesses et limites : `docs/conception/assets-lot-03.md`. Ces animations sont encore indépendantes de l'IA du prototype.
+
 Le **kit de refuge** se visite dans `scenes/refuge_review.tscn` (**F6**) : murs, fenêtre, porte ouvrante, échelle, passerelle et établi assemblés avec le mobilier et l'habitant de référence. **Espace** actionne la porte, **M** masque les murs et **L** change l'éclairage. Sources et limites dans `docs/conception/assets-lot-02.md`.
 
 Un premier lot issu des choix de conception est disponible dans la scène **`scenes/asset_review.tscn`** (ouvrir puis **F6**) : habitant de référence animé, lit en boîte d'allumettes, seau-dé à coudre, caisse et plancher modulaire. Les sources sont dans `art_source/reference_01/`, les GLB dans `assets/models/reference_01/`. Consulter `docs/conception/assets-lot-01.md` pour les commandes, limites et critères de revue. Il s'agit d'une étude indépendante ; les modèles de la partie principale restent ceux du prototype.

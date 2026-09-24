@@ -120,6 +120,7 @@ def finish(obj, name, mat, bone=None):
     obj.data.materials.append(mat)
     if bone:
         PARTS[obj.name] = bone
+        obj['deform_bone'] = bone
     return obj
 
 
@@ -267,7 +268,7 @@ def save_asset(name, rig=None):
                 if weight: upper.add([vertex.index], weight, 'REPLACE')
                 if weight<1: lower.add([vertex.index], 1-weight, 'REPLACE')
         elif rig:
-            group = obj.vertex_groups.new(name=PARTS.get(obj.name, 'spine'))
+            group = obj.vertex_groups.new(name=obj.get('deform_bone', PARTS.get(obj.name, 'spine')))
             group.add(list(range(len(obj.data.vertices))), 1.0, 'REPLACE')
         obj.select_set(True)
     bpy.context.view_layer.objects.active = objs[0]
