@@ -23,6 +23,8 @@ Caméra : flèches ou ZQSD sur clavier français (WASD physique), molette pour z
 
 ## Assets Blender
 
+Le **kit de refuge** se visite dans `scenes/refuge_review.tscn` (**F6**) : murs, fenêtre, porte ouvrante, échelle, passerelle et établi assemblés avec le mobilier et l'habitant de référence. **Espace** actionne la porte, **M** masque les murs et **L** change l'éclairage. Sources et limites dans `docs/conception/assets-lot-02.md`.
+
 Un premier lot issu des choix de conception est disponible dans la scène **`scenes/asset_review.tscn`** (ouvrir puis **F6**) : habitant de référence animé, lit en boîte d'allumettes, seau-dé à coudre, caisse et plancher modulaire. Les sources sont dans `art_source/reference_01/`, les GLB dans `assets/models/reference_01/`. Consulter `docs/conception/assets-lot-01.md` pour les commandes, limites et critères de revue. Il s'agit d'une étude indépendante ; les modèles de la partie principale restent ceux du prototype.
 
 Tous les modèles visibles sont créés avec Blender : sol et décor miniature, maison-boîte, établi, habitant au chapeau gland, miettes, bois et fibres. Les sources éditables sont dans `art_source/`, les exports glTF dans `assets/models/`. Le script `tools/create_assets.py` permet de les régénérer avec Blender 2.93 ou compatible :

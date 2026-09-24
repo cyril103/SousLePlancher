@@ -1,0 +1,175 @@
+{
+  "status": "reference kit v0.1, visual assets; gameplay not implemented",
+  "grid": {
+    "wall_width": 2.0,
+    "wall_height": 2.2,
+    "floor_grid": 2.0,
+    "resident_height": 1.58
+  },
+  "assets": [
+    {
+      "asset": "wall_solid_2m",
+      "triangles": 5844,
+      "materials": 4,
+      "dimensions": [
+        2.0598,
+        0.1864,
+        2.2
+      ],
+      "rig_bones": 0,
+      "status": "art reference v0.1; review required"
+    },
+    {
+      "asset": "wall_window_2m",
+      "triangles": 6704,
+      "materials": 5,
+      "dimensions": [
+        2.0,
+        0.4,
+        2.2
+      ],
+      "rig_bones": 0,
+      "status": "art reference v0.1; review required"
+    },
+    {
+      "asset": "wall_doorway_2m",
+      "triangles": 2544,
+      "materials": 3,
+      "dimensions": [
+        2.0,
+        0.27,
+        2.2
+      ],
+      "rig_bones": 0,
+      "status": "art reference v0.1; review required"
+    },
+    {
+      "asset": "door_leaf_1m",
+      "triangles": 2112,
+      "materials": 4,
+      "dimensions": [
+        1.02,
+        0.1981,
+        1.89
+      ],
+      "rig_bones": 0,
+      "status": "art reference v0.1; review required"
+    },
+    {
+      "asset": "ladder_2m",
+      "triangles": 12436,
+      "materials": 3,
+      "dimensions": [
+        0.8998,
+        0.571,
+        2.4922
+      ],
+      "rig_bones": 0,
+      "status": "art reference v0.1; review required"
+    },
+    {
+      "asset": "bridge_2m",
+      "triangles": 8656,
+      "materials": 5,
+      "dimensions": [
+        1.1398,
+        2.0624,
+        1.02
+      ],
+      "rig_bones": 0,
+      "status": "art reference v0.1; review required"
+    },
+    {
+      "asset": "salvage_workbench",
+      "triangles": 14848,
+      "materials": 9,
+      "dimensions": [
+        1.72,
+        0.87,
+        1.385
+      ],
+      "rig_bones": 0,
+      "status": "art reference v0.1; review required"
+    }
+  ],
+  "anchors_godot": {
+    "wall_solid_2m": {
+      "left": [
+        -1,
+        0,
+        0
+      ],
+      "right": [
+        1,
+        0,
+        0
+      ]
+    },
+    "wall_window_2m": {
+      "left": [
+        -1,
+        0,
+        0
+      ],
+      "right": [
+        1,
+        0,
+        0
+      ]
+    },
+    "wall_doorway_2m": {
+      "hinge": [
+        -0.505,
+        0,
+        0.075
+      ],
+      "clearance_width": 1.02,
+      "clearance_height": 1.95
+    },
+    "door_leaf_1m": {
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "opening_angle_degrees": -100
+    },
+    "ladder_2m": {
+      "bottom": [
+        0,
+        0,
+        0.32
+      ],
+      "top": [
+        0,
+        2.2,
+        -0.11
+      ]
+    },
+    "bridge_2m": {
+      "entry": [
+        0,
+        0.05,
+        1
+      ],
+      "exit": [
+        0,
+        0.05,
+        -1
+      ]
+    },
+    "salvage_workbench": {
+      "operator": [
+        0,
+        0,
+        1.05
+      ]
+    }
+  },
+  "limits": [
+    "No navigation or agent traversal",
+    "No construction/damage states",
+    "Door opens in review only",
+    "No production collision shapes yet"
+  ]
+}

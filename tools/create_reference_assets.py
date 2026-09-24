@@ -593,13 +593,14 @@ def showcase():
     bpy.context.scene.render.filepath=str(PREVIEW/'resident_front_back.png');bpy.ops.render.render(write_still=True)
 
 
-character()
-bed()
-bucket()
-crate()
-floor_module()
-(SOURCE/'manifest.json').write_text(json.dumps({'units':'1 Blender unit = 1 Godot unit; resident height about 1.60',
-    'assets':MANIFEST,'textures':'image_gen atlases; Blender-baked albedo and estimated tangent normals; packed in blend and GLB',
-    'rig_limit':'rigid segment skinning, reference idle only; not a final deformable production rig'},indent=2),encoding='utf-8')
-showcase()
-print('REFERENCE_LOT_OK',json.dumps(MANIFEST))
+if __name__ == '__main__':
+    character()
+    bed()
+    bucket()
+    crate()
+    floor_module()
+    (SOURCE/'manifest.json').write_text(json.dumps({'units':'1 Blender unit = 1 Godot unit; resident height about 1.60',
+        'assets':MANIFEST,'textures':'image_gen atlases; Blender-baked albedo and estimated tangent normals; packed in blend and GLB',
+        'rig_limit':'rigid segment skinning, reference idle only; not a final deformable production rig'},indent=2),encoding='utf-8')
+    showcase()
+    print('REFERENCE_LOT_OK',json.dumps(MANIFEST))

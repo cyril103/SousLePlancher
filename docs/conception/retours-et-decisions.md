@@ -78,6 +78,8 @@ La version 0.2 devra harmoniser les chapitres, les statistiques provisoires, les
 
 ## Validation de la reprise
 
+**Kit de refuge — validation artistique acquise.** Après présentation et lancement de `scenes/refuge_review.tscn`, le joueur confirme « ok je valide ». Les murs, la fenêtre avec store, la porte ouvrante, l'échelle, la passerelle, l'établi et leur assemblage sont retenus comme référence visuelle. Voir `assets-lot-02.md` pour les livrables et les travaux d'intégration restants.
+
 - [x] Les cinq décisions critiques DEC-01, 02, 03, 04 et 08 ont été discutées.
 - [x] La forme des habitants et le style du refuge sont choisis (direction validée ; scène étalon à produire et à examiner).
 - [x] La première aventure est retenue avec davantage de construction et d'aménagement avant l'expédition (déroulé à réviser).
