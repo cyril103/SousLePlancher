@@ -1,5 +1,7 @@
 # Lot 12 — Sommeil, fabrication des lits et intimité
 
+Fiche historique : le [lot 14](gameplay-lot-14.md), validé par le joueur, remplace le paiement immédiat et le remboursement direct décrits ici par l'approvisionnement et la récupération physiques.
+
 État : validé par le joueur (« ok validé, commit et push »), publication autorisée avec le lot 13. Ce lot suit sa demande de commencer la vie quotidienne par le sommeil et de remplacer les abris hérités du premier prototype.
 
 ## Jouer et examiner

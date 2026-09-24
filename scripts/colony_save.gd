@@ -1,6 +1,6 @@
 extends RefCounted
 ## Plain, versioned data only. Transient jobs must settle before capture.
-const VERSION := 3
+const VERSION := 4
 const DEFAULT_PATH := "user://saves/colony_v1.json"
 const KINDS := ["food", "food", "wood", "wood", "fiber", "fiber", "wood", "water"]
 
@@ -24,6 +24,7 @@ static func capture(game: Node) -> Dictionary:
 		"stock": stocks, "patches": patches, "buildings": buildings,
 		"assignments": assignments, "speed": game.speed,
 		"needs": needs, "furnishings": game.sleeping.snapshot(),
+		"recovery": game.construction.snapshot(),
 		"water_source": vector(game.patches[7].pos),
 		"clock": {"elapsed": game.elapsed, "meal_timer": game.meal_timer, "suspicion": game.suspicion, "hunger": game.hunger, "event_index": game.event_index},
 		"view": {"focus": vector(game.focus), "yaw": game.yaw, "zoom": game.zoom, "paths": game.show_paths, "resident": game.hud.resident_index, "cutaway": game.refuge.cutaway}
@@ -94,9 +95,22 @@ static func validate(data: Variant) -> String:
 			if not fields(bed, ["owner", "work", "built"]): return "Couchage incomplet."
 			if not number(bed.owner, -1, data.assignments.size() - 1, true) or not number(bed.work, 0, required) or not bed.built is bool: return "Couchage invalide."
 			if bed.built != (bed.work == required): return "Avancement du couchage incohérent."
+			if data.version >= 4:
+				var amounts := {"wood": 6, "fiber": 5} if furnishings[i] == "private_bed" else {"wood": 4, "fiber": 3}
+				if not fields(bed, ["materials"]) or not fields(bed.materials, ["wood", "fiber"]): return "Matériaux de chantier manquants."
+				for kind in amounts:
+					if not number(bed.materials[kind], 0, amounts[kind], true): return "Matériaux de chantier invalides."
+					if bed.work > 0 and bed.materials[kind] != amounts[kind]: return "Fabrication sans matériaux livrés."
 			if bed.owner >= 0:
 				if bed.owner in owners: return "Plusieurs lits attribués au même habitant."
 				owners.append(bed.owner)
+	if data.version >= 4:
+		if not data.has("recovery") or not data.recovery is Array or data.recovery.size() > 4096: return "Matériaux à récupérer invalides."
+		for pile in data.recovery:
+			if not fields(pile, ["pos", "materials"]) or not valid_vector(pile.pos) or not fields(pile.materials, ["wood", "fiber"]): return "Tas de récupération incomplet."
+			if absf(pile.pos[0]) > 10 or absf(pile.pos[2]) > 8 or absf(pile.pos[1] + .0105) > .001: return "Tas de récupération hors de la carte."
+			if not number(pile.materials.wood, 0, 6, true) or not number(pile.materials.fiber, 0, 5, true): return "Quantité à récupérer invalide."
+			if pile.materials.wood + pile.materials.fiber == 0: return "Tas de récupération vide."
 	for assignment in data.assignments:
 		if not number(assignment, -1, count - 1, true): return "Affectation invalide."
 		if assignment >= 0 and not data.patches[int(assignment)].discovered: return "Affectation dans une zone inconnue."

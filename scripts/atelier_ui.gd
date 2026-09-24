@@ -567,12 +567,13 @@ func refresh() -> void:
 	for key in ["food", "wood", "fiber", "water"]:
 		stocks_label.text += "\n%s : %d          +%d" % [game.NAMES[key], game.stock.get(key, 0), carrying[key]]
 	stocks_label.text += "\n\nChaque habitant mange et boit selon ses besoins.\nUne portion = 1 miette · Une boisson = 1 eau.\nSi une réserve est vide, les habitants cherchent une ressource accessible."
+	stocks_label.text += "\n\nRéservés aux chantiers : %d bois · %d fibres\nTas à récupérer : %d" % [game.construction.reserved("wood"), game.construction.reserved("fiber"), game.construction.recovery.size()]
 	for kind in build_buttons:
 		var affordable: bool = not game.ended and not game.start_panel.visible
 		for key in game.COSTS[kind]:
-			if game.stock[key] < game.COSTS[kind][key]: affordable = false
-		build_buttons[kind].disabled = not affordable
-		build_buttons[kind].tooltip_text = "Choisir un emplacement" if affordable else "Matériaux insuffisants au dépôt"
+			if game.construction.available(key) < game.COSTS[kind][key]: affordable = false
+		build_buttons[kind].disabled = game.ended or game.pending_save or (not affordable and not kind in ["bed", "private_bed"])
+		build_buttons[kind].tooltip_text = "Planifier un chantier ; livraison des matériaux avant fabrication" if kind in ["bed", "private_bed"] else ("Choisir un emplacement" if affordable else "Matériaux disponibles insuffisants")
 	resident_index = clampi(resident_index, 0, game.workers.size() - 1)
 	var resident: Dictionary = game.workers[resident_index]
 	resident_name.text = "Habitant %d" % (resident_index + 1)
@@ -623,7 +624,8 @@ func _refresh_beds() -> void:
 	for i in range(bed_controls.size()):
 		var controls := bed_controls[i]
 		var bed: Dictionary = game.sleeping.beds[i]
-		controls.label.text = "%s %d · %s" % ["Alcôve" if bed.private else "Lit", i + 1, "Terminé" if bed.built else "Fabrication %d %%" % int(100 * bed.work / bed.required)]
+		controls.label.text = "%s %d · %s" % ["Alcôve" if bed.private else "Lit", i + 1, game.construction.status(bed)]
+		if not bed.built: controls.label.text += "\n" + game.construction.quantities(bed)
 		controls.owner.select(bed.owner + 1)
 		controls.owner.disabled = bed.occupant >= 0 or game.ended
 		controls.cancel.visible = not bed.built

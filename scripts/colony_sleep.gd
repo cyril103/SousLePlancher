@@ -20,6 +20,7 @@ func add(pos: Vector3, private: bool) -> void:
 	var label: Label3D = game.Art.caption(node, "", Vector3(0, 1.9, 0))
 	label.pixel_size = .004
 	beds.append({"pos": pos, "private": private, "owner": owner, "occupant": -1, "builder": -1,
+		"materials": {"wood": 0, "fiber": 0}, "hauler": -1,
 		"work": 0.0, "required": 20.0 if private else 12.0, "built": false, "node": node, "label": label})
 	visual(beds.size() - 1)
 
@@ -29,14 +30,25 @@ func visual(index: int) -> void:
 		if child != bed.label:
 			bed.node.remove_child(child)
 			child.queue_free()
-	game.Art.model(bed.node, "reference_01/matchbox_bed" if bed.built else "sleep_12/bed_materials", Vector3.ZERO)
+	if bed.built:
+		game.Art.model(bed.node, "reference_01/matchbox_bed", Vector3.ZERO)
+	elif game.construction.supplied(bed):
+		game.Art.model(bed.node, "sleep_12/bed_materials", Vector3.ZERO)
+	elif bed.materials.wood + bed.materials.fiber > 0:
+		for kind in ["wood", "fiber"]:
+			if bed.materials[kind] <= 0: continue
+			var pile: Node3D = game.Art.model(bed.node, kind, Vector3(-.3 if kind == "wood" else .35, 0, 0))
+			pile.scale = Vector3.ONE * .45
+	else:
+		var outline: Node3D = game.Art.model(bed.node, "reference_01/matchbox_bed", Vector3.ZERO)
+		game._set_ghost(outline)
 	if bed.built and bed.private: game.Art.model(bed.node, "sleep_12/privacy_partition", Vector3.ZERO)
 	caption(index)
 
 func caption(index: int) -> void:
 	var bed := beds[index]
 	bed.label.text = ("Alcôve" if bed.private else "Lit") + " %d" % (index + 1)
-	if not bed.built: bed.label.text += " · %d %%" % int(100 * bed.work / bed.required)
+	if not bed.built: bed.label.text += " · " + game.construction.status(bed) + "\n" + game.construction.quantities(bed)
 	elif bed.occupant >= 0: bed.label.text += " · Zzz"
 	elif bed.owner >= 0: bed.label.text += " · H%d" % (bed.owner + 1)
 
@@ -54,6 +66,7 @@ func ready_count(private_only: bool = false) -> int:
 func cancel_order(index: int) -> bool:
 	if index < 0 or index >= beds.size() or beds[index].built: return false
 	var bed := beds[index]
+	game.construction.cancel_site(bed)
 	for worker in game.workers:
 		var c: WorkerDelivery = worker.delivery
 		if c.furniture_order == index:
@@ -63,7 +76,6 @@ func cancel_order(index: int) -> bool:
 		elif c.furniture_order > index: c.furniture_order -= 1
 		if c.rest_bed > index: c.rest_bed -= 1
 	var kind := "private_bed" if bed.private else "bed"
-	for key in game.COSTS[kind]: game.stock[key] += game.COSTS[kind][key]
 	for building in game.buildings:
 		if building.pos == bed.pos and building.kind == kind:
 			game.buildings.erase(building)
@@ -73,7 +85,7 @@ func cancel_order(index: int) -> bool:
 	bed.node.queue_free()
 	beds.remove_at(index)
 	for i in range(beds.size()): caption(i)
-	game._news("Chantier annulé. Les matériaux réservés sont rendus au dépôt.")
+	game._news("Chantier annulé. Les matériaux livrés restent à récupérer ; les charges en route reviennent au dépôt.")
 	return true
 
 func entrance(bed: Dictionary) -> Vector3:
@@ -237,9 +249,10 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 		if c.state != "return_home": c.change("return_home")
 		return false
 	if game.hiding or c.state != "idle" or c.exploring: return false
+	if game.construction.start(c): return true
 	for i in range(beds.size()):
 		var bed := beds[i]
-		if bed.built or bed.builder >= 0: continue
+		if bed.built or bed.builder >= 0 or bed.hauler >= 0 or not game.construction.supplied(bed): continue
 		var from: Vector3 = game.home_position(c.owner) if c.inside_refuge else c.actor.position
 		if game.travel_path(from, entrance(bed), c.owner).is_empty(): continue
 		if c.inside_refuge:
@@ -259,5 +272,5 @@ func description(c: WorkerDelivery) -> String:
 func snapshot() -> Array:
 	var result: Array = []
 	for bed in beds:
-		result.append({"owner": bed.owner, "work": bed.work, "built": bed.built})
+		result.append({"owner": bed.owner, "work": bed.work, "built": bed.built, "materials": bed.materials.duplicate()})
 	return result

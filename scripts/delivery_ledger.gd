@@ -38,6 +38,10 @@ func leave_source(id: int) -> void:
 
 func acquire_destination(id: int) -> bool:
 	if not jobs.has(id) or not jobs[id].collected: return false
+	return acquire_slot(id)
+
+func acquire_slot(id: int) -> bool:
+	# Positive tickets are harvest deliveries; construction uses tickets below -1.
 	if destination_owner == id: return true
 	if not destination_queue.has(id): destination_queue.append(id)
 	if destination_owner != -1 or destination_queue.front() != id: return false

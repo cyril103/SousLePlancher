@@ -136,7 +136,7 @@ func run() -> void:
 		worker.sleep_requested = false
 		worker.patch = -1
 	copy._toggle_hide()
-	advance(copy, 35)
+	advance(copy, 80)
 	copy.workers[0].energy = 20.0
 	for i in range(1000):
 		advance(copy, .05)

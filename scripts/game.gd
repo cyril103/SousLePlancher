@@ -8,10 +8,12 @@ const Save = preload("res://scripts/colony_save.gd")
 const Refuge = preload("res://scripts/refuge_access.gd")
 const Sleep = preload("res://scripts/colony_sleep.gd")
 const Needs = preload("res://scripts/colony_needs.gd")
+const Construction = preload("res://scripts/construction_logistics.gd")
 const HOME := Vector3(-3, 0, 1)
 const COSTS := {"bed": {"wood": 4, "fiber": 3}, "private_bed": {"wood": 6, "fiber": 5}, "shelter": {"wood": 8, "fiber": 4}, "workshop": {"wood": 10, "fiber": 6}}
 var sleeping := Sleep.new()
 var needs := Needs.new()
+var construction := Construction.new()
 const NAMES := {"food": "Miettes", "wood": "Bois", "fiber": "Fibres", "water": "Eau"}
 var stock := {"food": 24, "wood": 12, "fiber": 6, "water": 16}
 var patches: Array[Dictionary] = []
@@ -83,6 +85,7 @@ var route_timer := 0.0
 
 func _ready() -> void:
 	sleeping.game = self
+	construction.game = self
 	needs.game = self
 	Art.decorate(self)
 	refuge = Refuge.new()
@@ -181,6 +184,7 @@ func _ready() -> void:
 		selected = -1
 		_news("Un éclaireur reconnaît la réserve. T : exploration ; C : affecter au gisement découvert ; H : rappel.")
 	if "--demo-sleep" in OS.get_cmdline_user_args(): prepare_sleep_demo()
+	if "--demo-construction" in OS.get_cmdline_user_args(): prepare_construction_demo()
 	if "--demo-needs" in OS.get_cmdline_user_args(): prepare_needs_demo()
 
 func prepare_needs_demo() -> void:
@@ -188,7 +192,9 @@ func prepare_needs_demo() -> void:
 	stock = {"food": 40, "water": 30, "wood": 30, "fiber": 20}
 	_choose_build("private_bed")
 	_place_build(Vector3(-3, 0, -4))
-	for i in range(600): simulate(.05)
+	for i in range(1600):
+		simulate(.05)
+		suspicion = 0
 	workers[0].energy = 20.0
 	for i in range(240): simulate(.05)
 	for i in range(1, 4):
@@ -215,7 +221,9 @@ func prepare_sleep_demo() -> void:
 	for spec in [["private_bed", Vector3(-3, 0, -4)], ["bed", Vector3(0, 0, -3)]]:
 		_choose_build(spec[0])
 		_place_build(spec[1])
-	for i in range(700): simulate(.05)
+	for i in range(1600):
+		simulate(.05)
+		suspicion = 0
 	for i in range(2): workers[i].energy = 20.0
 	for i in range(220): simulate(.05)
 	_choose_build("private_bed")
@@ -230,6 +238,21 @@ func prepare_sleep_demo() -> void:
 	_update_camera()
 	_news("Sommeil : Espace pour reprendre. B fabrique les lits ; Couchages attribue les propriétaires ; H réveille et rappelle.")
 
+func prepare_construction_demo() -> void:
+	start_panel.hide()
+	stock = {"food": 80, "water": 50, "wood": 7, "fiber": 3}
+	for spec in [["bed", Vector3(-3, 0, -4)], ["private_bed", Vector3(0, 0, -3)]]:
+		_choose_build(spec[0])
+		_place_build(spec[1])
+	paused = true
+	zoom = 15
+	focus = Vector3(-2, 0, -1.8)
+	yaw = .32
+	hud.resident_index = 0
+	_show_tray("beds")
+	_update_camera()
+	_news("Deux chantiers, des réserves limitées. Espace : livrer puis fabriquer. Affectez ensuite un habitant au bois et aux fibres pour terminer l’alcôve.")
+
 func _add_patch(kind: String, pos: Vector3, amount: int) -> void:
 	var node := Art.model(self, "needs_13/condensation" if kind == "water" else kind, pos)
 	var label := Art.caption(node, NAMES[kind], Vector3(0, 1.0, 0), Color("eac37e"))
@@ -238,6 +261,7 @@ func _add_patch(kind: String, pos: Vector3, amount: int) -> void:
 
 func _exit_tree() -> void:
 	sleeping.game = null
+	construction.game = null
 	needs.game = null
 	# Workers store their controller; detach its dictionary reference on teardown.
 	for worker in workers:
@@ -324,6 +348,7 @@ func _navigation_allows_build(pos: Vector3, kind: String) -> bool:
 	destinations.append(HOME + Refuge.OUTSIDE)
 	destinations.append_array(depot_slots)
 	for bed in sleeping.beds: destinations.append(sleeping.entrance(bed))
+	for pile in construction.recovery: destinations.append(pile.pos)
 	if kind in ["bed", "private_bed"]: destinations.append(pos + Sleep.ENTRY)
 	for patch in patches:
 		if patch.pos.y < 1: destinations.append(patch.pos + Vector3(0.9, 0, 0.2))
@@ -560,15 +585,16 @@ func _place_build(point: Vector3) -> bool:
 	if build_mode == "shelter" and workers.size() >= Refuge.CAPACITY:
 		_news("Le refuge est complet : ses six places sont occupées.")
 		return false
+	var furniture := build_mode in ["bed", "private_bed"]
 	for key in COSTS[build_mode]:
-		if stock[key] < COSTS[build_mode][key]:
+		if not furniture and construction.available(key) < COSTS[build_mode][key]:
 			_news("Il manque des matériaux. Affectez des habitants au bois et aux fibres.")
 			return false
 	if not _navigation_allows_build(pos, build_mode):
 		_news("Ce bâtiment couperait un accès au refuge, au dépôt ou aux ressources.")
 		return false
-	for key in COSTS[build_mode]: stock[key] -= COSTS[build_mode][key]
-	var furniture := build_mode in ["bed", "private_bed"]
+	if not furniture:
+		for key in COSTS[build_mode]: stock[key] -= COSTS[build_mode][key]
 	if furniture: sleeping.add(pos, build_mode == "private_bed")
 	else: Art.building(self, pos, build_mode)
 	buildings.append({"pos": pos, "kind": build_mode})
@@ -576,7 +602,7 @@ func _place_build(point: Vector3) -> bool:
 	if not furniture: navigation_obstacles.append(Navigation.footprint(pos + Vector3(1.05, 0, 0.65), Vector2(0.12, 0.12)))
 	navigation.configure(navigation_obstacles, navigation_stands)
 	if furniture:
-		_news("Matériaux réservés. Un habitant fabriquera le couchage après sa livraison. T : suivi des travaux.")
+		_news("Chantier planifié. Bois et fibres seront livrés avant fabrication. T : suivi des travaux.")
 	elif build_mode == "shelter":
 		shelters += 1
 		_refresh_navigation_slots(workers.size() + 1)
@@ -758,6 +784,7 @@ func cancel_checkpoint() -> void:
 	_news(save_status)
 
 func checkpoint_ready() -> bool:
+	if not construction.jobs.is_empty(): return false
 	if ended or not hiding or not delivery_ledger.jobs.is_empty() or delivery_ledger.destination_owner != -1: return false
 	for patch in patches:
 		if patch.reserved != 0: return false
@@ -799,11 +826,17 @@ func apply_checkpoint(data: Dictionary) -> bool:
 		for i in range(sleeping.beds.size()):
 			for key in ["owner", "work", "built"]: sleeping.beds[i][key] = data.furnishings[i][key]
 			sleeping.beds[i].owner = int(sleeping.beds[i].owner)
+			# v2/v3 sites were already paid in full at placement. Migrate them as delivered.
+			var materials: Dictionary = data.furnishings[i].materials if data.version >= 4 else construction.cost(sleeping.beds[i])
+			sleeping.beds[i].materials = {"wood": int(materials.wood), "fiber": int(materials.fiber)}
 			sleeping.visual(i)
 		for i in range(workers.size()):
 			for key in ["energy", "comfort", "privacy", "sleep_requested"]: workers[i][key] = data.needs[i][key]
 			for key in ["nutrition", "hydration"]: workers[i][key] = float(data.needs[i].get(key, 100.0))
 	for i in range(data.patches.size()): patches[i].amount = int(data.patches[i].amount)
+	if data.version >= 4:
+		for pile in data.recovery:
+			construction.add_recovery(Vector3(pile.pos[0], pile.pos[1], pile.pos[2]), {"wood": int(pile.materials.wood), "fiber": int(pile.materials.fiber)})
 	if data.patches[6].discovered: discover_east()
 	for i in range(workers.size()):
 		var controller: WorkerDelivery = workers[i].delivery

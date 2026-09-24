@@ -78,6 +78,8 @@ La version 0.2 devra harmoniser les chapitres, les statistiques provisoires, les
 
 ## Validation de la reprise
 
+**Lot 14 — approvisionnement des lits validé.** Le joueur confirme « tu peux valider » après présentation et lancement de la démo. Livraison physique avant fabrication, réservations, récupération après annulation et sauvegarde v4. Voir `gameplay-lot-14.md`. Commit et push autorisés selon le fonctionnement convenu.
+
 **Nouvelle méthode demandée.** Une étape à la fois, présentation du résultat, validation du joueur, puis commit et push. La révision documentaire et la roadmap sont validées par le joueur (« je valide ») ; commit et push autorisés pour cette étape. Les torches individuelles et les liaisons physiques entre secteurs font partie de la suite autorisée, avec démonstration de chaque incrément.
 
 **Lots 12–13 — couchages et besoins autonomes validés et publiés.** Le joueur confirme « ok validé, commit et push ». Commit `3d1c9a3` : fabrication des lits et alcôves, propriété et intimité, sommeil, faim et soif autonomes, animations et sauvegarde des nouveaux états. Voir les fiches `gameplay-lot-12.md` et `gameplay-lot-13.md`. Les besoins ne comprennent pas encore santé, température ni simulation sociale.

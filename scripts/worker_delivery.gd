@@ -52,6 +52,7 @@ var exploring := false
 var exploration_time := 0.0
 var rest_bed := -1
 var furniture_order := -1
+var supply_job := -1
 var rest_recall := false
 var personal_recall := false
 var needs_supply := -1
@@ -123,6 +124,7 @@ func cancel() -> void:
 	game.ladder.release(owner)
 	waiting_ladder = false
 	navigation_issue = ""
+	if game.construction.cancel(self): return
 	if game.sleeping.interrupt(self): return
 	if state == "putdown": return # Complete an unloading already in progress.
 	if job < 0: return
@@ -237,6 +239,7 @@ func tick(dt: float) -> void:
 		ladder_exit = Vector3.INF
 	timer += dt
 	retry_time = maxf(0, retry_time - dt)
+	if game.construction.tick(self, dt): return
 	if game.needs.tick(self, dt): return
 	if needs_supply < 0 and not (need_interrupt and state == "return_home"):
 		if game.sleeping.tick(self, dt): return
@@ -351,6 +354,8 @@ func tick(dt: float) -> void:
 					change("return_home")
 
 func description() -> String:
+	var supply_description: String = game.construction.description(self)
+	if not supply_description.is_empty() and not climbing and not bridge_active and not door_active: return supply_description
 	var vital_description: String = game.needs.description(self)
 	if not vital_description.is_empty() and not climbing and not bridge_active and not door_active: return vital_description
 	var need_description: String = game.sleeping.description(self)

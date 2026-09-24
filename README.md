@@ -27,6 +27,8 @@ Le **lot 13** ajoute les besoins autonomes de faim et de soif au sommeil : trois
 
 ## Suite de production
 
+Le **lot 14**, validé par le joueur, remplace le paiement immédiat des lits par des livraisons physiques de bois et de fibres. Les chantiers incomplets attendent les matériaux ; leur annulation laisse des tas à récupérer. Démo en pause : `-- --demo-construction`. **Espace** reprend, **Construire → Gérer les couchages** montre le suivi. Voir [les règles et vérifications](docs/conception/gameplay-lot-14.md).
+
 Voir la [roadmap par étapes](docs/conception/roadmap-production.md) et le [cahier des charges révisé](docs/conception/cahier-des-charges.md). Chaque étape est présentée et validée avant commit et push. Le PDF v0.1 est une archive de conception ; le suivi actuel est dans les documents Markdown.
 
 ## Assets Blender

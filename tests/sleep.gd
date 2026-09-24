@@ -21,10 +21,10 @@ func run() -> void:
 	game.stock = {"food": 10000, "wood": 100, "fiber": 100}
 	game._choose_build("private_bed")
 	check(game._place_build(Vector3(-3, 0, -4)), "Private sleeping alcove placed")
-	check(game.stock.wood == 94 and game.stock.fiber == 95, "Materials reserved exactly once")
+	check(game.stock.wood == 100 and game.stock.fiber == 100, "Placement keeps materials in depot until pickup")
 	check(game.workers.size() == 4, "Furniture never creates an inhabitant")
 	check(not game.sleeping.beds[0].built, "Placing an order does not instantly create a usable bed")
-	advance(game, 35)
+	advance(game, 80)
 	check(game.sleeping.beds[0].built, "A resident reaches the site and finishes fabrication")
 	check(game.stock.wood == 94 and game.stock.fiber == 95, "Completing fabrication does not charge twice")
 	var c: WorkerDelivery = game.workers[0].delivery
@@ -69,6 +69,9 @@ func run() -> void:
 	game._choose_build("bed")
 	check(game._place_build(Vector3(0, 0, -3)), "Second bed order is reachable")
 	game.sleeping.beds[1].work = 3.5
+	game.sleeping.beds[1].materials = {"wood": 4, "fiber": 3}
+	game.stock.wood -= 4
+	game.stock.fiber -= 3
 	game.pending_save = true
 	advance(game, 2)
 	check(game.checkpoint_ready(), "Checkpoint interrupts floor sleep without deadlocking")
@@ -101,7 +104,7 @@ func run() -> void:
 	check(old_game.apply_checkpoint(legacy) and old_game.workers[0].energy == 100, "Old saves receive initialized needs")
 	var wood: int = candidate.stock.wood
 	check(candidate.sleeping.cancel_order(1), "Unfinished order can be cancelled")
-	check(candidate.stock.wood == wood + 4 and candidate.sleeping.beds.size() == 1, "Cancellation refunds materials once")
+	check(candidate.stock.wood == wood and candidate.sleeping.beds.size() == 1 and candidate.construction.recovery[0].materials.wood == 4, "Cancellation leaves physical materials for recovery")
 	check(not candidate.sleeping.cancel_order(0), "Completed furniture cannot be refunded as an order")
 	# A need appearing during the upper-zone delivery must not steal an access lock.
 	candidate.pending_save = false
@@ -125,7 +128,7 @@ func run() -> void:
 	old_game._toggle_hide()
 	old_game._choose_build("private_bed")
 	check(old_game._place_build(Vector3(-3, 0, -4)), "Live cancellation fixture placed")
-	for i in range(800):
+	for i in range(2200):
 		advance(old_game, .05)
 		if old_game.sleeping.beds[0].work > 1: break
 	check(old_game.sleeping.beds[0].work > 1, "Actual builder has started construction")
