@@ -62,10 +62,12 @@ func run() -> void:
 	check(game.workers[2].patch == 2 and game.workers[0].patch == -1, "Resident-specific assignment via real mouse input")
 	advance(1)
 	await click(game.hide_button)
-	advance(10)
+	advance(30)
 	check(game.workers[2].patch == 2 and game.workers[2].delivery.state == "idle", "Refuge preserves assignment until exit")
 	await click(game.hide_button)
-	advance(1)
+	for i in range(600):
+		advance(.05)
+		if game.workers[2].delivery.state == "to_source": break
 	check(game.workers[2].delivery.state == "to_source", "Second recall and exit resumes assigned resident")
 	game.free()
 	print("LIVE_ASSIGNMENTS: %d failure(s)" % failures)

@@ -34,6 +34,15 @@ var cancel_after_ladder := false
 var ladder_exit := Vector3.INF
 var waiting_ladder := false
 var crossings := 0
+var inside_refuge := false
+var door_active := false
+var door_entering := false
+var door_route := PackedVector3Array()
+var door_index := 0
+var waiting_door := false
+var exit_requested := false
+var recall_after_door := false
+var door_crossings := 0
 
 func setup(world: Node3D, data: Dictionary, index: int, transactions: DeliveryLedger) -> void:
 	game = world
@@ -67,6 +76,15 @@ func change(next: String) -> void:
 	retry_time = 0.0
 
 func cancel() -> void:
+	exit_requested = false
+	if door_active:
+		recall_after_door = true
+		return
+	game.refuge.release(owner)
+	waiting_door = false
+	if inside_refuge:
+		change("idle")
+		return
 	if climbing:
 		cancel_after_ladder = true
 		return
@@ -149,7 +167,7 @@ func plan_route(target: Vector3) -> bool:
 	return true
 
 func at_refuge() -> bool:
-	return actor.position.distance_to(game.home_position(owner)) < 0.12
+	return inside_refuge
 
 func depot_reachable() -> bool:
 	if depot_revision != game.travel_revision():
@@ -158,6 +176,9 @@ func depot_reachable() -> bool:
 	return depot_accessible
 
 func tick(dt: float) -> void:
+	if door_active:
+		advance_door(dt)
+		return
 	if climbing:
 		advance_ladder(dt)
 		return
@@ -169,6 +190,10 @@ func tick(dt: float) -> void:
 	match state:
 		"idle":
 			pose("idle", fposmod(timer, 4.0))
+			if inside_refuge:
+				actor.rotation.y = rotate_toward(actor.rotation.y, 0, dt * 2)
+				if not game.hiding and (exit_requested or worker.patch >= 0): change("leave_home")
+				return
 			if game.hiding or worker.patch < 0: return
 			source_position = game.patches[worker.patch].pos + Vector3(0.9, GROUND_Y, 0.2)
 			if not plan_route(source_position): return
@@ -240,14 +265,34 @@ func tick(dt: float) -> void:
 				actor.cargo.hide()
 				change("idle" if worker.patch >= 0 and not game.hiding else "return_home")
 		"return_home":
-			if move(game.home_position(owner), dt, false): change("idle")
+			if inside_refuge:
+				change("idle")
+				return
+			if game.refuge.passage_owner != owner:
+				if not move(game.home_position(owner), dt, false): return
+				waiting_door = not game.refuge.request(owner)
+				if waiting_door:
+					pose("idle", 0)
+					return
+			if game.refuge.opening < 1:
+				pose("idle", 0)
+				return
+			if move(game.HOME + game.Refuge.OUTSIDE, dt, false):
+				begin_door(true)
+			elif not navigation_issue.is_empty(): game.refuge.release(owner)
+		"leave_home":
+			waiting_door = not game.refuge.request(owner)
+			pose("idle", 0)
+			if not waiting_door and game.refuge.opening >= 1: begin_door(false)
 
 func description() -> String:
+	if door_active: return "Entre dans le refuge" if door_entering else "Franchit la porte vers l’extérieur"
+	if waiting_door: return "Attend la porte du refuge"
+	if inside_refuge: return "À l’abri" if state == "idle" else "Se prépare à sortir"
 	if climbing: return "Monte l’échelle" if climb_up else "Descend l’échelle"
 	if waiting_ladder: return "Attend le passage de l’échelle"
 	if not navigation_issue.is_empty(): return navigation_issue
 	if state == "idle":
-		if game.hiding and at_refuge(): return "À l’abri"
 		if worker.patch >= 0: return "Gisement épuisé" if game.patches[worker.patch].amount <= 0 else "Attend le poste de récolte"
 	return {"idle": "Disponible", "to_source": "Vers la caisse", "gather": "Prépare la charge", "pickup": "Prend la caisse", "waiting_storage": "Attend le dépôt", "to_storage": "Rapporte la caisse", "putdown": "Dépose", "return_home": "Rentre au refuge"}.get(state, state)
 
@@ -272,3 +317,66 @@ func advance_ladder(dt: float) -> void:
 	if cancel_after_ladder:
 		cancel_after_ladder = false
 		cancel()
+
+func resume_from_refuge() -> void:
+	exit_requested = true
+	recall_after_door = false
+	if state == "return_home" and not door_active and not inside_refuge and not climbing:
+		game.refuge.release(owner)
+		waiting_door = false
+		change("idle")
+
+func begin_door(entering: bool) -> void:
+	door_entering = entering
+	door_active = true
+	waiting_door = false
+	door_index = 0
+	var slot: Vector3 = game.refuge.slot(owner)
+	var aisle := Vector3(game.HOME.x, GROUND_Y, slot.z)
+	var inner: Vector3 = game.HOME + game.Refuge.INSIDE
+	var outer: Vector3 = game.HOME + game.Refuge.OUTSIDE
+	if entering:
+		door_route = PackedVector3Array([inner, aisle, slot])
+	else:
+		door_route = PackedVector3Array([aisle, inner, outer])
+		door_route.append_array(game.navigation.path(outer, game.home_position(owner)))
+	route = door_route
+	route_index = 0
+	game.refuge.set_cutaway(true)
+
+func advance_door(dt: float) -> void:
+	var budget := dt * 1.4
+	while budget > 0 and door_index < door_route.size():
+		var delta := door_route[door_index] - actor.position
+		delta.y = 0
+		var distance := delta.length()
+		if distance < .001:
+			door_index += 1
+			continue
+		var step := minf(distance, budget)
+		actor.rotation.y = rotate_toward(actor.rotation.y, atan2(delta.x, delta.z), dt * 9)
+		actor.position += delta.normalized() * step
+		# The door kit has a 5 cm sill. Lift over it rather than burying the boots.
+		var sill_distance := absf(actor.position.z - (game.HOME.z + .9))
+		actor.position.y = GROUND_Y + .052 * (1 - smoothstep(.12, .30, sill_distance))
+		if actor.position.z < game.HOME.z + .5: inside_refuge = true
+		elif actor.position.z > game.HOME.z + 1.25: inside_refuge = false
+		anim_time += step / float(ResidentAnimator.SPEEDS.walk)
+		budget -= step
+		if step >= distance - .001: door_index += 1
+	route_index = door_index
+	pose("walk", fposmod(anim_time, actor.player.get_animation("walk").length))
+	if door_index < door_route.size(): return
+	door_active = false
+	door_crossings += 1
+	inside_refuge = door_entering
+	actor.position.y = GROUND_Y
+	game.refuge.release(owner)
+	if recall_after_door and not inside_refuge:
+		recall_after_door = false
+		change("return_home")
+	else:
+		recall_after_door = false
+		if not inside_refuge: exit_requested = false
+		change("idle")
+	pose("idle", 0)

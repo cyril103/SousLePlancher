@@ -78,6 +78,8 @@ La version 0.2 devra harmoniser les chapitres, les statistiques provisoires, les
 
 ## Validation de la reprise
 
+**Lot 09 — porte et intérieur du refuge validés.** Suite engagée à la demande « ok on passe à la suite ». Entrées et sorties réservées, six places intérieures, protection effective, reprise des tâches et vue en coupe. Voir `gameplay-lot-09.md`. Le joueur confirme « ok validé, commit et pousse » après la démonstration ; publication autorisée.
+
 **Lot 08 — échelle intégrée au gameplay validée.** Palier Blender, deux gisements en hauteur, réservation du passage, animations de montée/descente, livraison et rappel. Voir `gameplay-lot-08.md`. Le joueur confirme « ok validé, commit et pousse » après la démonstration du palier et des traversées. Publication autorisée avec le lot 07 de navigation au sol.
 
 **Lot 07 — navigation au sol validée avec le lot 08.** Recherche de chemin autour des obstacles, places de rassemblement et d’attente, file du dépôt, refus des constructions coupant les accès et affichage du trajet sélectionné. Voir `gameplay-lot-07.md`. Après avoir autorisé la poursuite vers les échelles, le joueur valide l’ensemble intégré et demande son commit et sa publication.

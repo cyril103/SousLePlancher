@@ -41,3 +41,5 @@ Il s’agit d’un passage entre deux niveaux fixes. La pose libre d’échelles
 ## Suite proposée après retour
 
 Intégrer les portes du refuge : ouverture réservée, franchissement réel, position intérieure puis sortie et reprise du travail. Conserver les règles de rappel et de transport éprouvées ici, avant d’étendre les trajets aux ponts et à plusieurs zones explorables.
+
+La suite engagée après validation est décrite dans [le lot 09 — porte et intérieur du refuge](gameplay-lot-09.md).

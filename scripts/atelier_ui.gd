@@ -314,7 +314,7 @@ func _make_trays() -> void:
 	var goals := tray("goals", "Votre premier foyer")
 	game.objective_label = wrapped(goals, "", 19)
 	var help := tray("help", "Les gestes essentiels")
-	wrapped(help, "Flèches / WASD : déplacer la caméra\nMolette : zoom · Bouton central : rotation\nB : construire · C : habitants · T : travaux\nI : stocks · O : objectifs · H : au refuge\nEspace : pause · F11 : plein écran\n1 / 2 : construire un abri / un atelier\nÉchap : fermer / annuler · R : recommencer\n\nLes panneaux n’arrêtent pas le temps. Utilisez Espace pour planifier tranquillement.", 17)
+	wrapped(help, "Flèches / WASD : déplacer la caméra\nMolette : zoom · Bouton central : rotation\nB : construire · C : habitants · T : travaux\nI : stocks · O : objectifs · H : au refuge\nN : trajet · V : vue intérieure du refuge\nEspace : pause · F11 : plein écran\n1 / 2 : construire un abri / un atelier\nÉchap : fermer / annuler · R : recommencer\n\nLes panneaux n’arrêtent pas le temps. Utilisez Espace pour planifier tranquillement.", 17)
 
 func _make_resident() -> void:
 	resident_card = frame(self, true, true)
@@ -472,6 +472,10 @@ func refresh() -> void:
 	for worker in game.workers:
 		if not worker.delivery.navigation_issue.is_empty(): blocked += 1
 	work_label.text += "\n\nÉCHELLE · %s · %d en attente" % ["Passage occupé" if game.ladder.owner >= 0 else "Libre", game.ladder.queue.size()]
+	var sheltered := 0
+	for worker in game.workers:
+		if worker.delivery.at_refuge(): sheltered += 1
+	work_label.text += "\nREFUGE · %d/%d à l’abri · %d attendent la porte" % [sheltered, game.workers.size(), game.refuge.queue.size()]
 	if blocked > 0: work_label.text += "\n%d trajet(s) bloqué(s) : consultez les habitants." % blocked
 	stocks_label.text = "AU DÉPÔT          EN TRANSPORT\n"
 	for key in ["food", "wood", "fiber"]:
@@ -488,7 +492,7 @@ func refresh() -> void:
 	resident_name.text = "Habitant %d" % (resident_index + 1)
 	resident_task.text = resident.delivery.description()
 	resident_cargo.text = "Charge : %d · %s" % [resident.carrying, game.NAMES[resident.kind]] if resident.carrying > 0 else (game.NAMES[game.patches[resident.patch].kind] if resident.patch >= 0 else "Sans affectation")
-	resident_recall.disabled = game.ended or (resident.patch < 0 and resident.carrying == 0 and resident.delivery.state in ["idle", "return_home"])
+	resident_recall.disabled = game.ended or (resident.patch < 0 and resident.carrying == 0 and (resident.delivery.inside_refuge or resident.delivery.state == "return_home"))
 	resident_assign.disabled = game.ended or game.hiding or resident.patch >= 0 or resident.carrying > 0 or resident.delivery.state != "idle"
 	resident_card.visible = game.active_tray == "" and not game.start_panel.visible and not game.ended and game.build_mode == ""
 	modal_shade.visible = game.start_panel.visible or game.end_panel.visible

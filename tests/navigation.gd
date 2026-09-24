@@ -57,6 +57,8 @@ func run() -> void:
 	game._toggle_hide()
 	# Let one resident reserve, then make its source inaccessible before grasp.
 	for worker in game.workers: worker.patch = -1
+	# Finish real door exits before testing an outdoor source blockage.
+	for i in range(800): game.simulate(.05)
 	game.selected = 2
 	game.assign_worker(0)
 	game.simulate(0.05)

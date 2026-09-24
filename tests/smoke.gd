@@ -56,7 +56,7 @@ func run() -> void:
 	advance(game, 39)
 	game._toggle_hide()
 	advance(game, 33)
-	check(game.suspicion < 1, "Recall before human passage prevents detection")
+	check(game.suspicion < 100 and not game.ended, "Recall prevents discovery while inhabitants queue for the real door")
 	for w in game.workers:
 		check(w.delivery.at_refuge(), "All inhabitants reach their accessible refuge slots")
 	game._toggle_hide()

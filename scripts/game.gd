@@ -3,6 +3,7 @@ extends Node3D
 const Art = preload("res://scripts/world.gd")
 const Navigation = preload("res://scripts/ground_navigation.gd")
 const Ladder = preload("res://scripts/ladder_passage.gd")
+const Refuge = preload("res://scripts/refuge_access.gd")
 const HOME := Vector3(-3, 0, 1)
 const COSTS := {"shelter": {"wood": 8, "fiber": 4}, "workshop": {"wood": 10, "fiber": 6}}
 const NAMES := {"food": "Miettes", "wood": "Bois", "fiber": "Fibres"}
@@ -49,6 +50,7 @@ var release_button: Button
 var speed_button: Button
 var notice_timer := 0.0
 var ladder := Ladder.new()
+var refuge: Node3D
 var upper_navigation := Navigation.new()
 var upper_obstacles: Array[Rect2] = []
 var upper_stands: Array[Rect2] = []
@@ -63,7 +65,12 @@ var route_timer := 0.0
 
 func _ready() -> void:
 	Art.decorate(self)
-	Art.building(self, HOME, "heart")
+	refuge = Refuge.new()
+	refuge.position = HOME
+	add_child(refuge)
+	var refuge_label := Art.caption(refuge, "Refuge", Vector3(0, 2.35, -.6), Color("eac37e"))
+	refuge_label.pixel_size = .0055
+	get_node("Atmosphere").add_torch(HOME + Vector3(1.05, 0, .65))
 	buildings.append({"pos": HOME, "kind": "heart"})
 	camera = Camera3D.new()
 	camera.projection = Camera3D.PROJECTION_ORTHOGONAL
@@ -114,6 +121,16 @@ func _ready() -> void:
 		zoom = 18
 		focus = Vector3(2, 0, -2)
 		_news("Le palier est accessible : bois et fibres en hauteur. H rappelle les porteurs, N montre leur trajet.")
+	if "--demo-doors" in OS.get_cmdline_user_args():
+		start_panel.hide()
+		paused = false
+		zoom = 12
+		focus = HOME + Vector3(1, 0, 0)
+		for patch in [0, 2, 4, 1]:
+			selected = patch
+			assign_worker()
+		_toggle_hide()
+		_news("H fait ressortir les habitants et reprendre leurs tâches. V montre l’intérieur du refuge.")
 	if "--capture" in OS.get_cmdline_user_args():
 		_capture.call_deferred()
 
@@ -160,7 +177,7 @@ func _make_loading_stations() -> void:
 	depot_label.pixel_size = 0.005
 
 func _setup_navigation() -> void:
-	navigation_obstacles = [Navigation.building(HOME, "heart")]
+	navigation_obstacles = [refuge_footprint()]
 	# Blender floor props (coordinates converted from Z-up to Godot Y-up).
 	navigation_obstacles.append(Navigation.footprint(Vector3(9, 0, 5.7), Vector2(0.94, 0.94)))
 	navigation_obstacles.append(Rect2(-9.92, 5.38, 2.54, 0.84))
@@ -195,17 +212,19 @@ func _navigation_allows_build(pos: Vector3, kind: String) -> bool:
 	trial.configure(footprints, navigation_stands)
 	var depot: Vector3 = workers[0].delivery.destination_position
 	var destinations: Array[Vector3] = home_slots.duplicate()
+	destinations.append(HOME + Refuge.OUTSIDE)
 	destinations.append_array(depot_slots)
 	for patch in patches:
 		if patch.pos.y < 1: destinations.append(patch.pos + Vector3(0.9, 0, 0.2))
 	destinations.append(Ladder.LOWER)
 	for i in range(workers.size() + 1): destinations.append(ladder.waiting(i, false))
 	for worker in workers:
-		if worker.node.position.y < 0.1: destinations.append(worker.node.position)
+		if worker.node.position.y < 0.1 and not worker.delivery.inside_refuge and not worker.delivery.door_active: destinations.append(worker.node.position)
 	for point in destinations:
 		if trial.path(depot, point).is_empty(): return false
 	# Reserve a reachable spawn and waiting slot before charging for a new shelter.
 	if kind == "shelter":
+		if workers.size() >= Refuge.CAPACITY: return false
 		if upper_navigation.path(Ladder.UPPER, ladder.waiting(workers.size(), true)).is_empty(): return false
 		var homes := trial.slots(HOME + Vector3(0, 0, 1.65), workers.size() + 1)
 		var queues := trial.slots(HOME + Vector3(3.2, 0, 1.2), workers.size() + 1, homes)
@@ -236,6 +255,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_I: _toggle_tray("stocks")
 			KEY_F1: _toggle_tray("help")
 			KEY_N: show_paths = not show_paths
+			KEY_V: refuge.set_cutaway(not refuge.cutaway)
 			KEY_1: _choose_build("shelter")
 			KEY_2: _choose_build("workshop")
 			KEY_R: _restart()
@@ -325,6 +345,7 @@ func _process(delta: float) -> void:
 	_update_routes(delta)
 
 func simulate(dt: float) -> void:
+	refuge.update(dt)
 	elapsed += dt
 	var phase := fmod(elapsed, 100.0)
 	var active := phase >= 68 and phase < 88
@@ -337,9 +358,8 @@ func simulate(dt: float) -> void:
 			_news("Le repas des humains a laissé de nouvelles miettes.")
 	var exposed := 0
 	for worker in workers:
-		var node: Node3D = worker.node
 		worker.delivery.update(dt)
-		if not worker.delivery.at_refuge() and node.position.distance_to(HOME) > 1.8: exposed += 1
+		if not worker.delivery.at_refuge(): exposed += 1
 	if active:
 		suspicion += dt * exposed * 0.8
 	else:
@@ -386,6 +406,8 @@ func _valid_site(pos: Vector3) -> bool:
 	if pos.distance_to(Vector3(9, 0, 5.7)) < 2: return false
 	if pos.distance_to(Vector3(-8.7, 0, 5.8)) < 2: return false
 	var footprint := Navigation.building(pos, build_mode if build_mode != "" else "shelter").grow(Navigation.CLEARANCE)
+	if footprint.intersects(refuge_footprint()): return false
+	if footprint.has_point(Vector2(HOME.x, HOME.z + Refuge.OUTSIDE.z)): return false
 	if footprint.intersects(Rect2(3, -6.05, 4, 3)): return false
 	if footprint.has_point(Vector2(Ladder.LOWER.x, Ladder.LOWER.z)): return false
 	for i in range(workers.size() + 1):
@@ -419,6 +441,9 @@ func _place_build(point: Vector3) -> bool:
 	var pos := Vector3(snappedf(point.x, 1), 0, snappedf(point.z, 1))
 	if not _valid_site(pos):
 		_news("Cet emplacement est occupé ou trop près du bord.")
+		return false
+	if build_mode == "shelter" and workers.size() >= Refuge.CAPACITY:
+		_news("Le refuge est complet : ses six places sont occupées.")
 		return false
 	for key in COSTS[build_mode]:
 		if stock[key] < COSTS[build_mode][key]:
@@ -455,8 +480,10 @@ func _toggle_hide() -> void:
 	if hiding:
 		for worker in workers:
 			worker.delivery.cancel()
-			if worker.delivery.job < 0 and worker.delivery.state == "idle":
+			if worker.delivery.job < 0 and worker.delivery.state == "idle" and not worker.delivery.inside_refuge:
 				worker.delivery.change("return_home")
+	else:
+		for worker in workers: worker.delivery.resume_from_refuge()
 	_news("Tout le monde rentre au refuge. Les tâches seront conservées." if hiding else "Les habitants reprennent leurs tâches.")
 
 func _toggle_pause() -> void:
@@ -536,3 +563,6 @@ func travel_path(from: Vector3, to: Vector3, id: int = 0) -> PackedVector3Array:
 
 func travel_revision() -> int:
 	return navigation.revision + upper_navigation.revision
+
+func refuge_footprint() -> Rect2:
+	return Rect2(Refuge.FOOTPRINT.position + Vector2(HOME.x, HOME.z), Refuge.FOOTPRINT.size)
