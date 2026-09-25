@@ -27,6 +27,8 @@ Le **lot 13** ajoute les besoins autonomes de faim et de soif au sommeil : trois
 
 ## Suite de production
 
+Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une carte d’ensemble, une coupe verticale, neuf fiches de zones et un registre des passages. L’existant, la campagne prévue et les extensions différées y sont distingués. Publication autorisée par le joueur ; les implantations futures restent à éprouver, sans changement de l’ordre de réalisation.
+
 **Priorité proposée après le catalogue : terminer l’expédition vers le secteur adjacent.** La [roadmap actualisée](docs/conception/roadmap-production.md) sépare reconnaissance avec lanterne (6A), récolte et retour chargé (6B), puis sauvegarde en expédition (6C). Les assets fonctionnels sont réutilisés ; la fourmi et la refonte visuelle ne sont pas les prochains lots. Cette révision documentaire est validée par le joueur ; les lots futurs gardent leur validation séparée.
 
 Le **lot 18**, validé par le joueur, ajoute une fissure à inspecter, dégager et étayer : livraison de 6 bois et 4 fibres, puis 24 secondes de travaux. Une fois ouverte, elle permet une visite à vide de l’alcôve attenante, avec file d’attente et retour autonome. **Travaux → Fissure et passage** ; démo `-- --demo-fissure`, puis **Espace**. Voir [les règles et limites](docs/conception/gameplay-lot-18.md).

@@ -1,0 +1,679 @@
+{
+  "title": "Sous le Plancher — Atlas du monde",
+  "version": "V01",
+  "date": "2026-09-25",
+  "base": "ec1214c",
+  "sectors": [
+    {
+      "id": "S00",
+      "name": "Sous-plancher du salon",
+      "short": "Salon • refuge initial",
+      "level": "N0 + palier local",
+      "status": "partiel",
+      "phase": "Existant → 8–10",
+      "role": "S’installer, apprendre les besoins et préparer les expéditions.",
+      "resources": "Bois, fibres, miettes et eau : sources déjà présentes. Renouvellement à équilibrer.",
+      "danger": "Vibrations et menace humaine globale actuelles ; observation locale future.",
+      "build": "Conserver le refuge actuel. Aménager chambres, atelier et dépôts sans obstruer les accès.",
+      "goal": "Maintenir les besoins puis ouvrir la fissure sud et préparer une lanterne.",
+      "return": "Refuge accessible au centre-ouest ; eau et nourriture de départ conservées jusqu’à ce que la cuisine soit exploitable.",
+      "variation": "Petits tas et encombrement secondaire variables ; refuge, échelle et seuils critiques stables.",
+      "points": [
+        [
+          "A",
+          "Refuge initial",
+          "Habitat",
+          "(-3 ; 0 ; 1), position actuelle ; entrée et file à préserver."
+        ],
+        [
+          "B",
+          "Miettes ouest",
+          "Ressource",
+          "(-7 ; 0 ; -4), source actuelle."
+        ],
+        [
+          "C",
+          "Fibres ouest",
+          "Ressource",
+          "(-7 ; 0 ; 3), source actuelle."
+        ],
+        [
+          "D",
+          "Bois au sol",
+          "Ressource",
+          "(1 ; 0 ; 4), source actuelle."
+        ],
+        [
+          "E",
+          "Miettes est",
+          "Ressource",
+          "(4 ; 0 ; -2), source actuelle."
+        ],
+        [
+          "F",
+          "Eau",
+          "Ressource",
+          "(7 ; 0 ; 2), source actuelle ; pas de dépendance initiale à la salle de bains."
+        ],
+        [
+          "G",
+          "Échelle et palier",
+          "Accès",
+          "Base (6 ; 0 ; -3). Palier à y ≈ 2,04 ; bois et fibres en hauteur."
+        ],
+        [
+          "H",
+          "Réserve orientale",
+          "Ressource",
+          "Bois à (9,7 ; 2,04 ; -5,5). Passerelle existante, même secteur, pas la cuisine."
+        ],
+        [
+          "I",
+          "Fissure sud • L01",
+          "Accès",
+          "Entrée (4 ; -0,0105 ; 5), sortie z=7,4 ; inspection et travaux existants."
+        ],
+        [
+          "J",
+          "Accès cloisons • L03",
+          "Accès",
+          "Proposition future, emplacement à confirmer ; distinct de l’échelle du palier."
+        ]
+      ]
+    },
+    {
+      "id": "S01",
+      "name": "Alcôve et entre-sol",
+      "short": "Alcôve • première expédition",
+      "level": "N0",
+      "status": "prochain",
+      "phase": "6A → 6C puis 7",
+      "role": "Faire de la petite alcôve une expédition utile ; sous-zone du salon, pas un biome ajouté.",
+      "resources": "Fibres récupérables dès 6B ; bois secondaire seulement si utile. Aucune résine nécessaire à cette étape.",
+      "danger": "Obscurité, autonomie lumineuse, files au seuil. Faune exclue de 6A–6C.",
+      "build": "Élargir le passage pour les caisses en 6B ; dépôt et lumière fixe seulement à l’étape 7.",
+      "goal": "Reconnaître équipé, rapporter des fibres pour un lit, sauvegarder et reprendre en expédition.",
+      "return": "Retour par L01 avant la cuisine. Refuser le départ si l’autonomie est insuffisante ; garder une zone d’attente dégagée.",
+      "variation": "Gisement secondaire déplaçable à portée sûre ; point de retour et couloir principal fixes.",
+      "points": [
+        [
+          "A",
+          "Fissure vers salon • L01",
+          "Accès",
+          "Seuil actuel. Visite à vide seulement aujourd’hui ; équipement en 6A, charge après travaux 6B."
+        ],
+        [
+          "B",
+          "Aire de regroupement",
+          "Logistique",
+          "Zone d’attente distincte du seuil ; proposition 6A."
+        ],
+        [
+          "C",
+          "Niche d’observation",
+          "Observation",
+          "Révéler le décor sans déclencher automatiquement une récolte."
+        ],
+        [
+          "D",
+          "Écheveau de fibres",
+          "Ressource",
+          "Première source distante proposée en 6B ; usage immédiat dans les lits."
+        ],
+        [
+          "E",
+          "Dépôt d’étape",
+          "Logistique",
+          "Emplacement réservé pour 7A, pas un dépôt gratuit offert en 6A."
+        ],
+        [
+          "F",
+          "Nervure de bois",
+          "Obstacle",
+          "Obstacle structurant ; préserver un chemin chargé après élargissement."
+        ],
+        [
+          "G",
+          "Belvédère de cuisine",
+          "Observation",
+          "Indice visuel de la suite ; reste fermé au périmètre 6."
+        ],
+        [
+          "H",
+          "Joint rompu • L02",
+          "Accès",
+          "Accès futur cuisine : pont porteur et détour étroit à vide, lot 11A."
+        ]
+      ]
+    },
+    {
+      "id": "S02",
+      "name": "Sous la cuisine",
+      "short": "Cuisine • provisions et fourmis",
+      "level": "N0",
+      "status": "campagne",
+      "phase": "11A → 11C puis J4–J5",
+      "role": "Première zone où observer, aménager un trajet et choisir une fenêtre de récolte.",
+      "resources": "Miettes et biscuit. Graisse et autres ressources candidates attendent des recettes utiles.",
+      "danger": "Piste de fourmis, nettoyage et exposition sous les interstices. Horaires humains détaillés après le premier chapitre.",
+      "build": "Pont d’accès, dépôt en retrait et détour praticable. Pas de construction au centre de la piste animale.",
+      "goal": "Rapporter les provisions par deux stratégies possibles : détour couvert ou attente d’une fenêtre.",
+      "return": "Retrait vers le dépôt puis L02. Le biscuit n’est pas l’unique source alimentaire de survie.",
+      "variation": "Biscuit et piste peuvent varier dans des poches définies ; au moins un détour et une fenêtre restent possibles.",
+      "points": [
+        [
+          "A",
+          "Tête de pont • L02",
+          "Accès",
+          "Depuis l’alcôve ; pont à construire pour les charges. Détour de reconnaissance à vide."
+        ],
+        [
+          "B",
+          "Réserve en retrait",
+          "Logistique",
+          "Zone sèche abritée pour dépôt et regroupement."
+        ],
+        [
+          "C",
+          "Biscuit tombé",
+          "Ressource",
+          "Objectif de récolte principal ; portions comptables."
+        ],
+        [
+          "D",
+          "Piste de fourmis",
+          "Danger",
+          "Territoire local annoncé par traces ; ne couvre pas les deux itinéraires simultanément."
+        ],
+        [
+          "E",
+          "Détour sous la plinthe",
+          "Accès",
+          "Plus long et protégé ; alternative à l’attente près du biscuit."
+        ],
+        [
+          "F",
+          "Joint du plancher",
+          "Danger",
+          "Lumière et exposition ; nettoyage annoncé à terme."
+        ],
+        [
+          "G",
+          "Gaine vers cloisons • L04",
+          "Accès",
+          "Raccourci vertical ultérieur, indépendant de l’entrée cuisine."
+        ],
+        [
+          "H",
+          "Descente sèche • L06",
+          "Accès",
+          "Future seconde route de migration vers les fondations ; ne pas utiliser un tuyau sous eau."
+        ]
+      ]
+    },
+    {
+      "id": "S03",
+      "name": "Réseau des cloisons",
+      "short": "Cloisons • eau et raccourcis",
+      "level": "N0 ↔ N+1 ↔ N−1",
+      "status": "campagne",
+      "phase": "Après J3 • J4–J6",
+      "role": "Relier les zones, observer la maison et préparer une route verticale de migration.",
+      "resources": "Isolant/fibres, eau d’une fuite accessible, petites fixations métalliques ultérieures.",
+      "danger": "Goulets, chutes, câbles à éviter ; température et fumée quand leurs systèmes seront introduits.",
+      "build": "Paliers, échelles, points d’attente et collecteur ; monte-charge après validation du portage vertical.",
+      "goal": "Créer un raccourci exploitable et un second accès fiable aux fondations.",
+      "return": "Paliers de repos protégés, retour par L03 ou L04. Eau initiale du salon conservée avant collecteur opérationnel.",
+      "variation": "Poches d’isolant et traces variables ; colonne porteuse, gaine et sorties fixes.",
+      "points": [
+        [
+          "A",
+          "Entrée salon • L03",
+          "Accès",
+          "Nouvel accès futur, ne remplace pas l’échelle actuelle du salon."
+        ],
+        [
+          "B",
+          "Entrée cuisine • L04",
+          "Accès",
+          "Liaison de service entre étages."
+        ],
+        [
+          "C",
+          "Palier de manutention",
+          "Logistique",
+          "Réserve au pied de la colonne ; files séparées montée/descente."
+        ],
+        [
+          "D",
+          "Goutte et collecteur",
+          "Ressource",
+          "Eau sans exiger l’extension salle de bains ; chantier et qualité à concevoir."
+        ],
+        [
+          "E",
+          "Isolant récupérable",
+          "Ressource",
+          "Fibres avec accès latéral à la gaine."
+        ],
+        [
+          "F",
+          "Observatoire",
+          "Observation",
+          "Écouter les habitudes humaines depuis un couvert ; aucun accès direct au mobilier humain requis."
+        ],
+        [
+          "G",
+          "Puits vers fondations • L05",
+          "Accès",
+          "Descente aménagée puis route d’évacuation."
+        ],
+        [
+          "H",
+          "Branches hautes • L09/L10",
+          "Accès",
+          "Salle de bains et grenier différés ; paliers distincts avant leurs seuils."
+        ]
+      ]
+    },
+    {
+      "id": "S04",
+      "name": "Cave et fondations",
+      "short": "Fondations • Grand Refuge",
+      "level": "N−1",
+      "status": "campagne",
+      "phase": "J5–J6",
+      "role": "Offrir une implantation durable et rendre la migration concrète sans effacer le refuge initial.",
+      "resources": "Métal, bois ancien, eau à traiter ; cultures seulement après conception alimentaire.",
+      "danger": "Froid, humidité, longs trajets, traces de souris. Rat conditionnel, pas une nouvelle espèce obligatoire.",
+      "build": "Grand Refuge dans une poche sèche, réserves et ateliers ; drainage/ventilation selon systèmes livrés.",
+      "goal": "Préparer le Grand Refuge et deux itinéraires d’évacuation avant la rénovation annoncée.",
+      "return": "Route principale L05 et repli L06. Ne jamais bloquer simultanément les deux pendant un événement obligatoire.",
+      "variation": "Débris, ressources secondaires et territoire du rongeur variables ; poche sèche et couloirs critiques garantis.",
+      "points": [
+        [
+          "A",
+          "Descente des cloisons • L05",
+          "Accès",
+          "Route de migration principale après équipement."
+        ],
+        [
+          "B",
+          "Arrivée cuisine • L06",
+          "Accès",
+          "Route indépendante de secours ; débouche hors du même goulet."
+        ],
+        [
+          "C",
+          "Poche sèche • Grand Refuge",
+          "Habitat",
+          "Site à bâtir, pas une ville livrée gratuitement ni un second centre de gestion autonome."
+        ],
+        [
+          "D",
+          "Chutes de métal",
+          "Ressource",
+          "Source avancée liée à outils et renforts."
+        ],
+        [
+          "E",
+          "Fuite et bassin",
+          "Danger",
+          "Eau à capter/traiter ; préserver un contournement sec."
+        ],
+        [
+          "F",
+          "Territoire du rongeur",
+          "Danger",
+          "Souris d’abord ; rat seulement si fonction différente validée."
+        ],
+        [
+          "G",
+          "Porte de maçonnerie • L07",
+          "Accès",
+          "Route vers la ville : reconnaître, sécuriser puis négocier l’entrée."
+        ],
+        [
+          "H",
+          "Galerie haute • L08",
+          "Accès",
+          "Alternative sèche vers la ville, plus longue."
+        ],
+        [
+          "I",
+          "Soupirail • L11",
+          "Accès",
+          "Accès extérieur différé ; sans rôle obligatoire pour finir la campagne."
+        ]
+      ]
+    },
+    {
+      "id": "S05",
+      "name": "Ville souterraine indépendante",
+      "short": "Ville • rencontre et échanges",
+      "level": "N−2",
+      "status": "campagne",
+      "phase": "Fin de J6",
+      "role": "Aboutissement de l’exploration : une société existante, alliée potentielle, distincte du refuge du joueur.",
+      "resources": "Échanges, savoir-faire, recrutement et missions ; pas de réserve illimitée gratuite.",
+      "danger": "Conditions d’accès et trajets de ravitaillement ; pas de conflit imposé avec la ville.",
+      "build": "Point d’accueil et dépôt de transit du joueur ; pas de construction libre dans tous les quartiers.",
+      "goal": "Établir une liaison durable, recruter ou échanger puis revenir au refuge conservé.",
+      "return": "Deux arrivées L07/L08 rejoignent des sas distincts. Une visite ne déclenche ni déménagement forcé ni fin de partie.",
+      "variation": "Offres et missions variables ; portes, place centrale et services de base artisanaux.",
+      "points": [
+        [
+          "A",
+          "Porte principale • L07",
+          "Accès",
+          "Arrivée par la maçonnerie ; accueil à débloquer dans la progression."
+        ],
+        [
+          "B",
+          "Porte de galerie • L08",
+          "Accès",
+          "Accès alternatif après reconnaissance."
+        ],
+        [
+          "C",
+          "Place des échanges",
+          "Service",
+          "Marché et contrats ; règles économiques à concevoir."
+        ],
+        [
+          "D",
+          "Maison des voyageurs",
+          "Service",
+          "Rencontres et recrutement, cohérents avec la croissance sans naissances."
+        ],
+        [
+          "E",
+          "Ateliers de savoir-faire",
+          "Service",
+          "Découvertes et recherche, pas de déblocage automatique de toutes les recettes."
+        ],
+        [
+          "F",
+          "Conseil et missions",
+          "Service",
+          "Objectifs de liaison, échanges et aide."
+        ],
+        [
+          "G",
+          "Dépôt de transit",
+          "Logistique",
+          "Stock local du joueur, capacité et transport réels."
+        ],
+        [
+          "H",
+          "Quartiers habités",
+          "Habitat",
+          "Population de la ville distincte des 30–50 habitants simulés de la colonie."
+        ]
+      ]
+    },
+    {
+      "id": "E01",
+      "name": "Salle de bains",
+      "short": "Extension • salle de bains",
+      "level": "N0 / gaine",
+      "status": "extension",
+      "phase": "Après campagne",
+      "role": "Explorer un milieu humide, sans conditionner la survie de départ à cette extension.",
+      "resources": "Eau, fibres humides et culture fongique si validée.",
+      "danger": "Fuites, glissades et moisissures.",
+      "build": "Passages secs, récupération d’eau et drainage.",
+      "goal": "Obtenir une ressource ou une opportunité nouvelle ; aucune obligation pour le Grand Refuge.",
+      "return": "L09 vers les cloisons ; garder un itinéraire sec hors des écoulements.",
+      "variation": "Cycles de fuite et poches de ressources ; sortie garantie.",
+      "points": [
+        [
+          "A",
+          "Accès gaine • L09",
+          "Accès",
+          "Seuil différé depuis S03."
+        ],
+        [
+          "B",
+          "Collecteur",
+          "Ressource",
+          "Eau disponible après travaux."
+        ],
+        [
+          "C",
+          "Fuite intermittente",
+          "Danger",
+          "Traversée suspendue pendant l’écoulement."
+        ],
+        [
+          "D",
+          "Plateforme sèche",
+          "Logistique",
+          "Attente et stockage hors eau."
+        ],
+        [
+          "E",
+          "Niche humide",
+          "Ressource",
+          "Cultures candidates après système de milieu."
+        ]
+      ]
+    },
+    {
+      "id": "E02",
+      "name": "Grenier",
+      "short": "Extension • grenier",
+      "level": "N+2",
+      "status": "extension",
+      "phase": "Après campagne",
+      "role": "Valoriser l’exploration verticale d’objets oubliés.",
+      "resources": "Papier, coton, fils et objets anciens.",
+      "danger": "Chaleur, sécheresse et araignée si déjà produite pour la campagne.",
+      "build": "Haltes, cordes et monte-charge seulement après preuve des trajets verticaux.",
+      "goal": "Atteindre une cache avancée et redescendre les charges.",
+      "return": "L10 par la colonne des cloisons ; haltes avant épuisement.",
+      "variation": "Caches variables dans une charpente artisanale ; sortie et haltes stables.",
+      "points": [
+        [
+          "A",
+          "Arrivée gaine • L10",
+          "Accès",
+          "Longue ascension avec paliers."
+        ],
+        [
+          "B",
+          "Boîte oubliée",
+          "Ressource",
+          "Coton et papier récupérables."
+        ],
+        [
+          "C",
+          "Poutre traversante",
+          "Accès",
+          "Route étroite à aménager pour portage."
+        ],
+        [
+          "D",
+          "Toile et territoire",
+          "Danger",
+          "Contournement maintenu ; pas de combat obligatoire."
+        ],
+        [
+          "E",
+          "Halte abritée",
+          "Logistique",
+          "Récupération et vérification de l’autonomie."
+        ]
+      ]
+    },
+    {
+      "id": "E03",
+      "name": "Seuil extérieur et zones persistantes",
+      "short": "Extension • extérieur",
+      "level": "Sol extérieur",
+      "status": "extension",
+      "phase": "Après campagne et budgets mesurés",
+      "role": "Prolonger la partie par de nouvelles zones qui restent accessibles.",
+      "resources": "Ressources propres aux zones ; au moins un usage validé par nouvelle ressource.",
+      "danger": "Météo, exposition et faune à concevoir progressivement.",
+      "build": "Avant-postes limités : abri, stock, atelier et ravitaillement ; refuge principal conservé.",
+      "goal": "Explorer, établir un avant-poste utile et maintenir sa route.",
+      "return": "L11 rejoint S04 ; L12 relie les zones découvertes. Chaque nouvelle zone doit préserver un retour ou un secours possible.",
+      "variation": "Terrain procédural persistant hors maison ; connexions, constructions et conséquences enregistrées.",
+      "points": [
+        [
+          "A",
+          "Soupirail • L11",
+          "Accès",
+          "Seuil artisanal, liaison stable avec les fondations."
+        ],
+        [
+          "B",
+          "Abri du seuil",
+          "Logistique",
+          "Zone tampon, pas une téléportation de stocks."
+        ],
+        [
+          "C",
+          "Zone découverte • L12",
+          "Accès",
+          "Premier nœud procédural persistant ; graine et accès enregistrés."
+        ],
+        [
+          "D",
+          "Avant-poste",
+          "Habitat",
+          "Abri et stock associés à une ressource utile."
+        ],
+        [
+          "E",
+          "Frontière inconnue",
+          "Observation",
+          "Nouvelles zones créées à l’exploration ; pas de carte infinie entièrement prédessinée."
+        ]
+      ]
+    }
+  ],
+  "links": [
+    {
+      "id": "L01",
+      "from": "S00",
+      "to": "S01",
+      "name": "Fissure sud",
+      "level": "N0 → N0",
+      "status": "Partiellement existant",
+      "rule": "À vide actuellement ; lanterne en 6A ; élargissement et caisse en 6B.",
+      "phase": "6A–6C"
+    },
+    {
+      "id": "L02",
+      "from": "S01",
+      "to": "S02",
+      "name": "Joint rompu",
+      "level": "N0 → N0",
+      "status": "Prévu",
+      "rule": "Deux voies : reconnaissance étroite à vide ; pont construit pour porteurs.",
+      "phase": "11A"
+    },
+    {
+      "id": "L03",
+      "from": "S00",
+      "to": "S03",
+      "name": "Fente de cloison",
+      "level": "N0 → N+1",
+      "status": "Prévu",
+      "rule": "Échelle et palier ; lanterne ; futur transport vertical mesuré.",
+      "phase": "Après J3"
+    },
+    {
+      "id": "L04",
+      "from": "S02",
+      "to": "S03",
+      "name": "Gaine de service",
+      "level": "N0 → N+1",
+      "status": "Prévu",
+      "rule": "Raccourci à reconnaître et aménager ; caisse selon gabarit.",
+      "phase": "Après J3"
+    },
+    {
+      "id": "L05",
+      "from": "S03",
+      "to": "S04",
+      "name": "Puits maçonné",
+      "level": "N+1 → N−1",
+      "status": "Prévu",
+      "rule": "Descente équipée, paliers ; capacité chargée avant migration.",
+      "phase": "J6"
+    },
+    {
+      "id": "L06",
+      "from": "S02",
+      "to": "S04",
+      "name": "Galerie sèche",
+      "level": "N0 → N−1",
+      "status": "Prévu",
+      "rule": "Seconde route de migration ; travaux depuis le côté accessible.",
+      "phase": "J6"
+    },
+    {
+      "id": "L07",
+      "from": "S04",
+      "to": "S05",
+      "name": "Porte de maçonnerie",
+      "level": "N−1 → N−2",
+      "status": "Prévu",
+      "rule": "Accès principal à reconnaître ; point d’accueil de la ville.",
+      "phase": "J6"
+    },
+    {
+      "id": "L08",
+      "from": "S04",
+      "to": "S05",
+      "name": "Galerie haute sèche",
+      "level": "N−1 → N−2",
+      "status": "Prévu",
+      "rule": "Seconde arrivée, plus longue ; travaux sans ressource enfermée derrière.",
+      "phase": "J6"
+    },
+    {
+      "id": "L09",
+      "from": "S03",
+      "to": "E01",
+      "name": "Branche humide",
+      "level": "Gaine → N0",
+      "status": "Différé",
+      "rule": "Seuil protégé contre écoulements ; retour sec.",
+      "phase": "Extension"
+    },
+    {
+      "id": "L10",
+      "from": "S03",
+      "to": "E02",
+      "name": "Colonne haute",
+      "level": "N+1 → N+2",
+      "status": "Différé",
+      "rule": "Haltes et capacité chargée validées avant ouverture.",
+      "phase": "Extension"
+    },
+    {
+      "id": "L11",
+      "from": "S04",
+      "to": "E03",
+      "name": "Soupirail",
+      "level": "N−1 → extérieur",
+      "status": "Différé",
+      "rule": "Zone tampon et trajet retour ; pas de téléportation.",
+      "phase": "Extension"
+    },
+    {
+      "id": "L12",
+      "from": "E03",
+      "to": "Z*",
+      "name": "Frontières extérieures",
+      "level": "Extérieur variable",
+      "status": "Différé",
+      "rule": "Z* désigne une famille de nouvelles zones persistantes. Chaque instance aura son ID et ses seuils réversibles ; ce n’est pas un secteur déjà dessiné.",
+      "phase": "Extension"
+    }
+  ]
+}

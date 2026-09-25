@@ -6,6 +6,8 @@ Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [d
 
 ## Cap immédiat
 
+**Atlas proposé le 25 septembre 2026 :** [carte du monde et fiches des secteurs](../atlas-monde-v01/index.html). Les tracés futurs restent à valider. Ce document de conception ne change ni l’ordre des lots ni le périmètre de 6A.
+
 **Partir du refuge avec une lanterne, traverser un accès aménagé, récolter dans un secteur voisin, rapporter les ressources et reprendre la partie sans perte.**
 
 Le projet reste un prototype intégré. Nous terminons cette boucle avant d’étendre la carte et le bestiaire. La refonte générale des personnages et du mobilier n’est pas prioritaire. Le catalogue sert aux assets nécessaires aux étapes engagées ; il ne commande pas douze chantiers 3D.
