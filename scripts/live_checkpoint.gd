@@ -118,6 +118,7 @@ static func capture(g: Node) -> Dictionary:
 		job.source = -1 if job.source.is_empty() else g.construction.recovery.find(job.source)
 		job.target = -1 if job.target.is_empty() else sites.find(job.target)
 		r.construction_jobs[id] = job
+	r.ant = g.ant.snapshot()
 	r.kitchen = g.kitchen.snapshot()
 	r.health = g.health.snapshot()
 	r.rooms = g.rooms.snapshot()
@@ -183,6 +184,7 @@ static func validate(data: Dictionary) -> String:
 	if data.version >= 14 and not preload("res://scripts/constructed_rooms.gd").valid(r.get("rooms"), r): return "Chambre construite incohérente."
 	if data.version >= 16 and not preload("res://scripts/colony_health.gd").valid(r.get("health"), r): return "Secours ou soins incohérents."
 	if data.version >= 17 and not preload("res://scripts/kitchen_access.gd").valid(r.get("kitchen"), r): return "Cuisine, pont ou charge incohérente."
+	if data.version >= 18 and not preload("res://scripts/kitchen_ant.gd").valid(r.get("ant"), r.get("kitchen", {})): return "Fourmi ou miette incohérente."
 	var source_reserved := 0
 	for i in range(n):
 		var w = r.workers[i]
@@ -257,6 +259,7 @@ static func merge(target: Dictionary, values: Dictionary) -> void:
 static func restore(g: Node, data: Dictionary) -> bool:
 	var r: Dictionary = unpack(data.runtime.data)
 	g.kitchen.restore(r.get("kitchen", {}))
+	g.ant.restore(r.get("ant", {}))
 	g.health.restore(r.get("health", {}))
 	g.rooms.restore(r.get("rooms", []))
 	g.fixed_lighting.restore(r.get("fixed_lighting", {}))

@@ -122,3 +122,5 @@ Revue visuelle : lancer Godot avec `--script res://tests/visual_review.gd` pour 
 
 Prototype jouable : habitants animés, livraisons, navigation autour des bâtiments, accès verticaux, exploration d’une réserve, sauvegarde au refuge et premiers besoins de sommeil. Le cahier des charges complet reste à développer. Pas encore d’audio ni de grands humains modélisés ; leur présence est simulée par un cycle et une jauge de soupçons. Les horaires, métiers, pièces modulaires, chaînes de production et territoires procéduraux restent des étapes futures.
 
+
+Étape 11B / lot 31, validé par le joueur : première fourmi dans la cuisine, approche prudente et sauvegarde v18. Démo `-- --demo-ant`. Voir [la fiche du lot 31](docs/conception/gameplay-lot-31.md).

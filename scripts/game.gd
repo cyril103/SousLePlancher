@@ -13,6 +13,7 @@ const Depots = preload("res://scripts/local_depots.gd")
 const Torches = preload("res://scripts/carried_torches.gd")
 const Fissure = preload("res://scripts/fissure_passage.gd")
 var fissure := Fissure.new()
+var ant := preload("res://scripts/kitchen_ant.gd").new()
 var kitchen := preload("res://scripts/kitchen_access.gd").new()
 var health := preload("res://scripts/colony_health.gd").new()
 var rooms := preload("res://scripts/constructed_rooms.gd").new()
@@ -97,6 +98,7 @@ var route_mesh: MeshInstance3D
 var route_timer := 0.0
 
 func _ready() -> void:
+	ant.game = self
 	kitchen.game = self
 	health.game = self
 	rooms.game = self
@@ -157,6 +159,7 @@ func _ready() -> void:
 	_make_loading_stations()
 	fissure.setup()
 	kitchen.setup()
+	ant.setup()
 	designations.game = self
 	designations.setup()
 	_refresh_save_state()
@@ -218,6 +221,7 @@ func _ready() -> void:
 	if "--demo-fissure" in OS.get_cmdline_user_args(): prepare_fissure_demo()
 	if "--demo-alcove" in OS.get_cmdline_user_args(): prepare_alcove_demo()
 	if "--demo-alcove-haul" in OS.get_cmdline_user_args(): prepare_alcove_haul_demo()
+	if "--demo-ant" in OS.get_cmdline_user_args(): prepare_ant_demo()
 	if "--demo-kitchen" in OS.get_cmdline_user_args(): prepare_kitchen_demo()
 	if "--demo-health" in OS.get_cmdline_user_args(): prepare_health_demo()
 	if "--demo-privacy" in OS.get_cmdline_user_args(): prepare_privacy_demo()
@@ -334,6 +338,7 @@ func _add_patch(kind: String, pos: Vector3, amount: int) -> void:
 	patches.append({"kind": kind, "pos": pos, "amount": amount, "reserved": 0, "node": node, "label": label, "discovered": true})
 
 func _exit_tree() -> void:
+	ant.game = null
 	kitchen.game = null
 	health.game = null
 	rooms.game = null
@@ -638,6 +643,7 @@ func _process(delta: float) -> void:
 	_update_routes(delta)
 
 func simulate(dt: float) -> void:
+	ant.update(dt)
 	rooms.update(dt)
 	fixed_lighting.update(dt)
 	refuge.update(dt)
@@ -1458,3 +1464,22 @@ func prepare_kitchen_demo() -> void:
 	_update_camera()
 	_refresh_ui()
 	_news("11A · Désigner une reconnaissance, puis commander le pont et la récolte. Espace : reprendre. Les lanternes de cette démo sont fournies.")
+
+func prepare_ant_demo() -> void:
+	prepare_kitchen_demo()
+	kitchen.known = true
+	kitchen.planned = true
+	kitchen.built = true
+	kitchen.materials = kitchen.COST.duplicate()
+	kitchen.work = kitchen.WORK
+	kitchen.status = "Pont prêt. Observer la fourmi, puis désigner la récolte."
+	kitchen.refresh()
+	ant.refresh()
+	save_path = "user://saves/ant_demo.json"
+	get_window().title = "Sous le plancher — 11B · Première fourmi"
+	focus = Vector3(5, 0, 26)
+	zoom = 18
+	_show_tray("kitchen")
+	_update_camera()
+	_refresh_ui()
+	_news("11B · Pont et lanternes fournis. Espace : observer la fourmi ; désigner la récolte et choisir l’approche. F5/F9 : reprise sur place.")

@@ -1,6 +1,6 @@
 # Roadmap de production — terminer une boucle avant d’étendre le jeu
 
-Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B publié : `ea3f133`. Lot 21 / 6C publié : `faf0b0f`. Lot 22 / 9A publié : `d580be5`. Lot 23 / 9B publié : `e63107e`. Lot 24 / 7A publié : `7065446`. Lot 25 / 7B publié : `a51eea7`. Lot 26 / 7C publié : `d64659c`. Lot 27 / 8A publié : `22994ee`. Lot 28 / 8B publié : `1e0b8e1`. Lot 29 / étape 10 publié : `eb761b3`. Lot 30 / 11A validé par le joueur ; commit et push autorisés.** Catalogue publié : `1d88614`.
+Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B publié : `ea3f133`. Lot 21 / 6C publié : `faf0b0f`. Lot 22 / 9A publié : `d580be5`. Lot 23 / 9B publié : `e63107e`. Lot 24 / 7A publié : `7065446`. Lot 25 / 7B publié : `a51eea7`. Lot 26 / 7C publié : `d64659c`. Lot 27 / 8A publié : `22994ee`. Lot 28 / 8B publié : `1e0b8e1`. Lot 29 / étape 10 publié : `eb761b3`. Lot 30 / 11A publié : `becadcc`, ambiance étendue : `52aedc7`. Lot 31 / 11B validé par le joueur, animations corrigées ; commit et push autorisés.** Catalogue publié : `1d88614`.
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
@@ -12,7 +12,7 @@ Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [d
 
 Le projet reste un prototype intégré. Nous terminons cette boucle avant d’étendre la carte et le bestiaire. La refonte générale des personnages et du mobilier n’est pas prioritaire. Le catalogue sert aux assets nécessaires aux étapes engagées ; il ne commande pas douze chantiers 3D.
 
-**11A / lot 30 validé : accès cuisine, pont approvisionné et retour des provisions. Prochaine étape : 11B, première fourmi.** La fourmi viendra sur le parcours cuisine, après les transports et la sauvegarde nécessaires, plutôt que dans une démonstration isolée.
+**11B / lot 31 validé : première fourmi sur le parcours cuisine**, recherche et transport de miettes, perception locale, attente ou détour prudent, sauvegarde v18. Voir la [fiche du lot 31](gameplay-lot-31.md). Livraison validée ; la suite sera engagée à la demande du joueur.
 
 ## Cible de gameplay confirmée avec le joueur
 
@@ -38,9 +38,9 @@ Bilan du lot 30 validé par le joueur : [fiche accès cuisine](gameplay-lot-30.m
 | Éclairage | Torche et lanterne portées ; brasero construit au palier, combustible livré et autonomie | Un emplacement fixe ; protection des nouveaux transferts seulement, pas de couverture lumineuse générale ni recharge des équipements portés |
 | Exploration | Réserve découverte à l’étage ; fissure inspectée, dégagée et étayée | Alcôve adjacente agrandie et reconnue à la lanterne ; décor mémorisé et récolte d’une source finie de fibres |
 | Passage sud | Chantier 6 bois + 4 fibres puis traversée réservée dans les deux sens | Élargissement supplémentaire 6 bois + 4 fibres pour les caisses ; lanterne obligatoire |
-| Sauvegarde | Format v17, pont et missions cuisine, patients et secours actifs, coordonnées étendues, chambres et portes, éclairage fixe, combustible, liaisons et chantiers : positions, tâches, caisses, lumière, réservations et horloge conservées ; migrations antérieures | Rechargement en pause |
-| Cuisine (lot 30 validé) | L02 depuis l’alcôve, corniche à vide, pont 8 bois/4 fibres, biscuit fini, récolte autonome et files | Petite poche artisanale ; pas de fourmi ni de dépôt cuisine |
-| Faune et humains | Ambiance et menace humaine globale simplifiée | Pas de fourmi jouable, de perception animale locale ni de routines humaines détaillées |
+| Sauvegarde | Format v18 local : fourmi, charge et politique d’approche ; pont et missions cuisine, patients et secours actifs, coordonnées étendues, chambres et portes, éclairage fixe, combustible, liaisons et chantiers : positions, tâches, caisses, lumière, réservations et horloge conservées ; migrations antérieures | Rechargement en pause |
+| Cuisine (lot 30 validé) | L02 depuis l’alcôve, corniche à vide, pont 8 bois/4 fibres, biscuit fini, récolte autonome et files | Petite poche artisanale ; fourmi du lot 31 validée, pas de dépôt cuisine |
+| Faune (lot 31 validé) et humains | Une fourmi riggée dans la cuisine : prélèvement, transport, perception locale, alerte et repli ; approche prudente des habitants | Obstacles fixes 2D, pas de combat ni de colonie animale ; menace humaine globale simplifiée |
 | Catalogue | 12 planches, matériaux et vues de référence publiés | Concepts, pas de nouveaux modèles ; inventaire non exhaustif |
 
 Points de contrôle : [restrictions du passage](../../scripts/fissure_passage.gd), [format v17](../../scripts/colony_save.gd), [sauvegarde sur place](../../scripts/game.gd), [lumière portée](../../scripts/carried_torches.gd), [chantiers](../../scripts/construction_logistics.gd), [dépôts](../../scripts/local_depots.gd). Le passage dirige les déplacements de la mission lumineuse ; la lanterne garde la gestion du combustible et du rangement au refuge.
@@ -181,4 +181,4 @@ Ces reports ne suppriment pas la ville, les relations, le milieu ou la domestica
 
 À chaque lot : conservation des ressources, réservations libérées, besoins/rappel, pause/vitesse, migration et reprise selon périmètre. Réutiliser les suites navigation, livraisons, construction, dépôts, besoins, éclairage et fissure ; ajouter les cas nouveaux utiles. Mesurer progressivement 10, 20 puis 30–50 habitants. Cette dernière cible n’est pas démontrée.
 
-**11A / lot 30 validé : reconnaissance, pont approvisionné et provisions rapportées, sauvegarde v17. Prochaine étape : 11B, première fourmi.**
+**11B / lot 31 validé : fourmi intégrée, concurrence sur les miettes, attente et détour, sauvegarde v18.**

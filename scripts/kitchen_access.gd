@@ -205,6 +205,7 @@ func cancel(c: WorkerDelivery, m: Dictionary) -> void:
 	if m.returning: return
 	m.returning = true
 	t.returning = true
+	t.ant_wait = 0.0
 	if not t.collected and not t.released:
 		if t.kind == "food": reserved -= t.quantity
 		game.depots.release(token(c.owner))
@@ -246,6 +247,7 @@ func tick(c: WorkerDelivery, m: Dictionary, dt: float) -> bool:
 		return true
 	if m.phase != "kitchen": return false
 	t.clock += dt
+	if game.ant.worker_wait(c, t, dt): return true
 	match t.stage:
 		"fetch":
 			var gate: DeliveryLedger = game.depots.gate(t.depot)
@@ -308,7 +310,7 @@ func tick(c: WorkerDelivery, m: Dictionary, dt: float) -> bool:
 					if m.returning:
 						t.returning = true
 						route(t, [FAR + Vector3(0, 0, .7)], "bridge_back")
-					else: route(t, [Vector3(4, -.0105, 24), FOOD + Vector3(0, 0, (c.owner - 1.5) * .45)], "food_walk")
+					else: route(t, game.ant.food_route(c.owner), "food_walk")
 		"food_walk":
 			if walk(c, t, dt):
 				t.stage = "observe" if t.kind == "scout" else "harvest"
@@ -406,7 +408,7 @@ func delivery(c: WorkerDelivery, m: Dictionary, t: Dictionary, dt: float) -> voi
 func description(id: int) -> String:
 	if not tasks.has(id): return ""
 	var t: Dictionary = tasks[id]
-	return "Cuisine · " + {"scout": "reconnaissance", "supply": "livraison du pont", "build": "construction du pont", "food": "provisions"}[t.kind] + (" · retour" if t.returning else "")
+	return ("Cuisine · attend la fourmi" if float(t.get("ant_wait", 0)) > 0 else "Cuisine · " + {"scout": "reconnaissance", "supply": "livraison du pont", "build": "construction du pont", "food": "provisions"}[t.kind] + (" · retour" if t.returning else ""))
 
 func summary() -> String:
 	var text := "Alcôve → cuisine · détour à vide / pont pour caisses\n"
@@ -442,6 +444,7 @@ static func valid(v: Variant, r: Dictionary) -> bool:
 		if not t is Dictionary or not t.has_all(["kind", "stage", "resource", "quantity", "depot", "collected", "deposited", "released", "clock", "route", "index", "returning"]): return false
 		if t.kind not in ["scout", "supply", "build", "food"] or not t.route is PackedVector3Array or not t.index is int or t.index < 0 or t.index > t.route.size(): return false
 		if t.stage not in ["equip", "out", "fetch", "pickup", "to_bridge", "supply_drop", "build", "bridge_wait", "bridge_back", "bridge_cross", "food_walk", "observe", "harvest", "food_pickup", "alcove_back"]: return false
+		if t.has("ant_wait") and (not (t.ant_wait is float or t.ant_wait is int) or not is_finite(t.ant_wait) or t.ant_wait < 0 or t.ant_wait > 9): return false
 		if not t.quantity is int or t.quantity < 0 or t.quantity > 10 or not t.depot is int or t.depot < -1 or t.depot >= r.gates.size(): return false
 		if not (t.clock is float or t.clock is int) or not is_finite(t.clock) or t.clock < 0: return false
 		for k in ["collected", "deposited", "released", "returning"]:

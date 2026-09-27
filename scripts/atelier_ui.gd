@@ -1141,16 +1141,22 @@ func _make_kitchen() -> void:
 	kitchen_buttons.append(button(panel, "Commander le pont · 8 bois / 4 fibres", func(): game.kitchen.plan(); refresh()))
 	kitchen_buttons.append(button(panel, "", func(): game.kitchen.toggle_build(); refresh()))
 	kitchen_buttons.append(button(panel, "", func(): game.kitchen.designate_food(); refresh()))
+	button(panel, "Approche : basculer direct / détour ouest", func(): game.ant.toggle_policy(); refresh())
+	button(panel, "Observer la fourmi", func():
+		if game.kitchen.known: game.focus = game.ant.pos; game.zoom = 11; game.fissure.follow = -1; game._update_camera())
 	button(panel, "Voir le pont", func(): game.focus = game.kitchen.NEAR; game.zoom = 19; game.fissure.follow = -1; game._update_camera())
 	button(panel, "Suivre un habitant engagé", func():
 		if not game.kitchen.tasks.is_empty(): game.fissure.follow = game.kitchen.tasks.keys()[0])
 	button(panel, "Lanternes et fabrication", func(): game._show_tray("torches"))
-	wrapped(panel, "Récolte : reconnaissance et provisions. Transport : matériaux. Construction : pont. Deux habitants au maximum, une personne sur chaque passage. Lanternes obligatoires ; priorité aux besoins et au retour. Aucun insecte dans ce lot.", 15)
+	wrapped(panel, "Récolte : reconnaissance et provisions. Transport : matériaux. Construction : pont. Deux habitants au maximum, une personne sur chaque passage. Lanternes obligatoires ; priorité aux besoins et au retour. La fourmi prélève les miettes libres. Les habitants gardent leurs réservations ; approche prudente, sans combat.", 15)
 
 func _refresh_kitchen() -> void:
 	if kitchen_label == null: return
 	var k = game.kitchen
-	kitchen_label.text = k.summary()
+	kitchen_label.text = k.summary() + "\n\n" + game.ant.summary()
+	kitchen_buttons[0].visible = not k.known
+	kitchen_buttons[1].visible = not k.planned
+	kitchen_buttons[2].visible = k.planned and not k.built
 	kitchen_buttons[0].disabled = k.known or not game.fissure.visited
 	kitchen_buttons[0].text = "Annuler la reconnaissance" if k.scout else "Désigner la reconnaissance à vide"
 	kitchen_buttons[1].disabled = k.planned or not k.known or not game.fissure.widened()
