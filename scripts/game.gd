@@ -16,7 +16,7 @@ var fissure := Fissure.new()
 var priorities := preload("res://scripts/work_priorities.gd").new()
 var designations := preload("res://scripts/work_designations.gd").new()
 const HOME := Vector3(-3, 0, 1)
-const COSTS := {"depot": {}, "bed": {"wood": 4, "fiber": 3}, "private_bed": {"wood": 6, "fiber": 5}, "shelter": {"wood": 8, "fiber": 4}, "workshop": {"wood": 10, "fiber": 6}}
+const COSTS := {"depot": {"wood": 6, "fiber": 4}, "bed": {"wood": 4, "fiber": 3}, "private_bed": {"wood": 6, "fiber": 5}, "shelter": {"wood": 8, "fiber": 4}, "workshop": {"wood": 10, "fiber": 6}}
 var sleeping := Sleep.new()
 var needs := Needs.new()
 var construction := Construction.new()
@@ -207,6 +207,7 @@ func _ready() -> void:
 	if "--demo-fissure" in OS.get_cmdline_user_args(): prepare_fissure_demo()
 	if "--demo-alcove" in OS.get_cmdline_user_args(): prepare_alcove_demo()
 	if "--demo-alcove-haul" in OS.get_cmdline_user_args(): prepare_alcove_haul_demo()
+	if "--demo-depot-build" in OS.get_cmdline_user_args(): prepare_depot_build_demo()
 	if "--demo-priorities" in OS.get_cmdline_user_args(): prepare_priorities_demo()
 	if "--demo-designations" in OS.get_cmdline_user_args(): prepare_designations_demo()
 	if "--demo-live-save" in OS.get_cmdline_user_args(): prepare_live_save_demo()
@@ -287,6 +288,7 @@ func prepare_depots_demo() -> void:
 	stock = {"food": 24, "water": 16, "wood": 0, "fiber": 0}
 	_choose_build("depot")
 	_place_build(Vector3(4, 0, 2))
+	depots.restore_site(1, {}) # Historical demo starts with an existing depot.
 	depots.stocks(1).wood = 4
 	depots.stocks(1).fiber = 3
 	depots.stocks(1).food = 2
@@ -398,6 +400,17 @@ func queue_position(index: int) -> Vector3:
 	return depot_slots[index] + Vector3(0, WorkerDelivery.GROUND_Y, 0)
 
 func _navigation_allows_build(pos: Vector3, kind: String) -> bool:
+	if pos.y > 1:
+		var upper_trial := Navigation.new()
+		upper_trial.area = east_navigation.area
+		var obstacles: Array[Rect2] = east_obstacles.duplicate()
+		obstacles.append(Navigation.building(pos, kind))
+		upper_trial.configure(obstacles, east_stands)
+		var points: Array[Vector3] = [Depots.entrance(pos), patches[6].pos + Vector3(.9, WorkerDelivery.GROUND_Y, .2)]
+		for id in range(workers.size()): points.append(bridge.waiting(id, true))
+		for point in points:
+			if upper_trial.path(Bridge.FAR, point).is_empty(): return false
+		return true
 	var trial := Navigation.new()
 	var footprints: Array[Rect2] = navigation_obstacles.duplicate()
 	footprints.append(Navigation.building(pos, kind))
@@ -424,7 +437,7 @@ func _navigation_allows_build(pos: Vector3, kind: String) -> bool:
 	for worker in workers:
 		if worker.node.position.y < 0.1 and not worker.delivery.inside_refuge and not worker.delivery.door_active and not worker.delivery.state in ["bed_enter", "sleep", "bed_exit"]: destinations.append(worker.node.position)
 	for point in destinations:
-		if trial.path(depot, point).is_empty(): return false
+		if point.y < 1 and trial.path(depot, point).is_empty(): return false
 	# Reserve a reachable spawn and waiting slot before charging for a new shelter.
 	if kind == "shelter":
 		if workers.size() >= Refuge.CAPACITY: return false
@@ -433,7 +446,7 @@ func _navigation_allows_build(pos: Vector3, kind: String) -> bool:
 		var queues := trial.slots(HOME + Vector3(3.2, 0, 1.2), workers.size() + 1, homes)
 		if homes.size() <= workers.size() or queues.size() <= workers.size(): return false
 		for point in homes + queues:
-			if trial.path(depot, point).is_empty(): return false
+			if point.y < 1 and trial.path(depot, point).is_empty(): return false
 	return true
 
 func _update_camera() -> void:
@@ -516,7 +529,7 @@ func _unhandled_input(event: InputEvent) -> void:
 					selected = -1
 					hud.assignment_target = -1
 					for id in range(1, depots.sites.size()):
-						var depot_hit = ground_point(event.position)
+						var depot_hit = destination_point(event.position)
 						if depot_hit != null and depot_hit.distance_to(depots.sites[id].pos) < 1:
 							hud._refresh_depots()
 							hud.depot_picker.select(id)
@@ -649,6 +662,12 @@ func release_worker() -> void:
 			return
 
 func _valid_site(pos: Vector3) -> bool:
+	if pos.y > 1:
+		if build_mode != "depot" or not pos.is_equal_approx(Depots.EAST_POSITION): return false
+		if not east_discovered and not get_meta("restore_mode", false): return false
+		for depot in depots.sites:
+			if depot.pos.is_equal_approx(pos): return false
+		return true
 	if not get_meta("restore_mode", false) and Navigation.building(pos, build_mode).grow(.3).intersects(Rect2(2.8, 4.4, 2.4, 2.1)): return false
 	if absf(pos.x) > 9.5 or absf(pos.z) > 6: return false
 	if pos.distance_to(HOME + Vector3(1.6, 0, 0.25)) < 1.6: return false
@@ -694,7 +713,7 @@ func _set_ghost(node: Node) -> void:
 
 func _place_build(point: Vector3) -> bool:
 	if build_mode == "" or ended: return false
-	var pos := Vector3(snappedf(point.x, 1), 0, snappedf(point.z, 1))
+	var pos := Depots.EAST_POSITION if build_mode == "depot" and point.y > 1 else Vector3(snappedf(point.x, 1), 0, snappedf(point.z, 1))
 	if not _valid_site(pos):
 		_news("Cet emplacement est occupé ou trop près du bord.")
 		return false
@@ -702,26 +721,30 @@ func _place_build(point: Vector3) -> bool:
 		_news("Le refuge est complet : ses six places sont occupées.")
 		return false
 	var furniture := build_mode in ["bed", "private_bed"]
+	var physical := furniture or build_mode == "depot"
 	for key in COSTS[build_mode]:
-		if not furniture and depots.available(0, key) < COSTS[build_mode][key]:
+		if not physical and depots.available(0, key) < COSTS[build_mode][key]:
 			_news("Il manque des matériaux. Affectez des habitants au bois et aux fibres.")
 			return false
 	if not _navigation_allows_build(pos, build_mode):
 		_news("Ce bâtiment couperait un accès au refuge, au dépôt ou aux ressources.")
 		return false
-	if not furniture:
+	if not physical:
 		for key in COSTS[build_mode]: stock[key] -= COSTS[build_mode][key]
 	if furniture: sleeping.add(pos, build_mode == "private_bed")
 	elif build_mode == "depot": depots.add(pos)
 	else: Art.building(self, pos, build_mode)
 	buildings.append({"pos": pos, "kind": build_mode})
-	navigation_obstacles.append(Navigation.building(pos, build_mode))
+	if pos.y > 1:
+		east_obstacles.append(Navigation.building(pos, build_mode))
+		east_navigation.configure(east_obstacles, east_stands)
+	else: navigation_obstacles.append(Navigation.building(pos, build_mode))
 	if not furniture and build_mode != "depot": navigation_obstacles.append(Navigation.footprint(pos + Vector3(1.05, 0, 0.65), Vector2(0.12, 0.12)))
 	navigation.configure(navigation_obstacles, navigation_stands)
 	if furniture:
 		_news("Chantier planifié. Bois et fibres seront livrés avant fabrication. T : suivi des travaux.")
 	elif build_mode == "depot":
-		_news("Dépôt local installé : 12 places. Stocks → Dépôts pour choisir les ressources acceptées.")
+		_news("Plan de dépôt : livrer 6 bois et 4 fibres, puis fabriquer pendant 16 s. Stocks → Dépôts pour suivre le chantier.")
 	elif build_mode == "shelter":
 		shelters += 1
 		_refresh_navigation_slots(workers.size() + 1)
@@ -942,7 +965,7 @@ func apply_checkpoint(data: Dictionary) -> bool:
 	stock = {"food": 1000000, "wood": 1000000, "fiber": 1000000, "water": 16}
 	for building in data.buildings:
 		build_mode = building.kind
-		var point := Vector3(building.pos[0], 0, building.pos[2])
+		var point := Vector3(building.pos[0], building.pos[1], building.pos[2])
 		if not _place_build(point): return false
 	for kind in ["food", "wood", "fiber"]: stock[kind] = int(data.stock[kind])
 	stock.water = int(data.stock.get("water", 16))
@@ -952,6 +975,7 @@ func apply_checkpoint(data: Dictionary) -> bool:
 			depots.sites[id].capacity = int(saved.capacity)
 			depots.sites[id].filters = saved.filters.duplicate()
 			if id > 0:
+				depots.restore_site(id, saved)
 				for kind in Depots.KINDS: depots.sites[id].stock[kind] = int(saved.stock[kind])
 			depots.refresh(id)
 	else:
@@ -1235,3 +1259,36 @@ func prepare_priorities_demo() -> void:
 	_show_tray("priorities")
 	_refresh_ui()
 	_news("9B · H1 récolte, H2 transporte, H3 construit. Espace pour démarrer ; cliquez les chiffres pour changer les priorités.")
+
+func plan_east_depot() -> bool:
+	if not east_discovered:
+		_news("Reconnaissez la réserve de l’étage avant de planifier son dépôt.")
+		return false
+	build_mode = "depot"
+	var ok := _place_build(Depots.EAST_POSITION)
+	if not ok: _cancel_build()
+	return ok
+
+func prepare_depot_build_demo() -> void:
+	start_panel.hide()
+	discover_east()
+	stock = {"food": 24, "water": 16, "wood": 12, "fiber": 8}
+	for w in workers: w.priorities = {"collect": 0, "transport": 0, "build": 0}
+	workers[0].priorities.transport = 1
+	workers[1].priorities.build = 1
+	workers[2].priorities.collect = 1
+	workers[2].patch = 6
+	plan_east_depot()
+	# Demonstrate a destination-local harvest after construction; refuge accepts no wood.
+	depots.sites[0].filters.erase("wood")
+	save_path = "user://saves/depot_build_demo.json"
+	get_window().title = "Sous le plancher — 7A · Dépôt distant construit"
+	paused = true
+	focus = Vector3(5, 0, -2)
+	zoom = 19
+	hud._refresh_depots()
+	if depots.sites.size() > 1: hud.depot_picker.select(1)
+	_show_tray("depots")
+	_update_camera()
+	_refresh_ui()
+	_news("7A · Espace : H1 livre bois et fibres à l’étage, H2 construit, H3 remplit le dépôt. Annulez/relancez le plan dans Stocks → Dépôts ; F5/F9 conserve le chantier.")

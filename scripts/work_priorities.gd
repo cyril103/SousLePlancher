@@ -27,7 +27,7 @@ func start(c: WorkerDelivery) -> bool:
 			if value(c.owner, kind) != rank: continue
 			match kind:
 				"build":
-					if game.torches.start_work(c) or game.fissure.start_work(c) or game.sleeping.start_work(c): return true
+					if game.torches.start_work(c) or game.fissure.start_work(c) or game.sleeping.start_work(c) or game.depots.start_work(c): return true
 				"transport":
 					if game.construction.start(c): return true
 				"collect":

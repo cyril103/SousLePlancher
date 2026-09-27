@@ -15,6 +15,7 @@ func fixture() -> Node:
 	game.start_panel.hide()
 	game._choose_build("depot")
 	check(game._place_build(Vector3(4, 0, 2)), "Local depot placed at accessible site")
+	game.depots.restore_site(1, {}) # Existing-depot fixture; construction is covered by depot_build.gd.
 	return game
 func advance(game: Node, seconds: float) -> void:
 	for i in range(roundi(seconds * 20)):

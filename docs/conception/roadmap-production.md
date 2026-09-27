@@ -1,6 +1,6 @@
 # Roadmap de production — terminer une boucle avant d’étendre le jeu
 
-Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B publié : `ea3f133`. Lot 21 / 6C publié : `faf0b0f`. Lot 22 / 9A publié : `d580be5`. Lot 23 / 9B validé par le joueur ; commit et push autorisés.** Catalogue publié : `1d88614`.
+Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B publié : `ea3f133`. Lot 21 / 6C publié : `faf0b0f`. Lot 22 / 9A publié : `d580be5`. Lot 23 / 9B publié : `e63107e`. Lot 24 / 7A validé par le joueur ; commit et push autorisés.** Catalogue publié : `1d88614`.
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
@@ -12,7 +12,7 @@ Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [d
 
 Le projet reste un prototype intégré. Nous terminons cette boucle avant d’étendre la carte et le bestiaire. La refonte générale des personnages et du mobilier n’est pas prioritaire. Le catalogue sert aux assets nécessaires aux étapes engagées ; il ne commande pas douze chantiers 3D.
 
-**Étape validée : 9B, priorités de travail individuelles. Prochaine livraison : dépôt distant construit (7A).** La fourmi viendra sur le parcours cuisine, après les transports et la sauvegarde nécessaires, plutôt que dans une démonstration isolée.
+**Étape validée : 7A, dépôt distant construit dans la réserve à l’étage. Prochaine livraison : transfert régulier entre dépôts (7B).** La fourmi viendra sur le parcours cuisine, après les transports et la sauvegarde nécessaires, plutôt que dans une démonstration isolée.
 
 ## Cible de gameplay confirmée avec le joueur
 
@@ -22,7 +22,7 @@ Après 6C, prioriser le système général de tâches autonomes et les commandes
 
 ## État constaté
 
-Bilan actualisé au lot 23, validé par le joueur. [Fiche 9B](gameplay-lot-23.md). Tests du passage élargi, récolte distante, 6A, fissure, lanternes, chantiers et sauvegardes exécutés sous Godot 4.7.2 ; détail des nouvelles vérifications dans [la fiche du lot 21](gameplay-lot-21.md). 6A, 6B et 6C sont validées.
+Bilan actualisé au lot 24, validé par le joueur. [Fiche 7A](gameplay-lot-24.md). Tests du passage élargi, récolte distante, 6A, fissure, lanternes, chantiers et sauvegardes exécutés sous Godot 4.7.2 ; détail des nouvelles vérifications dans [la fiche du lot 21](gameplay-lot-21.md). 6A, 6B et 6C sont validées.
 
 | Domaine | Disponible aujourd’hui | Limite réelle |
 | --- | --- | --- |
@@ -33,11 +33,11 @@ Bilan actualisé au lot 23, validé par le joueur. [Fiche 9B](gameplay-lot-23.md
 | Besoins | Sommeil, faim et soif autonomes, accès physique à la nourriture et à l’eau | Pas de soins, humeur, relations ni milieu simulé |
 | Couchages | Lits fabriqués, propriétaire, confort et alcôves d’intimité | Meubles prédéfinis ; pas de pièces construites librement |
 | Chantiers | Livraisons physiques pour lits, équipements lumineux et fissure | Ateliers/anciens abris encore au paiement historique ; pas de pont construit par le joueur |
-| Dépôts | Stocks locaux, capacité, filtres et réservations, repas et approvisionnement | Casier gratuit et instantané ; pas de transfert automatique ni quotas |
+| Dépôts | Chantiers 6 bois + 4 fibres + 16 s, stocks locaux, filtres, réservations ; casier distant à l’étage | Emplacement distant fixe ; pas de casier dans l’alcôve, de transfert régulier ni quotas |
 | Éclairage | Torche au sol ; lanterne compatible avec caisse et échelle ; autonomie et retour anticipé | Pas de recharge ni éclairage fixe construit ; remplacement par fabrication |
 | Exploration | Réserve découverte à l’étage ; fissure inspectée, dégagée et étayée | Alcôve adjacente agrandie et reconnue à la lanterne ; décor mémorisé et récolte d’une source finie de fibres |
 | Passage sud | Chantier 6 bois + 4 fibres puis traversée réservée dans les deux sens | Élargissement supplémentaire 6 bois + 4 fibres pour les caisses ; lanterne obligatoire |
-| Sauvegarde | Format v10 : positions, tâches, caisses, lumière, réservations et horloge conservées ; migrations antérieures | Rechargement en pause |
+| Sauvegarde | Format v11, incluant les chantiers de dépôts : positions, tâches, caisses, lumière, réservations et horloge conservées ; migrations antérieures | Rechargement en pause |
 | Faune et humains | Ambiance et menace humaine globale simplifiée | Pas de fourmi jouable, de perception animale locale ni de routines humaines détaillées |
 | Catalogue | 12 planches, matériaux et vues de référence publiés | Concepts, pas de nouveaux modèles ; inventaire non exhaustif |
 
@@ -116,7 +116,7 @@ La livraison est terminée si le résultat est observable, les blocages sont exp
 
 ## Suite ordonnée après l’expédition
 
-Les numéros 7–11 sont conservés pour correspondre aux anciens documents. Les lots 9A–9B passent en tête pour respecter la priorité confirmée par le joueur : désignations et autonomie avant extension du contenu. **9A est publié ; 9B est réalisé et validé par le joueur** ; les autres sont non commencés. Chaque sous-lot sera présenté et validé séparément ; son détail sera fixé à son ouverture.
+Les numéros 7–11 sont conservés pour correspondre aux anciens documents. Les lots 9A–9B passent en tête pour respecter la priorité confirmée par le joueur : désignations et autonomie avant extension du contenu. **9A et 9B sont publiés ; 7A est réalisé et validé par le joueur** ; les autres sont non commencés. Chaque sous-lot sera présenté et validé séparément ; son détail sera fixé à son ouverture.
 
 | Ordre | Résultat attendu | Preuve de fonctionnement | Assets strictement utiles |
 | --- | --- | --- | --- |
@@ -179,4 +179,4 @@ Ces reports ne suppriment pas la ville, les relations, le milieu ou la domestica
 
 À chaque lot : conservation des ressources, réservations libérées, besoins/rappel, pause/vitesse, migration et reprise selon périmètre. Réutiliser les suites navigation, livraisons, construction, dépôts, besoins, éclairage et fissure ; ajouter les cas nouveaux utiles. Mesurer progressivement 10, 20 puis 30–50 habitants. Cette dernière cible n’est pas démontrée.
 
-**9B / lot 23 validé : priorités individuelles, collecte/transport/construction arbitrés au prochain travail, besoins prioritaires et persistance. Prochaine livraison : 7A, dépôt distant construit.**
+**7A / lot 24 validé : dépôt construit à l’étage par livraison physique, annulation/récupération et sauvegarde v11. Prochaine livraison : 7B, transferts réguliers entre dépôts.**

@@ -19,7 +19,7 @@ func release(id: int) -> void:
 	queue.erase(id)
 
 func waiting(id: int, far_side: bool) -> Vector3:
-	if far_side: return Vector3(9.4 + (id % 3) * .65, 2.0295, -3.45 - (id / 3) * .65)
+	if far_side: return Vector3(9.4 + (id % 2) * .45, 2.0295, -3.4 - (id / 2) * .4)
 	return Vector3(3.45 + (id % 4) * .7, 2.0295, -3.5 - (id / 4) * .7)
 
 func is_edge(from: Vector3, to: Vector3) -> bool:

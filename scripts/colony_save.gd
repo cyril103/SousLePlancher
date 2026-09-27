@@ -1,6 +1,6 @@
 extends RefCounted
 ## Versioned colony data and a data-only snapshot of active simulation.
-const VERSION := 10
+const VERSION := 11
 const Live = preload("res://scripts/live_checkpoint.gd")
 const DEFAULT_PATH := "user://saves/colony_v1.json"
 const KINDS := ["food", "food", "wood", "wood", "fiber", "fiber", "wood", "water"]
@@ -81,7 +81,9 @@ static func validate(data: Variant) -> String:
 			if data.version < 5: return "Dépôt incompatible avec l’ancien format."
 			depot_count += 1
 		if building.kind in ["bed", "private_bed"]: furnishings.append(building.kind)
-		if building.pos[1] != 0 or not number(building.pos[0], -9, 9, true) or not number(building.pos[2], -6, 6, true): return "Emplacement de bâtiment invalide."
+		var east_depot: bool = data.version >= 11 and building.kind == "depot" and Vector3(building.pos[0], building.pos[1], building.pos[2]).is_equal_approx(Vector3(11.2, 2.04, -3.7))
+		if not east_depot and (building.pos[1] != 0 or not number(building.pos[0], -9, 9, true) or not number(building.pos[2], -6, 6, true)): return "Emplacement de bâtiment invalide."
+		if east_depot and not data.patches[6].discovered: return "Dépôt dans une réserve inconnue."
 		if building.kind == "shelter": shelters += 1
 	if shelters > 2 or not data.assignments is Array or data.assignments.size() != 4 + shelters: return "Population incompatible avec les abris."
 	if data.version == 1 and not furnishings.is_empty(): return "Couchages incompatibles avec l’ancien format."
@@ -117,7 +119,8 @@ static func validate(data: Variant) -> String:
 		if not data.has("recovery") or not data.recovery is Array or data.recovery.size() > 4096: return "Matériaux à récupérer invalides."
 		for pile in data.recovery:
 			if not fields(pile, ["pos", "materials"]) or not valid_vector(pile.pos) or not fields(pile.materials, ["wood", "fiber"]): return "Tas de récupération incomplet."
-			if absf(pile.pos[0]) > 10 or absf(pile.pos[2]) > 8 or absf(pile.pos[1] + .0105) > .001: return "Tas de récupération hors de la carte."
+			var upper_pile: bool = data.version >= 11 and number(pile.pos[0], 9, 12) and number(pile.pos[2], -6, -3) and absf(pile.pos[1] - 2.0295) < .001
+			if not upper_pile and (absf(pile.pos[0]) > 10 or absf(pile.pos[2]) > 8 or absf(pile.pos[1] + .0105) > .001): return "Tas de récupération hors de la carte."
 			if not number(pile.materials.wood, 0, 6, true) or not number(pile.materials.fiber, 0, 5, true): return "Quantité à récupérer invalide."
 			if data.version < 10 and pile.materials.wood + pile.materials.fiber == 0: return "Tas de récupération vide."
 	if data.version >= 5:
@@ -130,6 +133,13 @@ static func validate(data: Variant) -> String:
 			for kind in ["food", "wood", "fiber", "water"]:
 				if not number(depot.stock[kind], 0, 100000000, true): return "Stock local invalide."
 				used += int(depot.stock[kind])
+			if data.version >= 11 and i > 0:
+				if not fields(depot, ["built", "active", "work", "materials"]) or not fields(depot.materials, ["wood", "fiber"]): return "Chantier de dépôt incomplet."
+				if not depot.built is bool or not depot.active is bool or not number(depot.work, 0, 16): return "Chantier de dépôt invalide."
+				if not number(depot.materials.wood, 0, 6, true) or not number(depot.materials.fiber, 0, 4, true): return "Matériaux de dépôt invalides."
+				if depot.built != (depot.work == 16) or (not depot.built and used > 0): return "Stockage avant construction."
+				if depot.work > 0 and (depot.materials.wood != 6 or depot.materials.fiber != 4): return "Dépôt construit sans matériaux."
+				if not depot.active and (depot.built or depot.work > 0 or depot.materials.wood + depot.materials.fiber > 0): return "Dépôt annulé incohérent."
 			if used > depot.capacity: return "Dépôt au-delà de sa capacité."
 			if not depot.filters is Array or depot.filters.size() > 4: return "Filtres invalides."
 			var seen: Array = []

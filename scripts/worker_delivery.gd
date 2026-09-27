@@ -53,6 +53,7 @@ var exploring := false
 var exploration_time := 0.0
 var rest_bed := -1
 var furniture_order := -1
+var depot_order := -1
 var supply_job := -1
 var depot_id := 0
 var need_depot := -1
@@ -99,6 +100,7 @@ func change(next: String) -> void:
 	retry_time = 0.0
 
 func cancel(skip_light: bool = false) -> void:
+	if game.depots.cancel_worker(self): return
 	if game.fissure.cancel(self):
 		if door_active: recall_after_door = true
 		return
@@ -274,6 +276,7 @@ func tick(dt: float) -> void:
 	if game.torches.tick(self, dt): return
 	if game.fissure.tick(self, dt): return
 	if game.construction.tick(self, dt): return
+	if game.depots.tick(self, dt): return
 	if game.torches.held(owner) < 0 and game.needs.tick(self, dt): return
 	if game.torches.held(owner) < 0 and needs_supply < 0 and not (need_interrupt and state == "return_home"):
 		if game.sleeping.tick(self, dt): return
@@ -318,7 +321,7 @@ func tick(dt: float) -> void:
 				change("waiting_storage")
 		"waiting_storage":
 			# Descend before joining the depot queue: a waiting climber must not lock it.
-			if actor.position.y > 1:
+			if actor.position.y > 1 and destination_position.y < 1:
 				move(game.ladder.waiting(owner, false), dt, true)
 				return
 			if harvest_destination() and game.depots.gate(depot_id).acquire_slot(job):
@@ -381,6 +384,7 @@ func tick(dt: float) -> void:
 					change("return_home")
 
 func description() -> String:
+	if depot_order >= 0: return "Construit le dépôt %d" % depot_order
 	var fissure_description: String = game.fissure.description(self)
 	if not fissure_description.is_empty(): return fissure_description
 	var torch_description: String = game.torches.description(self)

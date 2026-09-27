@@ -118,6 +118,8 @@ static func capture(g: Node) -> Dictionary:
 		job.source = -1 if job.source.is_empty() else g.construction.recovery.find(job.source)
 		job.target = -1 if job.target.is_empty() else sites.find(job.target)
 		r.construction_jobs[id] = job
+	r.depot_sites = []
+	for depot in g.depots.sites.slice(1): r.depot_sites.append(plain(depot))
 	r.designations = g.designations.snapshot()
 	var data = pack(r)
 	return {"schema": 1, "data": data, "sha256": JSON.stringify(data).sha256_text()}
@@ -158,6 +160,19 @@ static func validate(data: Dictionary) -> String:
 	var n: int = r.workers.size()
 	if not r.fissure.get("follow", -1) is int or r.fissure.get("follow", -1) < -1 or r.fissure.get("follow", -1) >= n: return "Suivi de caméra invalide."
 	if r.has("designations") and not preload("res://scripts/work_designations.gd").valid(r.designations, r): return "Ordre autonome incohérent."
+	if data.version >= 11:
+		if not r.get("depot_sites") is Array or r.depot_sites.size() != data.depots.size() - 1: return "Chantiers de dépôts incomplets."
+		for i in range(r.depot_sites.size()):
+			var site = r.depot_sites[i]
+			if not site is Dictionary or not site.has_all(["built", "active", "work", "materials", "hauler", "builder"]): return "Dépôt actif incomplet."
+			for key in ["built", "active", "work", "materials"]:
+				if key == "materials":
+					for kind in ["wood", "fiber"]:
+						if site.materials.get(kind, -1) != data.depots[i + 1].materials[kind]: return "Matériaux de dépôt incohérents."
+				elif site[key] != data.depots[i + 1][key]: return "Chantier de dépôt incohérent."
+			for key in ["builder", "hauler"]:
+				if not site[key] is int or site[key] < -1 or site[key] >= n: return "Responsable de dépôt invalide."
+			if site.builder >= 0 and r.workers[site.builder].controller.get("depot_order", -1) != i + 1: return "Artisan de dépôt orphelin."
 	var source_reserved := 0
 	for i in range(n):
 		var w = r.workers[i]
@@ -168,6 +183,10 @@ static func validate(data: Dictionary) -> String:
 		if not w.worker.has_all(["carrying", "kind"]) or not w.worker.carrying is int or w.worker.carrying < 0 or w.worker.carrying > 67: return "Charge invalide."
 		for key in ["energy", "comfort", "privacy", "nutrition", "hydration"]:
 			if not w.worker.has(key) or not (w.worker[key] is float or w.worker[key] is int) or not is_equal_approx(w.worker[key], data.needs[i][key]): return "Besoin actif incohérent."
+		if w.controller.has("depot_order"):
+			var order = w.controller.depot_order
+			if not order is int or order < -1 or order == 0 or order >= data.depots.size(): return "Chantier de dépôt d’habitant invalide."
+			if order > 0 and (not r.has("depot_sites") or r.depot_sites[order - 1].builder != i or r.depot_sites[order - 1].built or not r.depot_sites[order - 1].active): return "Artisan sans chantier de dépôt."
 		if w.worker.has("priorities") and not preload("res://scripts/work_priorities.gd").valid(w.worker.priorities): return "Priorités de travail invalides."
 		if w.worker.get("patch", -2) != data.assignments[i]: return "Affectation active incohérente."
 		if w.controller.job >= 0 and not r.components.delivery_ledger.jobs.has(w.controller.job) and not (w.controller.state == "putdown" and w.controller.get("deposited", false) and w.worker.carrying == 0): return "Récolte orpheline."
@@ -207,6 +226,7 @@ static func validate(data: Dictionary) -> String:
 		for quantity in data.depots[id].stock.values(): used += int(quantity)
 		for claim in r.incoming.values():
 			if claim.id == id: used += claim.quantity
+		if data.version >= 11 and id > 0 and not data.depots[id].built and used > 0: return "Réservation dans un dépôt en construction."
 		if used > data.depots[id].capacity: return "Capacité de dépôt sur-réservée."
 	return ""
 
@@ -262,6 +282,10 @@ static func restore(g: Node, data: Dictionary) -> bool:
 	for key in COMPONENTS:
 		if not apply_properties(g.get(key), r.components[key]): return false
 	for i in range(r.patches.size()): merge(g.patches[i], r.patches[i])
+	if r.has("depot_sites"):
+		for i in range(r.depot_sites.size()):
+			merge(g.depots.sites[i + 1], r.depot_sites[i])
+			g.depots.refresh(i + 1)
 	g.construction.next_id = r.construction_next
 	var sites: Array = g.construction.sites()
 	for id in r.construction_jobs:

@@ -6,19 +6,22 @@ var recovery: Array[Dictionary] = []
 var next_id := 1
 
 func cost(bed: Dictionary) -> Dictionary:
+	if bed.get("depot_site", false): return game.depots.COST
 	if bed.get("fissure_site", false): return game.fissure.COST
 	if bed.get("torch_site", false): return game.torches.RECIPES[bed.get("kind", "torch")]
 	return game.COSTS["private_bed" if bed.private else "bed"]
 
 func sites() -> Array:
-	return game.sleeping.beds + game.torches.orders + game.fissure.sites()
+	return game.sleeping.beds + game.torches.orders + game.fissure.sites() + game.depots.sites.slice(1)
 
 func entrance(site: Dictionary) -> Vector3:
+	if site.get("depot_site", false): return game.depots.entrance(site.pos)
 	if site.get("fissure_site", false): return game.fissure.entrance(site)
 	return game.torches.entrance(site) if site.get("torch_site", false) else game.sleeping.entrance(site)
 
 func visual(site: Dictionary) -> void:
-	if site.get("fissure_site", false): game.fissure.refresh()
+	if site.get("depot_site", false): game.depots.refresh(game.depots.sites.find(site))
+	elif site.get("fissure_site", false): game.fissure.refresh()
 	elif site.get("torch_site", false): game.torches.refresh_site(site)
 	else: game.sleeping.visual(game.sleeping.beds.find(site))
 
@@ -42,7 +45,7 @@ func for_site(bed: Dictionary, kind: String) -> int:
 	var amount := available(kind)
 	for earlier in sites():
 		if earlier == bed: break
-		if earlier.built: continue
+		if earlier.built or not earlier.get("active", true): continue
 		var missing: int = cost(earlier)[kind] - earlier.materials[kind]
 		for job in jobs.values():
 			if job.target == earlier and job.kind == kind and not job.deposited: missing -= job.quantity
@@ -72,7 +75,7 @@ func start(c: WorkerDelivery) -> bool:
 				var choice: Dictionary = game.depots.sink(pile.pos, kind, mini(pile.materials[kind], 3 + game.workshops), c.owner)
 				if not choice.is_empty(): return begin(c, kind, choice.quantity, pile, {}, choice.id)
 	for bed in sites():
-		if bed.built or bed.hauler >= 0 or supplied(bed): continue
+		if not bed.get("active", true) or bed.built or bed.hauler >= 0 or supplied(bed): continue
 		for kind in ["wood", "fiber"]:
 			var depot: int = game.depots.source(from, kind, c.owner, entrance(bed))
 			if depot < 0: continue

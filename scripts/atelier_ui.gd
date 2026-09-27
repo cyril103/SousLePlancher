@@ -68,6 +68,8 @@ var fissure_visit: Button
 var fissure_cancel: Button
 var depot_picker: OptionButton
 var depot_summary: Label
+var depot_cancel: Button
+var depot_resume: Button
 var depot_filters: Dictionary = {}
 var build_buttons: Dictionary = {}
 var modal_shade: ColorRect
@@ -321,7 +323,8 @@ func _make_trays() -> void:
 		wrapped(details, spec[3], 16, MUTED)
 	wrapped(build, "Choisissez un bâtiment, puis un emplacement libre. Clic droit pour annuler.", 16, MUTED)
 	button(build, "Gérer les couchages", func(): game._show_tray("beds"))
-	build_buttons.depot = button(build, "Installer un dépôt local · 12 places", func(): game._choose_build("depot"), "Casier de stockage : placement provisoire sans coût")
+	build_buttons.depot = button(build, "Construire un dépôt · 6 bois / 4 fibres", func(): game._choose_build("depot"), "12 places après livraison des matériaux et fabrication")
+	button(build, "Planifier le dépôt de la réserve à l’étage", func(): game.plan_east_depot())
 	var beds := tray("beds", "Couchages & intimité")
 	wrapped(beds, "Un lit personnel par habitant. Les cloisons améliorent le confort et la récupération. Elles ne protègent pas du passage des humains : H reste prioritaire.", 16, MUTED)
 	var bed_scroll := ScrollContainer.new()
@@ -390,6 +393,9 @@ func _make_trays() -> void:
 	storage.add_child(depot_picker)
 	depot_picker.item_selected.connect(func(_index: int): _refresh_depots())
 	depot_summary = wrapped(storage, "", 16)
+	var depot_actions := row(storage)
+	depot_cancel = button(depot_actions, "Annuler le chantier", func(): game.depots.cancel_plan(depot_picker.selected); refresh())
+	depot_resume = button(depot_actions, "Relancer le plan", func(): game.depots.resume_plan(depot_picker.selected); refresh())
 	wrapped(storage, "Accepter les prochaines livraisons :", 16, INK)
 	var filter_row := row(storage, 4)
 	for kind in game.Depots.KINDS:
@@ -403,7 +409,7 @@ func _make_trays() -> void:
 		depot_filters[key] = control
 	wrapped(storage, "Les livraisons réservées arrivent même si leur filtre est décoché. Le stock présent reste utilisable. Aucun transfert automatique entre dépôts.", 15, MUTED)
 	button(storage, "Voir ce dépôt", func(): game.focus = game.depots.sites[depot_picker.selected].pos; game._update_camera())
-	button(storage, "Installer un dépôt · 12 places", func(): game._choose_build("depot"))
+	button(storage, "Planifier un dépôt · 6 bois / 4 fibres", func(): game._choose_build("depot"))
 	var goals := tray("goals", "Votre premier foyer")
 	game.objective_label = wrapped(goals, "", 19)
 	save_label = wrapped(goals, "", 16, MUTED)
@@ -643,8 +649,8 @@ func refresh() -> void:
 		var affordable: bool = not game.ended and not game.start_panel.visible
 		for key in game.COSTS[kind]:
 			if game.depots.available(0, key) < game.COSTS[kind][key]: affordable = false
-		build_buttons[kind].disabled = game.ended or game.pending_save or (not affordable and not kind in ["bed", "private_bed"])
-		build_buttons[kind].tooltip_text = "Planifier un chantier ; livraison des matériaux avant fabrication" if kind in ["bed", "private_bed"] else ("Choisir un emplacement" if affordable else "Matériaux disponibles insuffisants")
+		build_buttons[kind].disabled = game.ended or game.pending_save or (not affordable and not kind in ["bed", "private_bed", "depot"])
+		build_buttons[kind].tooltip_text = "Planifier un chantier ; livraison des matériaux avant fabrication" if kind in ["bed", "private_bed", "depot"] else ("Choisir un emplacement" if affordable else "Matériaux disponibles insuffisants")
 	resident_index = clampi(resident_index, 0, game.workers.size() - 1)
 	var resident: Dictionary = game.workers[resident_index]
 	resident_name.text = "Habitant %d" % (resident_index + 1)
@@ -682,9 +688,13 @@ func _refresh_depots() -> void:
 		depot_picker.select(mini(id, game.depots.sites.size() - 1))
 	id = depot_picker.selected
 	var site: Dictionary = game.depots.sites[id]
-	depot_summary.text = "%d/%d places occupées · %d réservées\n(livraisons et retour possible des matériaux)\n" % [game.depots.used(id), site.capacity, game.depots.booked(id)]
+	depot_summary.text = "%d/%d places occupées · %d réservées\n" % [game.depots.used(id), site.capacity, game.depots.booked(id)]
+	depot_cancel.disabled = id <= 0 or site.get("built", true) or not site.get("active", true)
+	depot_resume.disabled = id <= 0 or site.get("built", true) or site.get("active", true)
+	if id > 0 and not site.built:
+		depot_summary.text = (game.construction.status(site) if site.active else "Plan annulé · emplacement conservé") + "\n" + game.construction.quantities(site) + "\nStockage indisponible avant fabrication.\n"
 	for kind in game.Depots.KINDS:
-		depot_summary.text += "\n%s : %d · %d réservé(s)" % [game.NAMES[kind], game.depots.stocks(id).get(kind, 0), game.depots.reserved(id, kind)]
+		depot_summary.text += ("\n" if kind in ["food", "fiber"] else " · ") + "%s %d" % [game.NAMES[kind], game.depots.stocks(id).get(kind, 0)]
 		depot_filters[kind].set_pressed_no_signal(kind in site.filters)
 		depot_filters[kind].disabled = game.ended or game.pending_save
 
