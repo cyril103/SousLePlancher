@@ -46,6 +46,7 @@ func stop(id: int) -> void:
 
 func blocked(order: Dictionary) -> String:
 	if not order.active: return "En pause ; les trajets déjà engagés se terminent."
+	if game.fixed_lighting.protects(order.source, order.target) and not game.fixed_lighting.lit(): return "Passerelle non éclairée : brasero ou combustible attendu."
 	if game.hiding or game.ended: return "Suspendu par le rappel ou l’arrêt de la colonie."
 	for id in [order.source, order.target]:
 		if id > 0 and not game.depots.sites[id].built: return "Attend la construction des dépôts."

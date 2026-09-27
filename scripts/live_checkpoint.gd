@@ -118,6 +118,7 @@ static func capture(g: Node) -> Dictionary:
 		job.source = -1 if job.source.is_empty() else g.construction.recovery.find(job.source)
 		job.target = -1 if job.target.is_empty() else sites.find(job.target)
 		r.construction_jobs[id] = job
+	r.fixed_lighting = g.fixed_lighting.snapshot()
 	r.transfers = g.transfers.snapshot()
 	r.depot_sites = []
 	for depot in g.depots.sites.slice(1): r.depot_sites.append(plain(depot))
@@ -175,6 +176,7 @@ static func validate(data: Dictionary) -> String:
 				if not site[key] is int or site[key] < -1 or site[key] >= n: return "Responsable de dépôt invalide."
 			if site.builder >= 0 and r.workers[site.builder].controller.get("depot_order", -1) != i + 1: return "Artisan de dépôt orphelin."
 	if data.version >= 12 and not preload("res://scripts/depot_transfers.gd").valid(r.get("transfers"), r, data): return "Liaison ou charge de transfert incohérente."
+	if data.version >= 13 and not preload("res://scripts/fixed_lighting.gd").valid(r.get("fixed_lighting"), r): return "Éclairage fixe incohérent."
 	var source_reserved := 0
 	for i in range(n):
 		var w = r.workers[i]
@@ -248,6 +250,7 @@ static func merge(target: Dictionary, values: Dictionary) -> void:
 
 static func restore(g: Node, data: Dictionary) -> bool:
 	var r: Dictionary = unpack(data.runtime.data)
+	g.fixed_lighting.restore(r.get("fixed_lighting", {}))
 	g.transfers.restore(r.get("transfers", {}))
 	g.designations.restore(r.get("designations", {}))
 	for key in ["elapsed", "meal_timer", "suspicion", "hunger", "event_index"]: g.set(key, r.clock[key])

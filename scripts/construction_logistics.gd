@@ -6,21 +6,24 @@ var recovery: Array[Dictionary] = []
 var next_id := 1
 
 func cost(bed: Dictionary) -> Dictionary:
+	if bed.get("fixed_site", false): return game.fixed_lighting.REFILL if bed.fuel_site else game.fixed_lighting.COST
 	if bed.get("depot_site", false): return game.depots.COST
 	if bed.get("fissure_site", false): return game.fissure.COST
 	if bed.get("torch_site", false): return game.torches.RECIPES[bed.get("kind", "torch")]
 	return game.COSTS["private_bed" if bed.private else "bed"]
 
 func sites() -> Array:
-	return game.sleeping.beds + game.torches.orders + game.fissure.sites() + game.depots.sites.slice(1)
+	return game.sleeping.beds + game.torches.orders + game.fissure.sites() + game.depots.sites.slice(1) + game.fixed_lighting.sites()
 
 func entrance(site: Dictionary) -> Vector3:
+	if site.get("fixed_site", false): return game.fixed_lighting.ENTRY
 	if site.get("depot_site", false): return game.depots.entrance(site.pos)
 	if site.get("fissure_site", false): return game.fissure.entrance(site)
 	return game.torches.entrance(site) if site.get("torch_site", false) else game.sleeping.entrance(site)
 
 func visual(site: Dictionary) -> void:
-	if site.get("depot_site", false): game.depots.refresh(game.depots.sites.find(site))
+	if site.get("fixed_site", false): game.fixed_lighting.refresh()
+	elif site.get("depot_site", false): game.depots.refresh(game.depots.sites.find(site))
 	elif site.get("fissure_site", false): game.fissure.refresh()
 	elif site.get("torch_site", false): game.torches.refresh_site(site)
 	else: game.sleeping.visual(game.sleeping.beds.find(site))
@@ -54,6 +57,7 @@ func for_site(bed: Dictionary, kind: String) -> int:
 
 func status(bed: Dictionary) -> String:
 	if bed.built: return "Terminé"
+	if bed.get("fuel_site", false) and supplied(bed): return "Réserve prête pour le prochain plein"
 	if supplied(bed):
 		return "Fabrication %d %%" % int(100 * bed.work / bed.required) if bed.builder >= 0 else "Prêt à fabriquer"
 	if bed.hauler >= 0: return "Transport en cours"

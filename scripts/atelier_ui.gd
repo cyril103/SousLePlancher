@@ -67,6 +67,11 @@ var fissure_haul: Button
 var fissure_visit: Button
 var fissure_cancel: Button
 var depot_picker: OptionButton
+var fixed_label: Label
+var fixed_plan: Button
+var fixed_cancel: Button
+var fixed_auto: Button
+var fixed_switch: Button
 var transfer_source: OptionButton
 var transfer_target: OptionButton
 var transfer_kind: OptionButton
@@ -378,6 +383,8 @@ func _make_trays() -> void:
 	button(work, "Chantiers et attribution des lits", func(): game._show_tray("beds"))
 	button(work, "Éclairage et éclaireurs", func(): game._show_tray("torches"))
 	_make_torches()
+	button(work, "Éclairage fixe de la passerelle", func(): game._show_tray("fixed_light"))
+	_make_fixed_light()
 	button(work, "Fissure et passage", func(): game._show_tray("fissure"))
 	_make_fissure()
 	var work_scroll := ScrollContainer.new()
@@ -552,6 +559,7 @@ func _update_roster() -> void:
 
 func refresh() -> void:
 	_refresh_transfers()
+	_refresh_fixed_light()
 	_refresh_priorities()
 	if designation_label != null:
 		designation_label.text = game.designations.summary()
@@ -983,3 +991,28 @@ func _refresh_transfers() -> void:
 	for i in range(transfer_rows.size()):
 		transfer_rows[i].label.text = game.transfers.summary(i)
 		transfer_rows[i].toggle.text = "Pause" if game.transfers.orders[i].active else "Reprendre"
+
+func _make_fixed_light() -> void:
+	var panel := tray("fixed_light", "Éclairage de la passerelle")
+	fixed_label = wrapped(panel, "", 18)
+	fixed_plan = button(panel, "Commander le brasero · 4 bois, 2 fibres", func(): game.fixed_lighting.plan(); refresh())
+	fixed_cancel = button(panel, "Annuler le chantier", func(): game.fixed_lighting.cancel_plan(); refresh())
+	fixed_auto = button(panel, "", func(): game.fixed_lighting.toggle_auto(); refresh())
+	fixed_switch = button(panel, "", func(): game.fixed_lighting.enabled = not game.fixed_lighting.enabled; game.fixed_lighting.refresh(); refresh())
+	button(panel, "Voir le palier", func(): game.focus = Vector3(6, 1, -4); game.zoom = 12; game._update_camera())
+	button(panel, "Liaisons de transport", func(): game._show_tray("transfers"))
+	wrapped(panel, "16 s de construction après livraison. 2 bois donnent 180 s de lumière ; une réserve est demandée à mi-autonomie. Priorités : Transport et Construction.\n\nBrasero commandé : les nouveaux transferts sur la passerelle attendent la lumière. Les trajets engagés et l’entretien restent autorisés en cas de panne.", 16)
+
+func _refresh_fixed_light() -> void:
+	if fixed_label == null: return
+	var f = game.fixed_lighting
+	fixed_label.text = f.summary()
+	fixed_plan.visible = f.site.is_empty() or not f.site.built
+	fixed_cancel.visible = not f.site.is_empty() and not f.site.built
+	fixed_plan.disabled = not game.east_discovered or (not f.site.is_empty() and f.site.active)
+	fixed_plan.text = "Reprendre le chantier" if not f.site.is_empty() else "Commander le brasero · 4 bois, 2 fibres"
+	fixed_cancel.disabled = f.site.is_empty() or f.site.built or not f.site.active
+	fixed_auto.disabled = f.site.is_empty() or not f.site.built
+	fixed_auto.text = "Suspendre le ravitaillement et rappeler" if f.automatic else "Reprendre le ravitaillement"
+	fixed_switch.disabled = f.site.is_empty() or not f.site.built
+	fixed_switch.text = "Éteindre (conserver le combustible)" if f.enabled else "Rallumer"

@@ -1,6 +1,6 @@
 extends RefCounted
 ## Versioned colony data and a data-only snapshot of active simulation.
-const VERSION := 12
+const VERSION := 13
 const Live = preload("res://scripts/live_checkpoint.gd")
 const DEFAULT_PATH := "user://saves/colony_v1.json"
 const KINDS := ["food", "food", "wood", "wood", "fiber", "fiber", "wood", "water"]
@@ -119,7 +119,7 @@ static func validate(data: Variant) -> String:
 		if not data.has("recovery") or not data.recovery is Array or data.recovery.size() > 4096: return "Matériaux à récupérer invalides."
 		for pile in data.recovery:
 			if not fields(pile, ["pos", "materials"]) or not valid_vector(pile.pos) or not fields(pile.materials, ["wood", "fiber"]): return "Tas de récupération incomplet."
-			var upper_pile: bool = data.version >= 11 and number(pile.pos[0], 9, 12) and number(pile.pos[2], -6, -3) and absf(pile.pos[1] - 2.0295) < .001
+			var upper_pile: bool = data.version >= 11 and number(pile.pos[0], 6 if data.version >= 13 else 9, 12) and number(pile.pos[2], -6, -3) and absf(pile.pos[1] - 2.0295) < .001
 			if not upper_pile and (absf(pile.pos[0]) > 10 or absf(pile.pos[2]) > 8 or absf(pile.pos[1] + .0105) > .001): return "Tas de récupération hors de la carte."
 			if not number(pile.materials.wood, 0, 6, true) or not number(pile.materials.fiber, 0, 5, true): return "Quantité à récupérer invalide."
 			if data.version < 10 and pile.materials.wood + pile.materials.fiber == 0: return "Tas de récupération vide."

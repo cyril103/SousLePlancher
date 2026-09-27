@@ -13,6 +13,7 @@ const Depots = preload("res://scripts/local_depots.gd")
 const Torches = preload("res://scripts/carried_torches.gd")
 const Fissure = preload("res://scripts/fissure_passage.gd")
 var fissure := Fissure.new()
+var fixed_lighting := preload("res://scripts/fixed_lighting.gd").new()
 var transfers := preload("res://scripts/depot_transfers.gd").new()
 var priorities := preload("res://scripts/work_priorities.gd").new()
 var designations := preload("res://scripts/work_designations.gd").new()
@@ -93,6 +94,7 @@ var route_mesh: MeshInstance3D
 var route_timer := 0.0
 
 func _ready() -> void:
+	fixed_lighting.game = self
 	transfers.game = self
 	priorities.game = self
 	fissure.game = self
@@ -209,6 +211,7 @@ func _ready() -> void:
 	if "--demo-fissure" in OS.get_cmdline_user_args(): prepare_fissure_demo()
 	if "--demo-alcove" in OS.get_cmdline_user_args(): prepare_alcove_demo()
 	if "--demo-alcove-haul" in OS.get_cmdline_user_args(): prepare_alcove_haul_demo()
+	if "--demo-fixed-light" in OS.get_cmdline_user_args(): prepare_fixed_light_demo()
 	if "--demo-transfers" in OS.get_cmdline_user_args(): prepare_transfers_demo()
 	if "--demo-depot-build" in OS.get_cmdline_user_args(): prepare_depot_build_demo()
 	if "--demo-priorities" in OS.get_cmdline_user_args(): prepare_priorities_demo()
@@ -320,6 +323,7 @@ func _add_patch(kind: String, pos: Vector3, amount: int) -> void:
 	patches.append({"kind": kind, "pos": pos, "amount": amount, "reserved": 0, "node": node, "label": label, "discovered": true})
 
 func _exit_tree() -> void:
+	fixed_lighting.game = null
 	transfers.game = null
 	fissure.game = null
 	torches.game = null
@@ -612,6 +616,7 @@ func _process(delta: float) -> void:
 	_update_routes(delta)
 
 func simulate(dt: float) -> void:
+	fixed_lighting.update(dt)
 	refuge.update(dt)
 	elapsed += dt
 	var phase := fmod(elapsed, 100.0)
@@ -1320,3 +1325,13 @@ func prepare_transfers_demo() -> void:
 	hud.transfer_target.select(0)
 	hud.transfer_kind.select(Depots.KINDS.find("wood"))
 	_news("7B · Espace : deux porteurs vident les 12 bois du dépôt de l’étage vers le refuge. Essayez Pause, Arrêter et rappeler, puis Reprendre. F5/F9 conserve la liaison et les caisses.")
+
+func prepare_fixed_light_demo() -> void:
+	prepare_transfers_demo()
+	workers[2].priorities = {"collect": 0, "transport": 1, "build": 1}
+	fixed_lighting.plan()
+	save_path = "user://saves/fixed_light_demo.json"
+	get_window().title = "Sous le plancher — 7C · Éclairage entretenu"
+	_show_tray("fixed_light")
+	_refresh_ui()
+	_news("7C · Espace : construire, livrer le combustible, puis transporter. Le brasero commande les nouveaux départs sur la passerelle.")

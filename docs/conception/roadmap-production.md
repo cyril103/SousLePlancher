@@ -1,6 +1,6 @@
 # Roadmap de production — terminer une boucle avant d’étendre le jeu
 
-Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B publié : `ea3f133`. Lot 21 / 6C publié : `faf0b0f`. Lot 22 / 9A publié : `d580be5`. Lot 23 / 9B publié : `e63107e`. Lot 24 / 7A publié : `7065446`. Lot 25 / 7B validé par le joueur ; commit et push autorisés.** Catalogue publié : `1d88614`.
+Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B publié : `ea3f133`. Lot 21 / 6C publié : `faf0b0f`. Lot 22 / 9A publié : `d580be5`. Lot 23 / 9B publié : `e63107e`. Lot 24 / 7A publié : `7065446`. Lot 25 / 7B publié : `a51eea7`. Lot 26 / 7C validé par le joueur ; commit et push autorisés.** Catalogue publié : `1d88614`.
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
@@ -12,7 +12,7 @@ Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [d
 
 Le projet reste un prototype intégré. Nous terminons cette boucle avant d’étendre la carte et le bestiaire. La refonte générale des personnages et du mobilier n’est pas prioritaire. Le catalogue sert aux assets nécessaires aux étapes engagées ; il ne commande pas douze chantiers 3D.
 
-**Étape validée : 7B, transferts réguliers entre dépôts. Prochaine livraison : 7C, éclairage fixe entretenu.** La fourmi viendra sur le parcours cuisine, après les transports et la sauvegarde nécessaires, plutôt que dans une démonstration isolée.
+**Étape validée : 7C, éclairage fixe entretenu. Prochaine livraison : 8A, chambre construite.** La fourmi viendra sur le parcours cuisine, après les transports et la sauvegarde nécessaires, plutôt que dans une démonstration isolée.
 
 ## Cible de gameplay confirmée avec le joueur
 
@@ -22,7 +22,7 @@ Après 6C, prioriser le système général de tâches autonomes et les commandes
 
 ## État constaté
 
-Bilan actualisé au lot 25, validé par le joueur : [fiche 7B](gameplay-lot-25.md). Lot 24 publié et validé : [fiche 7A](gameplay-lot-24.md). Tests du passage élargi, récolte distante, 6A, fissure, lanternes, chantiers et sauvegardes exécutés sous Godot 4.7.2 ; détail des nouvelles vérifications dans [la fiche du lot 21](gameplay-lot-21.md). 6A, 6B et 6C sont validées.
+Bilan actualisé au lot 26, validé par le joueur : [fiche 7C](gameplay-lot-26.md). Lot 25 validé et publié : [fiche 7B](gameplay-lot-25.md). Lot 24 publié et validé : [fiche 7A](gameplay-lot-24.md). Tests du passage élargi, récolte distante, 6A, fissure, lanternes, chantiers et sauvegardes exécutés sous Godot 4.7.2 ; détail des nouvelles vérifications dans [la fiche du lot 21](gameplay-lot-21.md). 6A, 6B et 6C sont validées.
 
 | Domaine | Disponible aujourd’hui | Limite réelle |
 | --- | --- | --- |
@@ -34,14 +34,14 @@ Bilan actualisé au lot 25, validé par le joueur : [fiche 7B](gameplay-lot-25.m
 | Couchages | Lits fabriqués, propriétaire, confort et alcôves d’intimité | Meubles prédéfinis ; pas de pièces construites librement |
 | Chantiers | Livraisons physiques pour lits, équipements lumineux et fissure | Ateliers/anciens abris encore au paiement historique ; pas de pont construit par le joueur |
 | Dépôts | Chantiers 6 bois + 4 fibres + 16 s, stocks locaux, filtres, réservations ; casier distant à l’étage | Emplacement distant fixe ; pas de casier dans l’alcôve ni quotas |
-| Éclairage | Torche au sol ; lanterne compatible avec caisse et échelle ; autonomie et retour anticipé | Pas de recharge ni éclairage fixe construit ; remplacement par fabrication |
+| Éclairage | Torche et lanterne portées ; brasero construit au palier, combustible livré et autonomie | Un emplacement fixe ; protection des nouveaux transferts seulement, pas de couverture lumineuse générale ni recharge des équipements portés |
 | Exploration | Réserve découverte à l’étage ; fissure inspectée, dégagée et étayée | Alcôve adjacente agrandie et reconnue à la lanterne ; décor mémorisé et récolte d’une source finie de fibres |
 | Passage sud | Chantier 6 bois + 4 fibres puis traversée réservée dans les deux sens | Élargissement supplémentaire 6 bois + 4 fibres pour les caisses ; lanterne obligatoire |
-| Sauvegarde | Format v12, incluant les liaisons de transfert et les chantiers de dépôts : positions, tâches, caisses, lumière, réservations et horloge conservées ; migrations antérieures | Rechargement en pause |
+| Sauvegarde | Format v13, incluant éclairage fixe, combustible, liaisons et chantiers : positions, tâches, caisses, lumière, réservations et horloge conservées ; migrations antérieures | Rechargement en pause |
 | Faune et humains | Ambiance et menace humaine globale simplifiée | Pas de fourmi jouable, de perception animale locale ni de routines humaines détaillées |
 | Catalogue | 12 planches, matériaux et vues de référence publiés | Concepts, pas de nouveaux modèles ; inventaire non exhaustif |
 
-Points de contrôle : [restrictions du passage](../../scripts/fissure_passage.gd), [format v12](../../scripts/colony_save.gd), [sauvegarde sur place](../../scripts/game.gd), [lumière portée](../../scripts/carried_torches.gd), [chantiers](../../scripts/construction_logistics.gd), [dépôts](../../scripts/local_depots.gd). Le passage dirige les déplacements de la mission lumineuse ; la lanterne garde la gestion du combustible et du rangement au refuge.
+Points de contrôle : [restrictions du passage](../../scripts/fissure_passage.gd), [format v13](../../scripts/colony_save.gd), [sauvegarde sur place](../../scripts/game.gd), [lumière portée](../../scripts/carried_torches.gd), [chantiers](../../scripts/construction_logistics.gd), [dépôts](../../scripts/local_depots.gd). Le passage dirige les déplacements de la mission lumineuse ; la lanterne garde la gestion du combustible et du rangement au refuge.
 
 ### Livraisons closes, à ne pas refaire
 
@@ -116,7 +116,7 @@ La livraison est terminée si le résultat est observable, les blocages sont exp
 
 ## Suite ordonnée après l’expédition
 
-Les numéros 7–11 sont conservés pour correspondre aux anciens documents. Les lots 9A–9B passent en tête pour respecter la priorité confirmée par le joueur : désignations et autonomie avant extension du contenu. **9A et 9B sont publiés ; 7A est réalisé et validé par le joueur** ; les autres sont non commencés. Chaque sous-lot sera présenté et validé séparément ; son détail sera fixé à son ouverture.
+Les numéros 7–11 sont conservés pour correspondre aux anciens documents. Les lots 9A–9B passent en tête pour respecter la priorité confirmée par le joueur : désignations et autonomie avant extension du contenu. **9A, 9B, 7A et 7B sont publiés ; 7C est validé par le joueur** ; les autres sont non commencés. Chaque sous-lot sera présenté et validé séparément ; son détail sera fixé à son ouverture.
 
 | Ordre | Résultat attendu | Preuve de fonctionnement | Assets strictement utiles |
 | --- | --- | --- | --- |
@@ -124,7 +124,7 @@ Les numéros 7–11 sont conservés pour correspondre aux anciens documents. Les
 | 9B — Priorités de travail | Collecte, transport et construction choisis selon priorités individuelles ; urgences vitales au-dessus | Artisan servi par porteur ; absence redistribuant le travail ; impossibilité expliquée et sauvegarde | Tableau de priorités, pas de nouvelles tenues |
 | 7A — Dépôt distant construit | Construire le casier par livraison et le remplir ; remplacer son installation gratuite par un chantier | Dépôt plein, filtre changé, annulation, reprise des stocks des deux côtés | Casier existant, états de chantier |
 | 7B — Transport régulier (lot 25 validé) | Ordre simple de transfert entre deux dépôts, besoins et retour prioritaires | Plusieurs rotations sans ordonner chaque trajet ; arrêt expliqué si accès/capacité manquent | Aucun nouveau personnage ou véhicule |
-| 7C — Éclairage fixe entretenu | Construire un point lumineux et le ravitailler pour sécuriser la route | Panne, ravitaillement interrompu, reprise et suspension des trajets non sûrs | Support planche 08, combustible minimal à usage défini |
+| 7C — Éclairage fixe entretenu (lot 26 validé) | Construire un point lumineux et le ravitailler pour sécuriser la route | Panne, ravitaillement interrompu, reprise et suspension des trajets non sûrs | Support planche 08, combustible minimal à usage défini |
 | 8A — Chambre construite | Un niveau, grille, murs/sol/porte/lit, matériaux livrés | Pièce ouverte/fermée, porte bloquée, annulation ; aucun habitant enfermé | Lit/porte existants, modules de cloisons manquants |
 | 8B — Intimité réelle | Pièces détectées, propriété et intimité selon occupation, couchage au sol conservé | Chambre partagée puis individuelle, propriétaire absent, sauvegarde | Aucun nouvel ensemble décoratif |
 | 10 — Soins et secours minimaux | Blessure de scénario, incapacité, secours au lit, soin consommant une ressource | Secouriste interrompu, lit inaccessible, reprise d’un blessé ; pas de mort soudaine ajoutée | Bandage, animations nécessaires, lit réutilisé |
@@ -134,7 +134,7 @@ Les numéros 7–11 sont conservés pour correspondre aux anciens documents. Les
 
 **Pourquoi cet ordre ?** Transport et sauvegarde rendent l’exploration fiable. Dépôts et priorités réduisent les manipulations répétitives. La fourmi intervient sur un trajet déjà exploitable. Les soins précèdent l’éventuelle introduction de blessures par la faune ; un système de combat complet n’est pas requis pour la première fourmi.
 
-En 7C, fixer une recette minimale avant développement. Métal, mica, cire et résine ne deviennent pas tous des chaînes de production parce qu’ils figurent sur une image. En 8A, convertir les constructions concernées au chantier physique, sans réécriture de tout le bâti.
+Recette 7C retenue : 4 bois + 2 fibres + 16 s, puis 2 bois pour 180 s de combustible. Métal, mica, cire et résine ne deviennent pas tous des chaînes de production parce qu’ils figurent sur une image. En 8A, convertir les constructions concernées au chantier physique, sans réécriture de tout le bâti.
 
 **J3, premier test d’ensemble.** Le parcours cuisine complet doit donner envie de gérer et d’explorer. La durée de 20–30 minutes reste une hypothèse, pas un délai imposé à l’aménagement. Des parties de J4 peuvent précéder J3 sans clore J4.
 
@@ -179,4 +179,4 @@ Ces reports ne suppriment pas la ville, les relations, le milieu ou la domestica
 
 À chaque lot : conservation des ressources, réservations libérées, besoins/rappel, pause/vitesse, migration et reprise selon périmètre. Réutiliser les suites navigation, livraisons, construction, dépôts, besoins, éclairage et fissure ; ajouter les cas nouveaux utiles. Mesurer progressivement 10, 20 puis 30–50 habitants. Cette dernière cible n’est pas démontrée.
 
-**7B / lot 25 validé : transferts réguliers, rappel chargé et sauvegarde v12. Prochaine livraison : 7C, éclairage fixe entretenu.**
+**7C / lot 26 validé : brasero construit et ravitaillé, attente des nouveaux transferts en cas de panne, sauvegarde v13. Prochaine livraison : 8A, chambre construite.**
