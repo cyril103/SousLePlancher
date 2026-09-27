@@ -118,6 +118,7 @@ static func capture(g: Node) -> Dictionary:
 		job.source = -1 if job.source.is_empty() else g.construction.recovery.find(job.source)
 		job.target = -1 if job.target.is_empty() else sites.find(job.target)
 		r.construction_jobs[id] = job
+	r.kitchen = g.kitchen.snapshot()
 	r.health = g.health.snapshot()
 	r.rooms = g.rooms.snapshot()
 	r.fixed_lighting = g.fixed_lighting.snapshot()
@@ -181,13 +182,14 @@ static func validate(data: Dictionary) -> String:
 	if data.version >= 13 and not preload("res://scripts/fixed_lighting.gd").valid(r.get("fixed_lighting"), r): return "Éclairage fixe incohérent."
 	if data.version >= 14 and not preload("res://scripts/constructed_rooms.gd").valid(r.get("rooms"), r): return "Chambre construite incohérente."
 	if data.version >= 16 and not preload("res://scripts/colony_health.gd").valid(r.get("health"), r): return "Secours ou soins incohérents."
+	if data.version >= 17 and not preload("res://scripts/kitchen_access.gd").valid(r.get("kitchen"), r): return "Cuisine, pont ou charge incohérente."
 	var source_reserved := 0
 	for i in range(n):
 		var w = r.workers[i]
 		if not w is Dictionary or not w.has_all(["worker", "controller", "transform", "visible", "clip", "clip_time", "cargo_parent", "cargo_transform", "cargo_visible"]): return "Habitant incomplet."
 		if not w.worker is Dictionary or not w.controller is Dictionary or not w.transform is Transform3D or not w.cargo_transform is Transform3D: return "Position d’habitant invalide."
 		if not w.controller.has_all(["owner", "sector_id", "job", "supply_job", "state", "inside_refuge"]) or w.controller.owner != i: return "Identité d’habitant incohérente."
-		if not w.controller.sector_id in ["refuge_south", "alcove_north"] or not w.cargo_parent in ["hands", "world"]: return "Secteur ou charge invalide."
+		if not w.controller.sector_id in ["refuge_south", "alcove_north", "kitchen"] or not w.cargo_parent in ["hands", "world"]: return "Secteur ou charge invalide."
 		if not w.worker.has_all(["carrying", "kind"]) or not w.worker.carrying is int or w.worker.carrying < 0 or w.worker.carrying > 67: return "Charge invalide."
 		for key in ["energy", "comfort", "privacy", "nutrition", "hydration"]:
 			if not w.worker.has(key) or not (w.worker[key] is float or w.worker[key] is int) or not is_equal_approx(w.worker[key], data.needs[i][key]): return "Besoin actif incohérent."
@@ -198,12 +200,12 @@ static func validate(data: Dictionary) -> String:
 		if w.worker.has("priorities") and not preload("res://scripts/work_priorities.gd").valid(w.worker.priorities): return "Priorités de travail invalides."
 		if w.worker.get("patch", -2) != data.assignments[i]: return "Affectation active incohérente."
 		if w.controller.job >= 0 and not r.components.delivery_ledger.jobs.has(w.controller.job) and not (w.controller.state == "putdown" and w.controller.get("deposited", false) and w.worker.carrying == 0): return "Récolte orpheline."
-		if w.controller.sector_id == "alcove_north" and not r.fissure.missions.has(i): return "Habitant perdu hors secteur."
+		if w.controller.sector_id in ["alcove_north", "kitchen"] and not r.fissure.missions.has(i): return "Habitant perdu hors secteur."
 		if w.controller.supply_job >= 0 and not r.construction_jobs.has(w.controller.supply_job): return "Transport de chantier orphelin."
 	for id in r.fissure.missions:
 		var m = r.fissure.missions[id]
 		if not id is int or id < 0 or id >= n or not m is Dictionary or not m.has_all(["phase", "side", "inspect", "returning", "clock"]): return "Mission invalide."
-		if not m.phase in ["approach", "inspect", "wait", "entry", "cross", "clear", "look_walk", "look", "back", "harvest_walk", "harvest", "harvest_pickup", "delivery_wait", "delivery_walk", "delivery_drop"] or not m.side in ["near", "far"]: return "Phase d’expédition inconnue."
+		if not m.phase in ["kitchen", "approach", "inspect", "wait", "entry", "cross", "clear", "look_walk", "look", "back", "harvest_walk", "harvest", "harvest_pickup", "delivery_wait", "delivery_walk", "delivery_drop"] or not m.side in ["near", "far"]: return "Phase d’expédition inconnue."
 		if m.phase in ["entry", "cross", "clear"] and r.fissure.owner != id: return "Seuil sans réservation."
 		if not m.inspect and (not r.torch_missions.has(id) or r.torch_missions[id].phase != "sector"): return "Expédition sans lanterne."
 		if m.has("quantity"):
@@ -254,6 +256,7 @@ static func merge(target: Dictionary, values: Dictionary) -> void:
 
 static func restore(g: Node, data: Dictionary) -> bool:
 	var r: Dictionary = unpack(data.runtime.data)
+	g.kitchen.restore(r.get("kitchen", {}))
 	g.health.restore(r.get("health", {}))
 	g.rooms.restore(r.get("rooms", []))
 	g.fixed_lighting.restore(r.get("fixed_lighting", {}))
@@ -335,4 +338,5 @@ static func restore(g: Node, data: Dictionary) -> bool:
 	g.hiding = r.hiding
 	g.refuge.update(0)
 	g.fissure.refresh()
+	g.kitchen.refresh()
 	return true

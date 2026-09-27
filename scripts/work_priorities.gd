@@ -25,6 +25,7 @@ func start(c: WorkerDelivery) -> bool:
 	for rank in range(1, 4):
 		for kind in KINDS:
 			if value(c.owner, kind) != rank: continue
+			if game.kitchen.try_start(c, kind): return true
 			match kind:
 				"build":
 					if game.rooms.start_work(c) or game.fixed_lighting.start_work(c) or game.torches.start_work(c) or game.fissure.start_work(c) or game.sleeping.start_work(c) or game.depots.start_work(c): return true

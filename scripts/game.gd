@@ -13,6 +13,7 @@ const Depots = preload("res://scripts/local_depots.gd")
 const Torches = preload("res://scripts/carried_torches.gd")
 const Fissure = preload("res://scripts/fissure_passage.gd")
 var fissure := Fissure.new()
+var kitchen := preload("res://scripts/kitchen_access.gd").new()
 var health := preload("res://scripts/colony_health.gd").new()
 var rooms := preload("res://scripts/constructed_rooms.gd").new()
 var fixed_lighting := preload("res://scripts/fixed_lighting.gd").new()
@@ -96,6 +97,7 @@ var route_mesh: MeshInstance3D
 var route_timer := 0.0
 
 func _ready() -> void:
+	kitchen.game = self
 	health.game = self
 	rooms.game = self
 	fixed_lighting.game = self
@@ -154,6 +156,7 @@ func _ready() -> void:
 		_add_worker()
 	_make_loading_stations()
 	fissure.setup()
+	kitchen.setup()
 	designations.game = self
 	designations.setup()
 	_refresh_save_state()
@@ -215,6 +218,7 @@ func _ready() -> void:
 	if "--demo-fissure" in OS.get_cmdline_user_args(): prepare_fissure_demo()
 	if "--demo-alcove" in OS.get_cmdline_user_args(): prepare_alcove_demo()
 	if "--demo-alcove-haul" in OS.get_cmdline_user_args(): prepare_alcove_haul_demo()
+	if "--demo-kitchen" in OS.get_cmdline_user_args(): prepare_kitchen_demo()
 	if "--demo-health" in OS.get_cmdline_user_args(): prepare_health_demo()
 	if "--demo-privacy" in OS.get_cmdline_user_args(): prepare_privacy_demo()
 	if "--demo-room" in OS.get_cmdline_user_args(): prepare_room_demo()
@@ -330,6 +334,7 @@ func _add_patch(kind: String, pos: Vector3, amount: int) -> void:
 	patches.append({"kind": kind, "pos": pos, "amount": amount, "reserved": 0, "node": node, "label": label, "discovered": true})
 
 func _exit_tree() -> void:
+	kitchen.game = null
 	health.game = null
 	rooms.game = null
 	fixed_lighting.game = null
@@ -525,6 +530,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.button_index == MOUSE_BUTTON_WHEEL_DOWN: zoom = minf(60, zoom + 1)
 		if event.button_index == MOUSE_BUTTON_RIGHT: torches.picking = -1; _cancel_build()
 		if event.button_index == MOUSE_BUTTON_LEFT and not ended and not start_panel.visible:
+			if build_mode.is_empty() and torches.picking < 0 and kitchen.hit(event.position):
+				_show_tray("kitchen")
+				return
 			if build_mode.is_empty() and torches.picking < 0 and designations.hit(event.position):
 				_show_tray("designations")
 				return
@@ -616,7 +624,7 @@ func _process(delta: float) -> void:
 	if fissure.follow >= 0: focus = workers[fissure.follow].node.position
 	focus += direction.rotated(Vector3.UP, yaw) * delta * 9
 	focus.x = clampf(focus.x, -18, 18)
-	focus.z = clampf(focus.z, -11, 14 if fissure.opened() else 11)
+	focus.z = clampf(focus.z, -11, 31 if fissure.visited else (14 if fissure.opened() else 11))
 	_update_camera()
 	if is_instance_valid(ghost):
 		var point = ground_point(get_viewport().get_mouse_position())
@@ -649,6 +657,7 @@ func simulate(dt: float) -> void:
 		worker.delivery.update(dt)
 		if not worker.delivery.at_refuge(): exposed += 1
 	health.refresh_visuals()
+	kitchen.update()
 	designations.tick()
 	if active:
 		suspicion += dt * exposed * 0.8
@@ -1427,3 +1436,25 @@ func prepare_health_demo() -> void:
 	_update_camera()
 	_refresh_ui()
 	_news("Soins · Espace : un habitant disponible secourt H1, puis apporte deux fibres pour le soigner. F5/F9 : reprise sur place.")
+
+func prepare_kitchen_demo() -> void:
+	start_panel.hide()
+	fissure.discovered = true
+	fissure.visited = true
+	fissure.site = {"fissure_site": true, "pos": fissure.NEAR, "materials": fissure.COST.duplicate(), "hauler": -1, "builder": -1, "work": 24.0, "required": 24.0, "built": true}
+	fissure.upgrade = fissure.site.duplicate(true)
+	fissure.refresh()
+	for i in range(12): torches.add_item(depots.entry(0), 180, "lantern")
+	kitchen.refresh()
+	for i in range(workers.size()):
+		workers[i].delivery.inside_refuge = true
+		workers[i].node.position = refuge.slot(i)
+	save_path = "user://saves/kitchen_demo.json"
+	get_window().title = "Sous le plancher — 11A · Accès cuisine"
+	focus = Vector3(4, 0, 16)
+	zoom = 29
+	paused = true
+	_show_tray("kitchen")
+	_update_camera()
+	_refresh_ui()
+	_news("11A · Désigner une reconnaissance, puis commander le pont et la récolte. Espace : reprendre. Les lanternes de cette démo sont fournies.")

@@ -100,6 +100,7 @@ func change(next: String) -> void:
 	retry_time = 0.0
 
 func cancel(skip_light: bool = false) -> void:
+	if game.kitchen.cancel_pre(self): return
 	if game.health.cancel(self): return
 	if game.depots.cancel_worker(self): return
 	if game.fissure.cancel(self):
@@ -393,6 +394,7 @@ func tick(dt: float) -> void:
 					change("return_home")
 
 func description() -> String:
+	if game.kitchen.tasks.has(owner): return game.kitchen.description(owner)
 	var health_description: String = game.health.description(owner)
 	if not health_description.is_empty(): return health_description
 	if not game.rooms.owned(self).is_empty(): return "Construit la chambre"

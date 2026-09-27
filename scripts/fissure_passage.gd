@@ -33,7 +33,7 @@ func setup() -> void:
 	wall = game.Art.model(game, "fissure_18/fissure_frame", Vector3(4, 0, 6.2))
 	rubble = game.Art.model(game, "fissure_18/fissure_blocked", Vector3(4, 0, 6.2))
 	braces = game.Art.model(game, "fissure_18/fissure_braces", Vector3(4, 0, 6.2))
-	annex = game.Art.model(game, "alcove_19/alcove_sector", Vector3(4, 0, 6.2))
+	annex = game.Art.model(game, "kitchen_30/alcove_connected", Vector3(4, 0, 6.2))
 	wide_frame = game.Art.model(game, "passage_20/wide_frame", Vector3(4, 0, 6.2))
 	wide_braces = game.Art.model(game, "passage_20/wide_braces", Vector3(4, 0, 6.2))
 	hauling.setup()
@@ -166,6 +166,9 @@ func cancel(c: WorkerDelivery) -> bool:
 		return true
 	if not missions.has(c.owner): return false
 	var m: Dictionary = missions[c.owner]
+	if m.get("kitchen", false):
+		game.kitchen.cancel(c, m)
+		return true
 	if m.returning: return true
 	m.returning = true
 	hauling.cancel_uncollected(c, m)
@@ -178,6 +181,7 @@ func cancel(c: WorkerDelivery) -> bool:
 
 func finish(c: WorkerDelivery) -> void:
 	if missions.has(c.owner): hauling.release(c, missions[c.owner])
+	game.kitchen.release(c)
 	queue.erase(c.owner)
 	if owner == c.owner: owner = -1
 	missions.erase(c.owner)
@@ -244,11 +248,12 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 			cancel(c)
 			if not missions.has(c.owner): return false
 	if c.inside_refuge or c.state == "leave_home": return false
+	if game.kitchen.tick(c, m, dt): return true
 	if hauling.tick(c, m, dt): return true
 	match m.phase:
 		"approach":
 			var waiting := NEAR + Vector3((c.owner - 1.5) * .5, 0, -.65)
-			if c.move(NEAR if m.inspect else waiting, dt, false):
+			if c.move(NEAR if m.inspect else waiting, dt, c.worker.carrying > 0):
 				m.phase = "inspect" if m.inspect else "wait"
 				m.clock = 0.0
 		"inspect":
@@ -270,7 +275,7 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 				queue.pop_front()
 				m.phase = "entry"
 		"entry":
-			if (local_move(c, FAR, dt) if m.side == "far" else c.move(NEAR, dt, false)):
+			if (local_move(c, FAR, dt) if m.side == "far" else c.move(NEAR, dt, c.worker.carrying > 0)):
 				m.phase = "cross"
 				m.clock = 0.0
 		"cross":
@@ -299,6 +304,9 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 			if local_move(c, FAR + Vector3((c.owner - 1.5) * .5, 0, .7), dt):
 				owner = -1
 				m.phase = "back" if m.returning else ("harvest_walk" if m.has("quantity") else "look_walk")
+				if m.get("kitchen", false) and not m.returning:
+					m.phase = "kitchen"
+					game.kitchen.enter(c)
 		"look_walk":
 			if local_move(c, LOOK + Vector3(c.owner * .35, 0, 0), dt):
 				m.phase = "look"
@@ -372,4 +380,9 @@ func return_budget(c: WorkerDelivery) -> float:
 		walking += c.actor.position.distance_to(FAR) / (1.4 * game.needs.movement_factor(c.worker)) + 6.0
 	else:
 		walking += game.torches.travel_seconds(c, c.actor.position, NEAR)
+	if m.get("kitchen", false):
+		walking += 20.0
+		var task: Dictionary = game.kitchen.tasks[c.owner]
+		if task.depot >= 0 and c.worker.carrying > 0:
+			walking += maxf(0, game.torches.travel_seconds(c, NEAR, game.depots.entry(task.depot)) + game.torches.travel_seconds(c, game.depots.entry(task.depot), game.HOME + game.Refuge.OUTSIDE) - game.torches.travel_seconds(c, NEAR, game.HOME + game.Refuge.OUTSIDE))
 	return walking + 8.0 * missions.size() + 4.0

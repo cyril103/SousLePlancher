@@ -31,6 +31,8 @@ Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une 
 
 **Priorité proposée après le catalogue : terminer l’expédition vers le secteur adjacent.** La [roadmap actualisée](docs/conception/roadmap-production.md) sépare reconnaissance avec lanterne (6A), récolte et retour chargé (6B), puis sauvegarde en expédition (6C). Les assets fonctionnels sont réutilisés ; la fourmi et la refonte visuelle ne sont pas les prochains lots. Cette révision documentaire est validée par le joueur ; les lots futurs gardent leur validation séparée.
 
+Le **lot 30 / étape 11A**, validé par le joueur, relie l’alcôve à la cuisine : reconnaissance à vide, pont livré et construit, puis récolte autonome de provisions. Démo `-- --demo-kitchen`, sauvegarde v17 ; [fiche du lot](docs/conception/gameplay-lot-30.md).
+
 Le **lot 29 / étape 10**, validé par le joueur, ajoute le secours autonome au sol, le transport au lit, les bandages approvisionnés avec deux fibres et la convalescence. Démo `-- --demo-health`, sauvegarde v16 ; [fiche du lot](docs/conception/gameplay-lot-29.md).
 
 Le **lot 28 / étape 8B**, validé par le joueur, **multiplie la surface jouable par quatre** et ajoute l’intimité des chambres construites selon leur propriétaire, leur porte et les habitants présents. Démo `-- --demo-privacy` avec quatre chambres attribuées, sommeil autonome et sauvegarde v15 ; [fiche du lot](docs/conception/gameplay-lot-28.md).

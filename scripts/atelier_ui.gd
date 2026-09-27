@@ -68,6 +68,8 @@ var fissure_visit: Button
 var fissure_cancel: Button
 var depot_picker: OptionButton
 var room_owner: OptionButton
+var kitchen_label: Label
+var kitchen_buttons: Array[Button] = []
 var health_people: VBoxContainer
 var health_label: Label
 var health_controls: Array[Button] = []
@@ -355,6 +357,7 @@ func _make_trays() -> void:
 	bed_list = column(bed_scroll, 12)
 	bed_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button(beds, "Fabriquer un couchage", func(): game._show_tray("build"))
+	_make_kitchen()
 	_make_health()
 	_make_priorities()
 	var people := tray("people", "Habitants & affectations")
@@ -390,6 +393,7 @@ func _make_trays() -> void:
 	wrapped(orders, "Le joueur choisit le travail. Les habitants libres préparent l’équipement et transportent les ressources. Besoins et rappel restent prioritaires.", 16)
 	button(orders, "Centrer sur le gisement", func(): game.fissure.follow = -1; game.focus = Vector3(3, 0, 10); game.zoom = 20; game._update_camera())
 	var work := tray("work", "Travaux en cours")
+	button(work, "Accès cuisine et pont", func(): game._show_tray("kitchen"))
 	button(work, "Priorités de travail", func(): game._show_tray("priorities"))
 	button(work, "Ordres de récolte autonomes", func(): game._show_tray("designations"))
 	button(work, "Chantiers et attribution des lits", func(): game._show_tray("beds"))
@@ -570,6 +574,7 @@ func _update_roster() -> void:
 		worker_rows.append(control)
 
 func refresh() -> void:
+	_refresh_kitchen()
 	_refresh_health()
 	_refresh_transfers()
 	_refresh_fixed_light()
@@ -1122,3 +1127,34 @@ func _refresh_health() -> void:
 		health_controls.append(button(health_people, "", func(): game.health.toggle(id); refresh()))
 	for id in range(health_controls.size()):
 		health_controls[id].text = "H%d · Secours %s" % [id + 1, "autorisé" if game.health.allowed.get(id, true) else "désactivé"]
+
+func _make_kitchen() -> void:
+	var outer := tray("kitchen", "Accès cuisine · L02")
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size.y = 515
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	outer.add_child(scroll)
+	var panel := column(scroll, 8)
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	kitchen_label = wrapped(panel, "", 16)
+	kitchen_buttons.append(button(panel, "Désigner la reconnaissance à vide", func(): game.kitchen.request_scout(); refresh()))
+	kitchen_buttons.append(button(panel, "Commander le pont · 8 bois / 4 fibres", func(): game.kitchen.plan(); refresh()))
+	kitchen_buttons.append(button(panel, "", func(): game.kitchen.toggle_build(); refresh()))
+	kitchen_buttons.append(button(panel, "", func(): game.kitchen.designate_food(); refresh()))
+	button(panel, "Voir le pont", func(): game.focus = game.kitchen.NEAR; game.zoom = 19; game.fissure.follow = -1; game._update_camera())
+	button(panel, "Suivre un habitant engagé", func():
+		if not game.kitchen.tasks.is_empty(): game.fissure.follow = game.kitchen.tasks.keys()[0])
+	button(panel, "Lanternes et fabrication", func(): game._show_tray("torches"))
+	wrapped(panel, "Récolte : reconnaissance et provisions. Transport : matériaux. Construction : pont. Deux habitants au maximum, une personne sur chaque passage. Lanternes obligatoires ; priorité aux besoins et au retour. Aucun insecte dans ce lot.", 15)
+
+func _refresh_kitchen() -> void:
+	if kitchen_label == null: return
+	var k = game.kitchen
+	kitchen_label.text = k.summary()
+	kitchen_buttons[0].disabled = k.known or not game.fissure.visited
+	kitchen_buttons[0].text = "Annuler la reconnaissance" if k.scout else "Désigner la reconnaissance à vide"
+	kitchen_buttons[1].disabled = k.planned or not k.known or not game.fissure.widened()
+	kitchen_buttons[2].disabled = not k.planned or k.built
+	kitchen_buttons[2].text = "Suspendre le chantier" if k.active else "Reprendre le chantier"
+	kitchen_buttons[3].disabled = not k.built or k.amount == 0
+	kitchen_buttons[3].text = "Arrêter la récolte (retour des charges)" if k.harvest else "Désigner la récolte du biscuit"
