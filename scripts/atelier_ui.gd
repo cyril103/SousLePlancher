@@ -32,6 +32,9 @@ var assignment_target := -1
 var resident_index := 0
 var people_list: VBoxContainer
 var worker_rows: Array[Button] = []
+var designation_label: Label
+var designation_start: Button
+var designation_cancel: Button
 var work_label: Label
 var save_button: Button
 var load_button: Button
@@ -348,7 +351,14 @@ func _make_trays() -> void:
 	people_list = column(scroll, 6)
 	people_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	wrapped(people, "Cliquez sur un habitant pour l’inspecter. [H] rappelle toute la colonie en conservant ses tâches.", 16, MUTED)
+	var orders := tray("designations", "Ordre · Fibres de l’alcôve")
+	designation_label = wrapped(orders, "", 16)
+	designation_start = button(orders, "Désigner la récolte", func(): game.designations.designate(); refresh())
+	designation_cancel = button(orders, "Annuler l’ordre et rappeler les porteurs", func(): game.designations.cancel(); refresh())
+	wrapped(orders, "Le joueur choisit le travail. Les habitants libres préparent l’équipement et transportent les ressources. Besoins et rappel restent prioritaires.", 16)
+	button(orders, "Centrer sur le gisement", func(): game.fissure.follow = -1; game.focus = Vector3(3, 0, 10); game.zoom = 20; game._update_camera())
 	var work := tray("work", "Travaux en cours")
+	button(work, "Ordres de récolte autonomes", func(): game._show_tray("designations"))
 	button(work, "Chantiers et attribution des lits", func(): game._show_tray("beds"))
 	button(work, "Éclairage et éclaireurs", func(): game._show_tray("torches"))
 	_make_torches()
@@ -520,6 +530,11 @@ func _update_roster() -> void:
 		worker_rows.append(control)
 
 func refresh() -> void:
+	if designation_label != null:
+		designation_label.text = game.designations.summary()
+		designation_start.disabled = game.designations.active or not game.fissure.visited or game.ended
+		designation_cancel.disabled = not game.designations.active
+
 	_refresh_torches()
 	_refresh_fissure()
 	if not is_instance_valid(game.start_panel): return

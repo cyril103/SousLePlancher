@@ -1,6 +1,6 @@
 # Roadmap de production — terminer une boucle avant d’étendre le jeu
 
-Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B publié : `ea3f133`. Lot 21 / 6C validé par le joueur ; commit et push autorisés.** Catalogue publié : `1d88614`.
+Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B publié : `ea3f133`. Lot 21 / 6C publié : `faf0b0f`. Lot 22 / 9A validé par le joueur ; commit et push autorisés.** Catalogue publié : `1d88614`.
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
@@ -12,7 +12,7 @@ Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [d
 
 Le projet reste un prototype intégré. Nous terminons cette boucle avant d’étendre la carte et le bestiaire. La refonte générale des personnages et du mobilier n’est pas prioritaire. Le catalogue sert aux assets nécessaires aux étapes engagées ; il ne commande pas douze chantiers 3D.
 
-**Étape validée : 6C, sauvegarde et reprise en expédition. Prochaine livraison : désignations et tâches autonomes (9A), conformément à la cible de gameplay confirmée.** La fourmi viendra sur le parcours cuisine, après les transports et la sauvegarde nécessaires, plutôt que dans une démonstration isolée.
+**Étape validée : 9A, première désignation de récolte et attribution autonome. Prochaine livraison : priorités individuelles (9B).** La fourmi viendra sur le parcours cuisine, après les transports et la sauvegarde nécessaires, plutôt que dans une démonstration isolée.
 
 ## Cible de gameplay confirmée avec le joueur
 
@@ -22,7 +22,7 @@ Après 6C, prioriser le système général de tâches autonomes et les commandes
 
 ## État constaté
 
-Bilan actualisé au lot 21, validé par le joueur. Tests du passage élargi, récolte distante, 6A, fissure, lanternes, chantiers et sauvegardes exécutés sous Godot 4.7.2 ; détail des nouvelles vérifications dans [la fiche du lot 21](gameplay-lot-21.md). 6A, 6B et 6C sont validées.
+Bilan actualisé au lot 22, validé par le joueur. [Fiche 9A](gameplay-lot-22.md). Tests du passage élargi, récolte distante, 6A, fissure, lanternes, chantiers et sauvegardes exécutés sous Godot 4.7.2 ; détail des nouvelles vérifications dans [la fiche du lot 21](gameplay-lot-21.md). 6A, 6B et 6C sont validées.
 
 | Domaine | Disponible aujourd’hui | Limite réelle |
 | --- | --- | --- |
@@ -70,7 +70,7 @@ La livraison est terminée si le résultat est observable, les blocages sont exp
 
 ## Étape 6 — Une expédition utile, en trois démonstrations
 
-L’ancienne étape 6 est découpée. **6A et 6B restent intermédiaires ; l’étape 6 n’est terminée qu’après 6C.**
+**6A, 6B et 6C sont validées et publiées : la boucle technique d’expédition est terminée.**
 
 ### 6A — Reconnaître le secteur adjacent avec une lanterne
 
@@ -116,7 +116,7 @@ L’ancienne étape 6 est découpée. **6A et 6B restent intermédiaires ; l’�
 
 ## Suite ordonnée après l’expédition
 
-Les numéros 7–11 sont conservés pour correspondre aux anciens documents. Les lots 9A–9B passent en tête pour respecter la priorité confirmée par le joueur : désignations et autonomie avant extension du contenu. Tous sont **non commencés** au présent bilan. Chaque sous-lot sera présenté et validé séparément ; son détail sera fixé à son ouverture.
+Les numéros 7–11 sont conservés pour correspondre aux anciens documents. Les lots 9A–9B passent en tête pour respecter la priorité confirmée par le joueur : désignations et autonomie avant extension du contenu. **9A est réalisé et validé par le joueur** ; les autres sont non commencés. Chaque sous-lot sera présenté et validé séparément ; son détail sera fixé à son ouverture.
 
 | Ordre | Résultat attendu | Preuve de fonctionnement | Assets strictement utiles |
 | --- | --- | --- | --- |
@@ -179,4 +179,4 @@ Ces reports ne suppriment pas la ville, les relations, le milieu ou la domestica
 
 À chaque lot : conservation des ressources, réservations libérées, besoins/rappel, pause/vitesse, migration et reprise selon périmètre. Réutiliser les suites navigation, livraisons, construction, dépôts, besoins, éclairage et fissure ; ajouter les cas nouveaux utiles. Mesurer progressivement 10, 20 puis 30–50 habitants. Cette dernière cible n’est pas démontrée.
 
-**6C / lot 21 validé. Prochaine livraison : 9A, désignations et tâches autonomes.**
+**9A / lot 22 validé : un ordre de récolte dans l’alcôve, deux habitants équipés automatiquement, annulation et persistance. Prochaine livraison : 9B, priorités de travail.**

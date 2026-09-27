@@ -118,6 +118,7 @@ static func capture(g: Node) -> Dictionary:
 		job.source = -1 if job.source.is_empty() else g.construction.recovery.find(job.source)
 		job.target = -1 if job.target.is_empty() else sites.find(job.target)
 		r.construction_jobs[id] = job
+	r.designations = g.designations.snapshot()
 	var data = pack(r)
 	return {"schema": 1, "data": data, "sha256": JSON.stringify(data).sha256_text()}
 
@@ -156,6 +157,7 @@ static func validate(data: Dictionary) -> String:
 	if not r.components.delivery_ledger.has_all(["jobs", "source_slots", "next_id"]): return "Registre de récolte incomplet."
 	var n: int = r.workers.size()
 	if not r.fissure.get("follow", -1) is int or r.fissure.get("follow", -1) < -1 or r.fissure.get("follow", -1) >= n: return "Suivi de caméra invalide."
+	if r.has("designations") and not preload("res://scripts/work_designations.gd").valid(r.designations, r): return "Ordre autonome incohérent."
 	var source_reserved := 0
 	for i in range(n):
 		var w = r.workers[i]
@@ -223,6 +225,7 @@ static func merge(target: Dictionary, values: Dictionary) -> void:
 
 static func restore(g: Node, data: Dictionary) -> bool:
 	var r: Dictionary = unpack(data.runtime.data)
+	g.designations.restore(r.get("designations", {}))
 	for key in ["elapsed", "meal_timer", "suspicion", "hunger", "event_index"]: g.set(key, r.clock[key])
 	# Recreate render nodes through trusted existing constructors, then relink data.
 	for order in g.torches.orders:

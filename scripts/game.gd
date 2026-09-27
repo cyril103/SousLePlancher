@@ -13,6 +13,7 @@ const Depots = preload("res://scripts/local_depots.gd")
 const Torches = preload("res://scripts/carried_torches.gd")
 const Fissure = preload("res://scripts/fissure_passage.gd")
 var fissure := Fissure.new()
+var designations := preload("res://scripts/work_designations.gd").new()
 const HOME := Vector3(-3, 0, 1)
 const COSTS := {"depot": {}, "bed": {"wood": 4, "fiber": 3}, "private_bed": {"wood": 6, "fiber": 5}, "shelter": {"wood": 8, "fiber": 4}, "workshop": {"wood": 10, "fiber": 6}}
 var sleeping := Sleep.new()
@@ -143,6 +144,8 @@ func _ready() -> void:
 		_add_worker()
 	_make_loading_stations()
 	fissure.setup()
+	designations.game = self
+	designations.setup()
 	_refresh_save_state()
 	_make_ui()
 	_refresh_ui()
@@ -202,6 +205,7 @@ func _ready() -> void:
 	if "--demo-fissure" in OS.get_cmdline_user_args(): prepare_fissure_demo()
 	if "--demo-alcove" in OS.get_cmdline_user_args(): prepare_alcove_demo()
 	if "--demo-alcove-haul" in OS.get_cmdline_user_args(): prepare_alcove_haul_demo()
+	if "--demo-designations" in OS.get_cmdline_user_args(): prepare_designations_demo()
 	if "--demo-live-save" in OS.get_cmdline_user_args(): prepare_live_save_demo()
 	if "--demo-needs" in OS.get_cmdline_user_args(): prepare_needs_demo()
 
@@ -483,6 +487,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.button_index == MOUSE_BUTTON_WHEEL_DOWN: zoom = minf(34, zoom + 1)
 		if event.button_index == MOUSE_BUTTON_RIGHT: torches.picking = -1; _cancel_build()
 		if event.button_index == MOUSE_BUTTON_LEFT and not ended and not start_panel.visible:
+			if build_mode.is_empty() and torches.picking < 0 and designations.hit(event.position):
+				_show_tray("designations")
+				return
 			if torches.picking >= 0:
 				var destination = destination_point(event.position)
 				if destination != null:
@@ -601,6 +608,7 @@ func simulate(dt: float) -> void:
 	for worker in workers:
 		worker.delivery.update(dt)
 		if not worker.delivery.at_refuge(): exposed += 1
+	designations.tick()
 	if active:
 		suspicion += dt * exposed * 0.8
 	else:
@@ -1182,3 +1190,31 @@ func prepare_live_save_demo() -> void:
 	_update_camera()
 	_refresh_ui()
 	_news("Démo 6C · H1 traverse avec 3 fibres. F5 sauvegarde ici. Espace avance ; F9 recharge cette traversée en pause. Espace termine la livraison et le lit.")
+
+func prepare_designations_demo() -> void:
+	prepare_alcove_haul_demo()
+	for w in workers: w.delivery.cancel()
+	for i in range(1800):
+		simulate(.05)
+		suspicion = 0
+		if torches.missions.is_empty() and fissure.missions.is_empty(): break
+	for w in workers:
+		w.energy = 95.0
+		w.nutrition = 95.0
+		w.hydration = 95.0
+		w.sleep_requested = false
+		w.delivery.personal_recall = false
+	torches.add_item(depots.entry(0), 180, "lantern")
+	save_path = "user://saves/designations_demo.json"
+	get_window().title = "Sous le plancher — 9A · Désignations et habitants autonomes"
+	elapsed = 0
+	suspicion = 0
+	paused = true
+	focus = Vector3(3, 0, 6)
+	zoom = 24
+	fissure.follow = -1
+	designations.refresh()
+	_show_tray("")
+	_update_camera()
+	_refresh_ui()
+	_news("9A · Cliquez FIBRES dans l’alcôve, puis Désigner la récolte et Espace. Deux habitants prendront leurs lanternes. T → Ordres pour annuler ; F5/F9 pour sauvegarder et reprendre.")
