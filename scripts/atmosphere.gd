@@ -7,6 +7,7 @@ const DUST = preload("res://shaders/dust.gdshader")
 const COBWEB = preload("res://shaders/cobweb.gdshader")
 var torches: Array[OmniLight3D] = []
 var daylight: Array[SpotLight3D] = []
+var sector_effects: Dictionary = {}
 var clock := 0.0
 static var materials: Dictionary = {}
 
@@ -66,21 +67,48 @@ func _ready() -> void:
 	add_child(scenery)
 	scenery.scale = Vector3(2, 1, 2)
 	age_materials(scenery)
-	add_daylight(Vector3(-7.0, 4.18, -5.85), Vector3(-4.3, -0.35, -1.25), 1.28, 2.65, 3.0, 0.65)
-	add_daylight(Vector3(-0.7, 4.24, -5.95), Vector3(1.45, -0.2, -2.35), 0.64, 1.85, 19.0, 0.42)
-	add_daylight(Vector3(6.4, 4.19, -5.90), Vector3(8.25, -0.4, -2.65), 1.65, 2.15, 41.0, 0.86)
-	add_daylight(Vector3(-17, 4.2, -11), Vector3(-14, -.2, -7), 1.4, 1.8, 57.0, .72)
-	add_daylight(Vector3(-12, 4.2, -2), Vector3(-15, -.2, 0), .9, 1.6, 67.0, .5)
+	# Cutaway ceiling: cracks cover each footprint, including the later extensions.
+	add_sector("home", Rect2(-21, -13, 42, 26), 0.0, 731, Vector2i(6, 4))
+	add_sector("alcove", Rect2(1.5, 13, 5, 5.5), 0.0, 193, Vector2i(1, 2))
+	add_sector("kitchen", Rect2(-1.5, 22, 11, 9), 0.0, 829, Vector2i(3, 2))
+	add_sector("link", Rect2(1, 18.5, 4, 3.5), 0.0, 419, Vector2i(1, 1))
 	add_torch(Vector3(-6.3, 0, 3.8))
 	add_torch(Vector3(3.0, 0, 4.9))
-	add_dust(Vector3(0, 1.5, 0), Vector3(21, 1.4, 13), 500, false)
+	update_sector_visibility()
+
+func add_sector(key: String, footprint: Rect2, floor_y: float, random_seed: int, cells: Vector2i) -> void:
+	var group := Node3D.new()
+	group.name = "CeilingCracks_" + key
+	add_child(group)
+	sector_effects[key] = group
+	var first := get_child_count()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = random_seed
+	var cell := footprint.size / Vector2(cells)
+	for z in range(cells.y):
+		for x in range(cells.x):
+			var point := footprint.position + Vector2(x + rng.randf_range(.25, .75), z + rng.randf_range(.25, .75)) * cell
+			var bottom := Vector3(point.x, floor_y + .05, point.y)
+			# One sun direction, irregular board joints. Upper platforms intercept the volumes through scene depth.
+			var top := bottom + Vector3(-1.7, 4.3, -2.2)
+			add_daylight(top, bottom, rng.randf_range(.65, 1.5), rng.randf_range(.85, 1.55), random_seed + z * cells.x + x, rng.randf_range(.28, .65))
+	var center := footprint.get_center()
+	add_dust(Vector3(center.x, floor_y + 1.9, center.y), Vector3(footprint.size.x * .5, 1.7, footprint.size.y * .5), maxi(35, int(footprint.get_area() * .65)), false)
+	# All positions are world-space under identity sector transforms.
+	for child in get_children().slice(first): child.reparent(group)
+
+func update_sector_visibility() -> void:
+	var game := get_parent()
+	sector_effects.alcove.visible = game.fissure.visited
+	sector_effects.kitchen.visible = game.fissure.visited
+	sector_effects.link.visible = game.fissure.visited
 
 func add_daylight(top: Vector3, bottom: Vector3, width: float, energy: float, seed: float, flatten: float) -> void:
 	var light := SpotLight3D.new()
 	add_child(light)
 	light.position = top
 	light.look_at(bottom)
-	light.light_color = Color("d8dfd2").lerp(Color("dfcfa9"), seed * 0.013)
+	light.light_color = Color("d8dfd2").lerp(Color("dfcfa9"), fposmod(seed * 0.137, 1.0))
 	light.light_energy = energy
 	light.set_meta("base_energy", energy)
 	light.spot_range = top.distance_to(bottom) + 4.0
@@ -107,7 +135,7 @@ func add_daylight(top: Vector3, bottom: Vector3, width: float, energy: float, se
 	mat.set_shader_parameter("width", width)
 	mat.set_shader_parameter("seed", seed)
 	mat.set_shader_parameter("flatten", flatten)
-	mat.set_shader_parameter("strength", 0.38 / sqrt(width))
+	mat.set_shader_parameter("strength", 0.25 / sqrt(width))
 	mat.set_shader_parameter("tint", light.light_color)
 	volume.material_override = mat
 	volume.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -181,6 +209,7 @@ func add_dust(pos: Vector3, extents: Vector3, amount: int, bright: bool, embers:
 
 func _process(delta: float) -> void:
 	clock += delta
+	update_sector_visibility()
 	for i in range(torches.size()):
 		torches[i].light_energy = 2.2 + sin(clock*8.0+i*2)*0.16 + sin(clock*13.7+i)*0.10
 	# Passing humans briefly interrupt daylight through the cracks.

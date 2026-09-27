@@ -83,3 +83,12 @@ Pas de fourmi, de combat, de génération procédurale, de dépôt dans la cuisi
 La source de biscuit est finie et ne remplace pas les sources alimentaires initiales. La présence humaine conserve la règle globale du prototype ; les routines locales et fenêtres de récolte restent à développer.
 
 **Prochaine livraison : 11B, première fourmi sur le parcours cuisine.** Aucun bestiaire supplémentaire n’est engagé dans ce lot.
+
+
+## Retouche d’ambiance — validée par le joueur
+
+Les cinq anciens rais fixes sont remplacés par 33 ouvertures réparties sur la surface actuelle : secteur principal agrandi (24), prolongement de l’alcôve (2), liaison L02 (1) et cuisine (6). Le plafond est suggéré en coupe, sans cacher la vue de gestion. Les ouvertures partagent une direction solaire, avec positions, largeurs, aplatissements et intensités variés et reproductibles. Le shader existant conserve ses bords diffus et son arrêt sur la profondeur visible.
+
+La poussière ambiante couvre chaque zone ; des particules plus lumineuses flottent dans les rais. Les effets des extensions suivent la visibilité de la cuisine après visite de l’alcôve. L’assombrissement lors du passage humain reste actif. Aucun changement des besoins, réservations, sauvegardes ou règles des lanternes.
+
+Vérification graphique sous Godot 4.7.2 Compatibility : captures du refuge, de l’alcôve et de la cuisine, sans erreur de script ni de shader (`artifacts/atmosphere_review.log`).
