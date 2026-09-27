@@ -22,7 +22,7 @@ static func caption(parent: Node3D, text: String, pos: Vector3, color: Color = C
 	return label
 
 static func decorate(root: Node3D) -> void:
-	model(root, "floor", Vector3.ZERO)
+	model(root, "floor_expanded", Vector3.ZERO)
 	var atmosphere := preload("res://scripts/atmosphere.gd").new()
 	root.add_child(atmosphere)
 

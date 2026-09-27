@@ -9,6 +9,10 @@ var game: Node
 var rooms: Array = []
 var installed: Array[Rect2] = []
 var selected := 0
+var preview_pos := Vector3.INF
+var preview_revision := -1
+var preview_count := -1
+var preview_valid := false
 
 func sites() -> Array:
 	var all: Array = []
@@ -65,7 +69,7 @@ func safe(extra: Array[Rect2]) -> bool:
 
 func can_plan(pos: Vector3) -> bool:
 	if not pos.is_finite() or pos.y != 0 or pos != pos.snapped(Vector3.ONE): return false
-	if rooms.size() >= 8 or absf(pos.x) > 8 or pos.z < -4 or pos.z > 3: return false
+	if rooms.size() >= 8 or absf(pos.x) > 18 or pos.z < -11 or pos.z > 9: return false
 	var footprint := bounds(pos)
 	for box in game.navigation_obstacles + game.navigation_stands:
 		if footprint.intersects(box): return false
@@ -142,6 +146,7 @@ func update(dt: float) -> void:
 					c.change("return_home")
 		room.opening = move_toward(room.opening, 1.0 if opened and room.parts[2].built else 0.0, dt * 4)
 		room.node.get_node("door").position.x = room.opening * 1.25
+		if room.parts[2].built: room.label.text = "Chambre %d · %s" % [rooms.find(room) + 1, owner_name(room)]
 
 func start_work(c: WorkerDelivery) -> bool:
 	for site in sites():
@@ -270,7 +275,7 @@ static func valid(value: Variant, runtime: Dictionary) -> bool:
 	var owners := {}
 	for room in value:
 		if not room is Dictionary or not room.has_all(["pos", "active", "mode", "opening", "parts"]): return false
-		if not room.pos is Vector3 or not room.pos.is_finite() or room.pos.y != 0 or absf(room.pos.x) > 8 or room.pos.z < -4 or room.pos.z > 3 or room.pos != room.pos.snapped(Vector3.ONE): return false
+		if not room.pos is Vector3 or not room.pos.is_finite() or room.pos.y != 0 or absf(room.pos.x) > 18 or room.pos.z < -11 or room.pos.z > 9 or room.pos != room.pos.snapped(Vector3.ONE): return false
 		for p in positions:
 			if bounds(p).intersects(bounds(room.pos)): return false
 		positions.append(room.pos)
@@ -294,3 +299,77 @@ static func valid(value: Variant, runtime: Dictionary) -> bool:
 	for i in range(runtime.workers.size()):
 		if str(runtime.workers[i].controller.state).begins_with("room_") and not owners.has(i): return false
 	return true
+
+func preview(pos: Vector3) -> bool:
+	# Placement always revalidates; cache only the visual hint while hovering one cell.
+	if pos != preview_pos or preview_revision != game.navigation.revision or preview_count != rooms.size():
+		preview_pos = pos
+		preview_revision = game.navigation.revision
+		preview_count = rooms.size()
+		preview_valid = can_plan(pos)
+	return preview_valid
+
+func room_at(pos: Vector3) -> int:
+	if pos.y > .5: return -1
+	for i in range(rooms.size()):
+		var room: Dictionary = rooms[i]
+		if not room.active or not room.parts[0].built or not room.parts[1].built or not room.parts[2].built: continue
+		var inner := Rect2(Vector2(room.pos.x - 1.6, room.pos.z - 1.5), Vector2(3.2, 3.7))
+		if inner.has_point(Vector2(pos.x, pos.z)): return i
+	return -1
+
+func bed_index(room: Dictionary) -> int:
+	for i in range(game.sleeping.beds.size()):
+		if room_at(game.sleeping.beds[i].pos) == rooms.find(room): return i
+	return -1
+
+func owner_name(room: Dictionary) -> String:
+	var bed := bed_index(room)
+	if bed < 0: return "Sans lit"
+	var owner: int = game.sleeping.beds[bed].owner
+	return "Usage collectif" if owner < 0 else "H%d" % (owner + 1)
+
+func occupants(id: int) -> Array[int]:
+	var result: Array[int] = []
+	for i in range(game.workers.size()):
+		var c: WorkerDelivery = game.workers[i].delivery
+		if not c.inside_refuge and room_at(c.actor.position) == id: result.append(i)
+	return result
+
+func assign_owner(id: int, owner: int) -> bool:
+	var bed := bed_index(rooms[id])
+	if bed < 0: return false
+	var result: bool = game.sleeping.assign(bed, owner)
+	if not result: game._news("Attribution impossible pendant l’accès ou l’occupation d’un lit. Attendre sa libération.")
+	return result
+
+func rest_quality(bed: Dictionary, owner: int) -> Dictionary:
+	var id := room_at(bed.pos)
+	if id < 0:
+		return {"privacy": 100.0 if bed.private else 20.0, "comfort": 85.0 if bed.private else 65.0, "rate": 3.0 if bed.private else 2.0, "reason": "Alcôve individuelle" if bed.private else "Lit sans pièce fermée"}
+	var room: Dictionary = rooms[id]
+	var privacy := 95.0 if bed.owner >= 0 and bed.owner == owner else 60.0
+	var reason := "Chambre personnelle, seul et porte fermée" if bed.owner >= 0 and bed.owner == owner else "Chambre collective, seul et porte fermée"
+	if room.mode == "open" or room.opening > .1:
+		privacy = minf(privacy, 35.0)
+		reason = "Porte ouverte : intimité réduite"
+	for other in occupants(id):
+		if other != owner:
+			privacy = minf(privacy, 25.0)
+			reason = "Présence d’un autre habitant"
+	return {"privacy": privacy, "comfort": 75.0 + privacy * .1, "rate": 2.0 + privacy * .008, "reason": reason}
+
+func privacy_summary(id: int) -> String:
+	var room: Dictionary = rooms[id]
+	if not room.parts[2].built: return "Pièce non fermée : terminer ses trois étapes."
+	var bed := bed_index(room)
+	var people := occupants(id)
+	var names: Array[String] = []
+	for person in people: names.append("H%d" % (person + 1))
+	var text := "Pièce détectée · %s\nPrésents : %s" % [owner_name(room), ", ".join(names) if not names.is_empty() else "aucun"]
+	if bed >= 0:
+		var b: Dictionary = game.sleeping.beds[bed]
+		var owner: int = b.occupant if b.occupant >= 0 else b.owner
+		var quality := rest_quality(b, owner)
+		text += "\nIntimité %d/100 · %s" % [int(quality.privacy), quality.reason]
+	return text

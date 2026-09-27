@@ -22,7 +22,7 @@ func run() -> void:
 		check(nav.segment_clear(previous, point), "Smoothed route never cuts a corner")
 		previous = point
 	check(nav.path(start, Vector3.ZERO).is_empty(), "Blocked endpoint is not silently snapped through an obstacle")
-	boxes = [Rect2(-0.3, -6.5, 0.6, 13)]
+	boxes = [Rect2(-0.3, GroundNavigation.BOUNDS.position.y, 0.6, GroundNavigation.BOUNDS.size.y)]
 	nav.configure(boxes)
 	check(nav.path(start, end).is_empty(), "Separated regions have no partial/fake route")
 	nav.configure([])
@@ -95,8 +95,8 @@ func run() -> void:
 	check(not game._place_build(game.home_slots[0]), "Construction cannot occupy refuge waiting slots")
 	check(game.stock.wood == stock_before, "Rejected construction costs nothing")
 	# Sealing the last connection is rejected even without overlapping a station.
-	game.navigation_obstacles.append(Rect2(-.1, -6.5, .2, 5.5))
-	game.navigation_obstacles.append(Rect2(-.1, 1.0, .2, 5.5))
+	game.navigation_obstacles.append(Rect2(-.1, GroundNavigation.BOUNDS.position.y, .2, -1.0 - GroundNavigation.BOUNDS.position.y))
+	game.navigation_obstacles.append(Rect2(-.1, 1.0, .2, GroundNavigation.BOUNDS.end.y - 1.0))
 	game.navigation.configure(game.navigation_obstacles, game.navigation_stands)
 	check(not game.navigation.path(depot, game.patches[0].pos + Vector3(.9, 0, .2)).is_empty(), "Remaining connection is initially usable")
 	check(not game._navigation_allows_build(Vector3.ZERO, "workshop"), "Building cannot seal last connection to resources")

@@ -3,7 +3,7 @@ extends RefCounted
 ## Deterministic horizontal routes with clearance for a resident carrying a crate.
 const STEP := 0.25
 const CLEARANCE := 0.27
-const BOUNDS := Rect2(-10.5, -6.5, 21.0, 13.0)
+const BOUNDS := Rect2(-21.0, -13.0, 42.0, 26.0)
 var grid := AStarGrid2D.new()
 var obstacles: Array[Rect2] = []
 var collision_boxes: Array[Rect2] = []

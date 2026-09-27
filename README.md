@@ -31,6 +31,8 @@ Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une 
 
 **Priorité proposée après le catalogue : terminer l’expédition vers le secteur adjacent.** La [roadmap actualisée](docs/conception/roadmap-production.md) sépare reconnaissance avec lanterne (6A), récolte et retour chargé (6B), puis sauvegarde en expédition (6C). Les assets fonctionnels sont réutilisés ; la fourmi et la refonte visuelle ne sont pas les prochains lots. Cette révision documentaire est validée par le joueur ; les lots futurs gardent leur validation séparée.
 
+Le **lot 28 / étape 8B**, validé par le joueur, **multiplie la surface jouable par quatre** et ajoute l’intimité des chambres construites selon leur propriétaire, leur porte et les habitants présents. Démo `-- --demo-privacy` avec quatre chambres attribuées, sommeil autonome et sauvegarde v15 ; [fiche du lot](docs/conception/gameplay-lot-28.md).
+
 Le **lot 27 / étape 8A**, validé par le joueur, ajoute une **chambre compacte sur la grille** : Construire → Construire une chambre. Sol, cloisons et porte sont livrés puis fabriqués en trois étapes ; le lit se commande ensuite. Porte automatique, condamnation sûre, annulation/récupération et sauvegarde v14. Démo `-- --demo-room` ; [fiche du lot](docs/conception/gameplay-lot-27.md). La forme reste prédéfinie ; l’intimité réelle arrive en 8B.
 
 Le **lot 26 / étape 7C**, validé par le joueur, ajoute un **brasero construit et entretenu sur le palier** : Travaux → Éclairage fixe de la passerelle. 4 bois + 2 fibres, puis combustible livré (2 bois / 180 s). Après sa commande, les nouveaux transferts attendent en cas de panne ; les trajets engagés finissent. Sauvegarde v13, démo `-- --demo-fixed-light` ; [fiche du lot](docs/conception/gameplay-lot-26.md).

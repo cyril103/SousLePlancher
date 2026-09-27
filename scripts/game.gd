@@ -213,6 +213,7 @@ func _ready() -> void:
 	if "--demo-fissure" in OS.get_cmdline_user_args(): prepare_fissure_demo()
 	if "--demo-alcove" in OS.get_cmdline_user_args(): prepare_alcove_demo()
 	if "--demo-alcove-haul" in OS.get_cmdline_user_args(): prepare_alcove_haul_demo()
+	if "--demo-privacy" in OS.get_cmdline_user_args(): prepare_privacy_demo()
 	if "--demo-room" in OS.get_cmdline_user_args(): prepare_room_demo()
 	if "--demo-fixed-light" in OS.get_cmdline_user_args(): prepare_fixed_light_demo()
 	if "--demo-transfers" in OS.get_cmdline_user_args(): prepare_transfers_demo()
@@ -381,7 +382,7 @@ func _make_loading_stations() -> void:
 func _setup_navigation() -> void:
 	navigation_obstacles = [refuge_footprint()]
 	# Only the reserved passage controller may cross the southern partition.
-	navigation_obstacles.append(Rect2(1.5, 6.0, 5, .4))
+	navigation_obstacles.append(Rect2(1.5, 6.0, 5, 8.1)) # Alcove remains accessible only through its dedicated passage.
 	# Blender floor props (coordinates converted from Z-up to Godot Y-up).
 	navigation_obstacles.append(Navigation.footprint(Vector3(9, 0, 5.7), Vector2(0.94, 0.94)))
 	navigation_obstacles.append(Rect2(-9.92, 5.38, 2.54, 0.84))
@@ -517,7 +518,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_R: _restart()
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP: zoom = maxf(15, zoom - 1)
-		if event.button_index == MOUSE_BUTTON_WHEEL_DOWN: zoom = minf(34, zoom + 1)
+		if event.button_index == MOUSE_BUTTON_WHEEL_DOWN: zoom = minf(60, zoom + 1)
 		if event.button_index == MOUSE_BUTTON_RIGHT: torches.picking = -1; _cancel_build()
 		if event.button_index == MOUSE_BUTTON_LEFT and not ended and not start_panel.visible:
 			if build_mode.is_empty() and torches.picking < 0 and designations.hit(event.position):
@@ -610,14 +611,14 @@ func _process(delta: float) -> void:
 	if direction != Vector3.ZERO: fissure.follow = -1
 	if fissure.follow >= 0: focus = workers[fissure.follow].node.position
 	focus += direction.rotated(Vector3.UP, yaw) * delta * 9
-	focus.x = clampf(focus.x, -7, 7)
-	focus.z = clampf(focus.z, -5, 14 if fissure.opened() else 6)
+	focus.x = clampf(focus.x, -18, 18)
+	focus.z = clampf(focus.z, -11, 14 if fissure.opened() else 11)
 	_update_camera()
 	if is_instance_valid(ghost):
 		var point = ground_point(get_viewport().get_mouse_position())
 		if point != null:
 			ghost.position = Vector3(snappedf(point.x, 1), 0, snappedf(point.z, 1))
-			ghost.visible = _valid_site(ghost.position)
+			ghost.visible = rooms.preview(ghost.position) if build_mode == "room" else _valid_site(ghost.position)
 	if not paused and not ended:
 		simulate(delta * speed)
 	_try_checkpoint()
@@ -690,7 +691,8 @@ func _valid_site(pos: Vector3) -> bool:
 			if depot.pos.is_equal_approx(pos): return false
 		return true
 	if not get_meta("restore_mode", false) and Navigation.building(pos, build_mode).grow(.3).intersects(Rect2(2.8, 4.4, 2.4, 2.1)): return false
-	if absf(pos.x) > 9.5 or absf(pos.z) > 6: return false
+	if absf(pos.x) > 19 or absf(pos.z) > 11: return false
+	if Navigation.building(pos, build_mode).intersects(Rect2(1.5, 6, 5, 8.1)): return false
 	if pos.distance_to(HOME + Vector3(1.6, 0, 0.25)) < 1.6: return false
 	for b in buildings:
 		if pos.distance_to(b.pos) < 2.2: return false
@@ -1370,3 +1372,36 @@ func prepare_room_demo() -> void:
 	_update_camera()
 	_refresh_ui()
 	_news("8A · Espace : livrer et construire sol, cloisons, porte. Commandez ensuite le lit dans la chambre.")
+
+func prepare_privacy_demo() -> void:
+	start_panel.hide()
+	# Existing homes for an 8B review; normal play still requires all 8A deliveries.
+	for pos in [Vector3(-17, 0, -9), Vector3(-12, 0, -9), Vector3(-17, 0, -3), Vector3(-12, 0, -3)]:
+		if not rooms.plan(pos): continue
+		var room: Dictionary = rooms.rooms[-1]
+		for phase in range(3):
+			room.parts[phase].materials = rooms.COSTS[phase].duplicate()
+			room.parts[phase].work = rooms.TIMES[phase]
+			room.parts[phase].built = true
+		rooms.rebuild_navigation()
+		rooms.refresh(room)
+		if rooms.add_bed(rooms.rooms.size() - 1):
+			var bed: Dictionary = sleeping.beds[-1]
+			bed.materials = COSTS.bed.duplicate()
+			bed.work = bed.required
+			bed.built = true
+			sleeping.visual(sleeping.beds.size() - 1)
+	for w in workers:
+		w.priorities = {"collect": 0, "transport": 0, "build": 0}
+		w.energy = 10.0
+		w.sleep_requested = true
+	rooms.selected = 0
+	save_path = "user://saves/privacy_demo.json"
+	get_window().title = "Sous le plancher — 8B · Quatre chambres et intimité"
+	paused = true
+	focus = Vector3(-12, 0, -5)
+	zoom = 23
+	_show_tray("rooms")
+	_update_camera()
+	_refresh_ui()
+	_news("8B · Terrain quatre fois plus grand. Espace : chacun rejoint son lit. Comparer porte auto et ouverte ; attribution après le repos.")

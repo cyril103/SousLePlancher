@@ -64,13 +64,16 @@ func _ready() -> void:
 	add_child(bounce)
 	var scenery := load("res://assets/models/underfloor.glb").instantiate() as Node3D
 	add_child(scenery)
+	scenery.scale = Vector3(2, 1, 2)
 	age_materials(scenery)
 	add_daylight(Vector3(-7.0, 4.18, -5.85), Vector3(-4.3, -0.35, -1.25), 1.28, 2.65, 3.0, 0.65)
 	add_daylight(Vector3(-0.7, 4.24, -5.95), Vector3(1.45, -0.2, -2.35), 0.64, 1.85, 19.0, 0.42)
 	add_daylight(Vector3(6.4, 4.19, -5.90), Vector3(8.25, -0.4, -2.65), 1.65, 2.15, 41.0, 0.86)
+	add_daylight(Vector3(-17, 4.2, -11), Vector3(-14, -.2, -7), 1.4, 1.8, 57.0, .72)
+	add_daylight(Vector3(-12, 4.2, -2), Vector3(-15, -.2, 0), .9, 1.6, 67.0, .5)
 	add_torch(Vector3(-6.3, 0, 3.8))
 	add_torch(Vector3(3.0, 0, 4.9))
-	add_dust(Vector3(0, 1.5, 0), Vector3(10.8, 1.4, 6.5), 220, false)
+	add_dust(Vector3(0, 1.5, 0), Vector3(21, 1.4, 13), 500, false)
 
 func add_daylight(top: Vector3, bottom: Vector3, width: float, energy: float, seed: float, flatten: float) -> void:
 	var light := SpotLight3D.new()

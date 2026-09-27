@@ -171,9 +171,10 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 		"sleep":
 			var bed := beds[c.rest_bed]
 			c.pose("sleep", fposmod(c.timer, 4))
-			c.worker.energy = minf(100, c.worker.energy + dt * (3.0 if bed.private else 2.0))
-			c.worker.comfort = 85.0 if bed.private else 65.0
-			c.worker.privacy = 100.0 if bed.private else 20.0
+			var quality: Dictionary = game.rooms.rest_quality(bed, c.owner)
+			c.worker.energy = minf(100, c.worker.energy + dt * quality.rate)
+			c.worker.comfort = quality.comfort
+			c.worker.privacy = quality.privacy
 			if c.worker.energy >= WAKE:
 				c.worker.sleep_requested = false
 				c.change("bed_exit")

@@ -1,6 +1,6 @@
 extends RefCounted
 ## Versioned colony data and a data-only snapshot of active simulation.
-const VERSION := 14
+const VERSION := 15
 const Live = preload("res://scripts/live_checkpoint.gd")
 const DEFAULT_PATH := "user://saves/colony_v1.json"
 const KINDS := ["food", "food", "wood", "wood", "fiber", "fiber", "wood", "water"]
@@ -82,7 +82,7 @@ static func validate(data: Variant) -> String:
 			depot_count += 1
 		if building.kind in ["bed", "private_bed"]: furnishings.append(building.kind)
 		var east_depot: bool = data.version >= 11 and building.kind == "depot" and Vector3(building.pos[0], building.pos[1], building.pos[2]).is_equal_approx(Vector3(11.2, 2.04, -3.7))
-		if not east_depot and (building.pos[1] != 0 or not number(building.pos[0], -9, 9, true) or not number(building.pos[2], -6, 6, true)): return "Emplacement de bâtiment invalide."
+		if not east_depot and (building.pos[1] != 0 or not number(building.pos[0], -19 if data.version >= 15 else -9, 19 if data.version >= 15 else 9, true) or not number(building.pos[2], -11 if data.version >= 15 else -6, 11 if data.version >= 15 else 6, true)): return "Emplacement de bâtiment invalide."
 		if east_depot and not data.patches[6].discovered: return "Dépôt dans une réserve inconnue."
 		if building.kind == "shelter": shelters += 1
 	if shelters > 2 or not data.assignments is Array or data.assignments.size() != 4 + shelters: return "Population incompatible avec les abris."
@@ -120,7 +120,7 @@ static func validate(data: Variant) -> String:
 		for pile in data.recovery:
 			if not fields(pile, ["pos", "materials"]) or not valid_vector(pile.pos) or not fields(pile.materials, ["wood", "fiber"]): return "Tas de récupération incomplet."
 			var upper_pile: bool = data.version >= 11 and number(pile.pos[0], 6 if data.version >= 13 else 9, 12) and number(pile.pos[2], -6, -3) and absf(pile.pos[1] - 2.0295) < .001
-			if not upper_pile and (absf(pile.pos[0]) > 10 or absf(pile.pos[2]) > 8 or absf(pile.pos[1] + .0105) > .001): return "Tas de récupération hors de la carte."
+			if not upper_pile and (absf(pile.pos[0]) > (20 if data.version >= 15 else 10) or absf(pile.pos[2]) > (12.5 if data.version >= 15 else 8) or absf(pile.pos[1] + .0105) > .001): return "Tas de récupération hors de la carte."
 			if not number(pile.materials.wood, 0, 6, true) or not number(pile.materials.fiber, 0, 5, true): return "Quantité à récupérer invalide."
 			if data.version < 10 and pile.materials.wood + pile.materials.fiber == 0: return "Tas de récupération vide."
 	if data.version >= 5:
@@ -212,7 +212,7 @@ static func validate(data: Variant) -> String:
 	if not number(data.clock.event_index, -1, 10000000, true): return "Cycle invalide."
 	if int(data.clock.event_index) != int(data.clock.elapsed / 100) and not (data.clock.elapsed == 0 and data.clock.event_index == -1): return "Cycle incohérent."
 	if not fields(data.view, ["focus", "yaw", "zoom", "paths", "resident", "cutaway"]): return "Vue incomplète."
-	if not valid_vector(data.view.focus) or not number(data.view.yaw, -1000000, 1000000) or not number(data.view.zoom, 5, 34): return "Caméra invalide."
+	if not valid_vector(data.view.focus) or not number(data.view.yaw, -1000000, 1000000) or not number(data.view.zoom, 5, 60 if data.version >= 15 else 34): return "Caméra invalide."
 	if not data.view.paths is bool or not data.view.cutaway is bool or not number(data.view.resident, 0, data.assignments.size() - 1, true): return "Sélection invalide."
 	return ""
 

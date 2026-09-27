@@ -67,6 +67,8 @@ var fissure_haul: Button
 var fissure_visit: Button
 var fissure_cancel: Button
 var depot_picker: OptionButton
+var room_owner: OptionButton
+var room_privacy: Label
 var room_picker: OptionButton
 var room_label: Label
 var room_actions: Array[Button] = []
@@ -1024,13 +1026,23 @@ func _refresh_fixed_light() -> void:
 	fixed_switch.text = "Éteindre (conserver le combustible)" if f.enabled else "Rallumer"
 
 func _make_rooms() -> void:
-	var panel := tray("rooms", "Chambres construites")
+	var shell := tray("rooms", "Chambres et intimité")
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size.y = 565
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	shell.add_child(scroll)
+	var panel := column(scroll, 10)
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button(panel, "Tracer une chambre sur la grille", func(): game._choose_build("room"))
 	wrapped(panel, "Plan compact sur la grille : 12 bois + 7 fibres, livrés en trois étapes. Lit séparé : 4 bois + 3 fibres.", 16)
 	room_picker = OptionButton.new()
 	panel.add_child(room_picker)
 	room_picker.item_selected.connect(func(id: int): game.rooms.selected = id; refresh())
 	room_label = wrapped(panel, "", 16)
+	room_privacy = wrapped(panel, "", 16)
+	room_owner = OptionButton.new()
+	panel.add_child(room_owner)
+	room_owner.item_selected.connect(func(index: int): game.rooms.assign_owner(game.rooms.selected, index - 1); refresh())
 	room_actions.append(button(panel, "Fabriquer le lit à l’intérieur", func(): game.rooms.add_bed(game.rooms.selected); refresh()))
 	var actions := row(panel)
 	room_actions.append(button(actions, "Annuler le chantier", func(): game.rooms.cancel_plan(game.rooms.selected); refresh()))
@@ -1041,7 +1053,7 @@ func _make_rooms() -> void:
 		room_actions.append(button(modes, spec[1], func(): game.rooms.set_mode(game.rooms.selected, mode); refresh()))
 	room_actions.append(button(panel, "Voir la chambre", func(): game.focus = game.rooms.rooms[game.rooms.selected].pos; game.zoom = 12; game._update_camera()))
 	button(panel, "Propriétaires des lits et repos", func(): game._show_tray("beds"))
-	wrapped(panel, "Une porte automatique s’ouvre au passage. Condamner est refusé si cela isole un habitant, un lit ou un chantier. La détection des pièces et leur intimité arrivent en 8B.", 15)
+	wrapped(panel, "Une porte automatique s’ouvre au passage. Condamner est refusé si cela isole un habitant, un lit ou un chantier. Intimité calculée pendant le repos selon la porte, l’attribution et les habitants présents.", 15)
 
 func _refresh_rooms() -> void:
 	if room_picker == null: return
@@ -1052,9 +1064,20 @@ func _refresh_rooms() -> void:
 	game.rooms.selected = clampi(game.rooms.selected, 0, maxi(0, count - 1))
 	if count > 0: room_picker.select(game.rooms.selected)
 	room_label.text = game.rooms.summary(game.rooms.selected) if count > 0 else "Aucune chambre tracée. Choisir un terrain libre devant la porte, orientée vers le bas de la carte."
+	if room_owner.item_count != game.workers.size() + 1:
+		room_owner.clear()
+		room_owner.add_item("Chambre collective · lit non attribué")
+		for i in range(game.workers.size()): room_owner.add_item("Chambre personnelle · H%d" % (i + 1))
+	room_owner.disabled = true
+	room_privacy.text = ""
 	for control in room_actions: control.disabled = count == 0
 	if count > 0:
 		var room: Dictionary = game.rooms.rooms[game.rooms.selected]
+		room_privacy.text = game.rooms.privacy_summary(game.rooms.selected)
+		var bed_id: int = game.rooms.bed_index(room)
+		if bed_id >= 0:
+			room_owner.disabled = game.sleeping.beds[bed_id].occupant >= 0
+			room_owner.select(game.sleeping.beds[bed_id].owner + 1)
 		var has_bed := false
 		for bed in game.sleeping.beds:
 			if bed.pos == room.pos: has_bed = true
