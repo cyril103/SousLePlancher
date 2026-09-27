@@ -35,6 +35,10 @@ var worker_rows: Array[Button] = []
 var designation_label: Label
 var designation_start: Button
 var designation_cancel: Button
+var priority_list: VBoxContainer
+var priority_cells: Array[Dictionary] = []
+var priority_note: Label
+var priority_count := -1
 var work_label: Label
 var save_button: Button
 var load_button: Button
@@ -327,7 +331,9 @@ func _make_trays() -> void:
 	bed_list = column(bed_scroll, 12)
 	bed_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button(beds, "Fabriquer un couchage", func(): game._show_tray("build"))
+	_make_priorities()
 	var people := tray("people", "Habitants & affectations")
+	button(people, "Priorités de travail", func(): game._show_tray("priorities"))
 	game.patch_picker = OptionButton.new()
 	game.patch_picker.focus_mode = Control.FOCUS_NONE
 	game.patch_picker.custom_minimum_size.y = 40
@@ -358,6 +364,7 @@ func _make_trays() -> void:
 	wrapped(orders, "Le joueur choisit le travail. Les habitants libres préparent l’équipement et transportent les ressources. Besoins et rappel restent prioritaires.", 16)
 	button(orders, "Centrer sur le gisement", func(): game.fissure.follow = -1; game.focus = Vector3(3, 0, 10); game.zoom = 20; game._update_camera())
 	var work := tray("work", "Travaux en cours")
+	button(work, "Priorités de travail", func(): game._show_tray("priorities"))
 	button(work, "Ordres de récolte autonomes", func(): game._show_tray("designations"))
 	button(work, "Chantiers et attribution des lits", func(): game._show_tray("beds"))
 	button(work, "Éclairage et éclaireurs", func(): game._show_tray("torches"))
@@ -530,6 +537,7 @@ func _update_roster() -> void:
 		worker_rows.append(control)
 
 func refresh() -> void:
+	_refresh_priorities()
 	if designation_label != null:
 		designation_label.text = game.designations.summary()
 		designation_start.disabled = game.designations.active or not game.fissure.visited or game.ended
@@ -863,3 +871,46 @@ func _refresh_torches() -> void:
 	torch_depart.disabled = not game.torches.missions.has(resident_index) or game.torches.missions[resident_index].phase != "ready"
 	lantern_east.disabled = not game.torches.can_haul(resident_index) or game.hiding
 	lantern_haul.disabled = lantern_east.disabled or not game.east_discovered
+
+func _make_priorities() -> void:
+	var panel := tray("priorities", "Priorités de travail")
+	wrapped(panel, "0 arrêt · 1 haute · 2 normale · 3 basse", 16)
+	wrapped(panel, "Cliquez les chiffres pour changer les priorités.", 15)
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size.y = 320
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	panel.add_child(scroll)
+	priority_list = column(scroll, 8)
+	priority_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	priority_note = wrapped(panel, "", 16)
+	wrapped(panel, "Besoins et rappel prioritaires. À égalité : construction, transport, puis récolte.", 15)
+
+func _refresh_priorities() -> void:
+	if priority_list == null: return
+	if priority_count != game.workers.size():
+		for child in priority_list.get_children():
+			priority_list.remove_child(child)
+			child.queue_free()
+		priority_cells.clear()
+		var header := row(priority_list, 4)
+		label(header, "Habitant", 15).custom_minimum_size.x = 65
+		for kind in ["collect", "transport", "build"]:
+			label(header, game.priorities.NAMES[kind], 14).custom_minimum_size.x = 94
+		for id in range(game.workers.size()):
+			var line := row(priority_list, 4)
+			button(line, "H%d" % (id + 1), func(): select_resident(id)).custom_minimum_size.x = 65
+			for kind in ["collect", "transport", "build"]:
+				var control := button(line, "", func(): game.priorities.set_priority(id, kind, (game.priorities.value(id, kind) + 1) % 4); refresh())
+				control.custom_minimum_size.x = 94
+				control.tooltip_text = "%s : 0 désactivé, 1 prioritaire, 2 normal, 3 secondaire" % game.priorities.NAMES[kind]
+				priority_cells.append({"id": id, "kind": kind, "button": control})
+			var activity := wrapped(priority_list, "", 14)
+			priority_cells.append({"id": id, "activity": activity})
+		priority_count = game.workers.size()
+	for cell in priority_cells:
+		if cell.has("activity"):
+			cell.activity.text = game.workers[cell.id].delivery.description()
+		else:
+			var rank: int = game.priorities.value(cell.id, cell.kind)
+			cell.button.text = "—" if rank == 0 else str(rank)
+	priority_note.text = game.priorities.summary()

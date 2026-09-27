@@ -248,8 +248,9 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 			return true
 		if c.state != "return_home": c.change("return_home")
 		return false
-	if game.hiding or c.state != "idle" or c.exploring: return false
-	if game.construction.start(c): return true
+	return false
+
+func start_work(c: WorkerDelivery) -> bool:
 	for i in range(beds.size()):
 		var bed := beds[i]
 		if bed.built or bed.builder >= 0 or bed.hauler >= 0 or not game.construction.supplied(bed): continue

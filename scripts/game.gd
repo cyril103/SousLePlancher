@@ -13,6 +13,7 @@ const Depots = preload("res://scripts/local_depots.gd")
 const Torches = preload("res://scripts/carried_torches.gd")
 const Fissure = preload("res://scripts/fissure_passage.gd")
 var fissure := Fissure.new()
+var priorities := preload("res://scripts/work_priorities.gd").new()
 var designations := preload("res://scripts/work_designations.gd").new()
 const HOME := Vector3(-3, 0, 1)
 const COSTS := {"depot": {}, "bed": {"wood": 4, "fiber": 3}, "private_bed": {"wood": 6, "fiber": 5}, "shelter": {"wood": 8, "fiber": 4}, "workshop": {"wood": 10, "fiber": 6}}
@@ -91,6 +92,7 @@ var route_mesh: MeshInstance3D
 var route_timer := 0.0
 
 func _ready() -> void:
+	priorities.game = self
 	fissure.game = self
 	torches.game = self
 	depots.game = self
@@ -205,6 +207,7 @@ func _ready() -> void:
 	if "--demo-fissure" in OS.get_cmdline_user_args(): prepare_fissure_demo()
 	if "--demo-alcove" in OS.get_cmdline_user_args(): prepare_alcove_demo()
 	if "--demo-alcove-haul" in OS.get_cmdline_user_args(): prepare_alcove_haul_demo()
+	if "--demo-priorities" in OS.get_cmdline_user_args(): prepare_priorities_demo()
 	if "--demo-designations" in OS.get_cmdline_user_args(): prepare_designations_demo()
 	if "--demo-live-save" in OS.get_cmdline_user_args(): prepare_live_save_demo()
 	if "--demo-needs" in OS.get_cmdline_user_args(): prepare_needs_demo()
@@ -329,7 +332,7 @@ func _add_worker() -> void:
 	var node := Art.worker(self, home_slots[i], i)
 	workers.append({"node": node, "patch": -1, "carrying": 0, "kind": "food", "work": 0.0,
 		"energy": 100.0, "comfort": 0.0, "privacy": 0.0, "sleep_requested": false,
-		"nutrition": 100.0, "hydration": 100.0})
+		"nutrition": 100.0, "hydration": 100.0, "priorities": {"collect": 2, "transport": 2, "build": 2}})
 	var controller := WorkerDelivery.new()
 	workers[i].delivery = controller
 	controller.setup(self, workers[i], i, delivery_ledger)
@@ -1218,3 +1221,17 @@ func prepare_designations_demo() -> void:
 	_update_camera()
 	_refresh_ui()
 	_news("9A · Cliquez FIBRES dans l’alcôve, puis Désigner la récolte et Espace. Deux habitants prendront leurs lanternes. T → Ordres pour annuler ; F5/F9 pour sauvegarder et reprendre.")
+
+func prepare_priorities_demo() -> void:
+	prepare_designations_demo()
+	for w in workers: w.priorities = {"collect": 0, "transport": 0, "build": 0}
+	workers[0].priorities.collect = 1
+	workers[1].priorities.transport = 1
+	workers[2].priorities.build = 1
+	# A second collector may be enabled by the player; the first crate suffices for the bed.
+	designations.designate()
+	save_path = "user://saves/priorities_demo.json"
+	get_window().title = "Sous le plancher — 9B · Priorités individuelles"
+	_show_tray("priorities")
+	_refresh_ui()
+	_news("9B · H1 récolte, H2 transporte, H3 construit. Espace pour démarrer ; cliquez les chiffres pour changer les priorités.")

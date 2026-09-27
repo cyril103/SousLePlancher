@@ -44,7 +44,11 @@ func required(c: WorkerDelivery, choice: Dictionary) -> float:
 	var p = game.fissure
 	return p.required_fuel(c) + 24.0 - game.torches.margin(c.owner) + game.torches.travel_seconds(c, p.NEAR, game.depots.entry(choice.id)) + game.torches.travel_seconds(c, game.depots.entry(choice.id), game.HOME + game.Refuge.OUTSIDE) + 12
 
-func tick() -> void:
+func try_start(c: WorkerDelivery) -> bool:
+	tick(c.owner)
+	return owners.has(c.owner)
+
+func tick(candidate: int = -1) -> void:
 	for id in owners.keys():
 		if not game.torches.occupied(id) and not game.fissure.occupied(id): owners.erase(id)
 	refresh()
@@ -62,13 +66,14 @@ func tick() -> void:
 		if owners.is_empty(): active = false
 		refresh()
 		return
-	status = "Récolte en cours." if owners.size() >= 2 else "En attente : habitants disponibles et reposés."
+	if candidate >= 0 or not owners.is_empty():
+		status = "Récolte en cours." if owners.size() >= 2 else "En attente : habitants disponibles et reposés."
 	for id in range(game.workers.size()):
 		var c: WorkerDelivery = game.workers[id].delivery
 		if owners.has(id):
 			if not healthy(c): game.torches.recall(c, "Besoins prioritaires"); continue
 			if not game.torches.can_haul(id): continue
-		elif owners.size() >= 2 or not healthy(c) or not game.torches.available(c) or game.torches.occupied(id): continue
+		elif id != candidate or owners.size() >= 2 or not healthy(c) or not game.torches.available(c) or game.torches.occupied(id): continue
 		if game.fissure.hauling.amount <= game.fissure.hauling.reserved:
 			status = "Toutes les fibres restantes sont réservées."
 			if owners.has(id): game.torches.recall(c, "Récolte déjà réservée")

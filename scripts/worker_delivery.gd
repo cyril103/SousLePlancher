@@ -275,38 +275,20 @@ func tick(dt: float) -> void:
 	if game.fissure.tick(self, dt): return
 	if game.construction.tick(self, dt): return
 	if game.torches.held(owner) < 0 and game.needs.tick(self, dt): return
-	if game.torches.start_work(self): return
-	if game.fissure.start_work(self): return
 	if game.torches.held(owner) < 0 and needs_supply < 0 and not (need_interrupt and state == "return_home"):
 		if game.sleeping.tick(self, dt): return
+	if game.priorities.start(self): return
 	match state:
 		"idle":
 			pose("idle", fposmod(timer, 4.0))
 			if inside_refuge:
 				actor.rotation.y = rotate_toward(actor.rotation.y, 0, dt * 2)
-				if not game.hiding and (exit_requested or worker.patch >= 0 or exploring or needs_supply >= 0): change("leave_home")
+				if not game.hiding and (exit_requested or (worker.patch >= 0 and game.priorities.value(owner, "collect") > 0) or exploring or needs_supply >= 0): change("leave_home")
 				return
 			if exploring and not game.hiding:
 				change("explore")
 				return
-			var patch: int = needs_supply if needs_supply >= 0 else worker.patch
-			if game.hiding or patch < 0: return
-			source_position = game.patches[patch].pos + Vector3(0.9, GROUND_Y, 0.2)
-			if not plan_route(source_position): return
-			var choice: Dictionary = game.depots.sink(source_position, game.patches[patch].kind, mini(3 + game.workshops, game.patches[patch].amount - game.patches[patch].reserved), owner)
-			if choice.is_empty():
-				navigation_issue = "Aucun dépôt accessible n’accepte cette charge ou n’a de place"
-				return
-			job = ledger.reserve(owner, patch, choice.quantity)
-			if job < 0: return
-			game.depots.reserve_in("h:%d" % job, choice)
-			set_depot(choice.id)
-			worker.kind = ledger.jobs[job].kind
-			actor.cargo.reparent(game, true)
-			actor.cargo.global_transform = Transform3D(Basis.IDENTITY, source_position) * contact
-			actor.cargo.show()
-			deposited = false
-			change("to_source")
+			if needs_supply >= 0: start_harvest(needs_supply)
 		"to_source":
 			if move(source_position, dt, false):
 				actor.rotation.y = 0
@@ -524,3 +506,24 @@ func advance_bridge(dt: float) -> void:
 	if bridge_cancel:
 		bridge_cancel = false
 		cancel()
+
+func start_harvest(patch_index: int) -> bool:
+	var patch: int = patch_index
+	if game.hiding or patch < 0: return false
+	source_position = game.patches[patch].pos + Vector3(0.9, GROUND_Y, 0.2)
+	if not plan_route(source_position): return false
+	var choice: Dictionary = game.depots.sink(source_position, game.patches[patch].kind, mini(3 + game.workshops, game.patches[patch].amount - game.patches[patch].reserved), owner)
+	if choice.is_empty():
+		navigation_issue = "Aucun dépôt accessible n’accepte cette charge ou n’a de place"
+		return false
+	job = ledger.reserve(owner, patch, choice.quantity)
+	if job < 0: return false
+	game.depots.reserve_in("h:%d" % job, choice)
+	set_depot(choice.id)
+	worker.kind = ledger.jobs[job].kind
+	actor.cargo.reparent(game, true)
+	actor.cargo.global_transform = Transform3D(Basis.IDENTITY, source_position) * contact
+	actor.cargo.show()
+	deposited = false
+	change("to_source")
+	return true

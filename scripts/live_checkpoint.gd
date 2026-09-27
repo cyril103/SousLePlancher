@@ -168,6 +168,7 @@ static func validate(data: Dictionary) -> String:
 		if not w.worker.has_all(["carrying", "kind"]) or not w.worker.carrying is int or w.worker.carrying < 0 or w.worker.carrying > 67: return "Charge invalide."
 		for key in ["energy", "comfort", "privacy", "nutrition", "hydration"]:
 			if not w.worker.has(key) or not (w.worker[key] is float or w.worker[key] is int) or not is_equal_approx(w.worker[key], data.needs[i][key]): return "Besoin actif incohérent."
+		if w.worker.has("priorities") and not preload("res://scripts/work_priorities.gd").valid(w.worker.priorities): return "Priorités de travail invalides."
 		if w.worker.get("patch", -2) != data.assignments[i]: return "Affectation active incohérente."
 		if w.controller.job >= 0 and not r.components.delivery_ledger.jobs.has(w.controller.job) and not (w.controller.state == "putdown" and w.controller.get("deposited", false) and w.worker.carrying == 0): return "Récolte orpheline."
 		if w.controller.sector_id == "alcove_north" and not r.fissure.missions.has(i): return "Habitant perdu hors secteur."
