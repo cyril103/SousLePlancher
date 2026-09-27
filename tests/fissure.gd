@@ -29,6 +29,16 @@ func settle(g: Node) -> void:
 	for w in g.workers: print(w.delivery.owner, " ", w.delivery.state, " ", w.node.position, " ", w.delivery.description())
 	print(g.fissure.missions, " OWNER ", g.fissure.owner, " QUEUE ", g.fissure.queue)
 	check(false, "All visitors and builders settle at refuge")
+func equip(g: Node, ids: Array) -> void:
+	for id in ids:
+		g.torches.add_item(g.depots.entry(0), 180, "lantern")
+		check(g.torches.equip(id, "lantern"), "Lantern reserved for sector expedition")
+	for i in range(1200):
+		step(g)
+		var ready := true
+		for id in ids: ready = ready and g.torches.can_haul(id)
+		if ready: return
+	check(false, "Lantern equipment completes")
 func run() -> void:
 	var g := fixture()
 	check(not g.fissure.request_build(), "Inspection required before construction")
@@ -64,6 +74,7 @@ func run() -> void:
 	check(g.fissure.opened() and g.fissure.braces.visible, "Open state and visuals persist")
 	g.pending_save = false
 	g._toggle_hide()
+	equip(g, [0, 1, 2, 3])
 	check(g.fissure.start(0) and g.fissure.start(1), "Two visits can queue")
 	check(g.fissure.start(2) and g.fissure.start(3), "Additional visitors share the same passage")
 	var waited := false
@@ -84,6 +95,7 @@ func run() -> void:
 	g.workers[0].carrying = 1
 	check(not g.fissure.start(0), "Cargo forbidden")
 	g.workers[0].carrying = 0
+	equip(g, [0])
 	check(g.fissure.start(0), "Recall visit starts")
 	for i in range(600):
 		step(g)
@@ -140,6 +152,7 @@ func run() -> void:
 	step(g, 1200)
 	check(g.fissure.opened(), "Restored work completes")
 	check(g.depots.total("wood") == 24 and g.depots.total("fiber") == 16, "Restore never charges recipe twice")
+	equip(g, [0])
 	check(g.fissure.start(0), "Need interruption fixture starts")
 	for i in range(600):
 		step(g)

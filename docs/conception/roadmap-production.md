@@ -1,6 +1,6 @@
 # Roadmap de production — terminer une boucle avant d’étendre le jeu
 
-Révision du 24 septembre 2026. **Base gameplay publiée : `06226a1` (lot 18). Catalogue publié : `1d88614`.** Révision documentaire validée par le joueur, commit et push autorisés ; aucun nouveau système n’est annoncé comme réalisé.
+Révision du 27 septembre 2026. **Lot 19 / 6A validé par le joueur ; commit et push autorisés.** Base précédente : `06226a1` (lot 18). Catalogue publié : `1d88614`.
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
@@ -12,30 +12,30 @@ Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [d
 
 Le projet reste un prototype intégré. Nous terminons cette boucle avant d’étendre la carte et le bestiaire. La refonte générale des personnages et du mobilier n’est pas prioritaire. Le catalogue sert aux assets nécessaires aux étapes engagées ; il ne commande pas douze chantiers 3D.
 
-**Prochaine étape : 6A, reconnaissance équipée du secteur adjacent.** La fourmi viendra sur le parcours cuisine, après les transports et la sauvegarde nécessaires, plutôt que dans une démonstration isolée.
+**Étape validée : 6A, reconnaissance équipée du secteur adjacent. Prochaine livraison : 6B, récolte et retour chargé.** La fourmi viendra sur le parcours cuisine, après les transports et la sauvegarde nécessaires, plutôt que dans une démonstration isolée.
 
 ## État constaté
 
-Bilan fondé sur les lots publiés et la lecture du code le 24 septembre 2026. Les suites de tests citées existent ; elles n’ont pas été réexécutées pour cette révision documentaire.
+Bilan actualisé au lot 19 validé. Tests 6A, fissure, lanternes, torches et sauvegardes exécutés sous Godot 4.7.2 ; détail dans [la fiche du lot 19](gameplay-lot-19.md). Validation joueur reçue le 27 septembre 2026.
 
 | Domaine | Disponible aujourd’hui | Limite réelle |
 | --- | --- | --- |
 | Habitants | Modèles Blender animés : marche, travail, caisse, montée/descente et transitions validés | Diversité et finition ultérieures ; aucune refonte nécessaire pour la prochaine étape |
 | Interface | Atelier miniature : affectations, stocks, travaux, besoins et exploration | Compléter les panneaux existants, sans nouvelle refonte |
 | Navigation | Obstacles au sol, porte, échelle, passerelle, réservations et files | Liens spécialisés ; pas de navigation générale entre secteurs ni de capacité démontrée à 30–50 habitants |
-| Transport | Prise, portage, dépose, annulation et rappel | Visite de fissure et trajet lumineux ne forment pas encore une expédition commune |
+| Transport | Prise, portage, dépose, annulation et rappel | Expédition lumineuse reliée à la fissure ; pas encore de caisse par ce passage |
 | Besoins | Sommeil, faim et soif autonomes, accès physique à la nourriture et à l’eau | Pas de soins, humeur, relations ni milieu simulé |
 | Couchages | Lits fabriqués, propriétaire, confort et alcôves d’intimité | Meubles prédéfinis ; pas de pièces construites librement |
 | Chantiers | Livraisons physiques pour lits, équipements lumineux et fissure | Ateliers/anciens abris encore au paiement historique ; pas de pont construit par le joueur |
 | Dépôts | Stocks locaux, capacité, filtres et réservations, repas et approvisionnement | Casier gratuit et instantané ; pas de transfert automatique ni quotas |
 | Éclairage | Torche au sol ; lanterne compatible avec caisse et échelle ; autonomie et retour anticipé | Pas de recharge ni éclairage fixe construit ; remplacement par fabrication |
-| Exploration | Réserve découverte à l’étage ; fissure inspectée, dégagée et étayée | Réserve sur la carte actuelle ; alcôve adjacente visitée par trajet dédié à vide |
-| Passage sud | Chantier 6 bois + 4 fibres puis traversée réservée dans les deux sens | Caisse interdite ; visite sans équipement engagé ; aucune récolte distante |
+| Exploration | Réserve découverte à l’étage ; fissure inspectée, dégagée et étayée | Alcôve adjacente agrandie et reconnue à la lanterne ; décor statique mémorisé, pas de récolte distante |
+| Passage sud | Chantier 6 bois + 4 fibres puis traversée réservée dans les deux sens | Caisse interdite ; lanterne de ceinture obligatoire ; aucune récolte distante |
 | Sauvegarde | Format v8, migrations, besoins, stocks et travaux conservés | F5 rappelle et stabilise au refuge ; aucune reprise en expédition |
 | Faune et humains | Ambiance et menace humaine globale simplifiée | Pas de fourmi jouable, de perception animale locale ni de routines humaines détaillées |
 | Catalogue | 12 planches, matériaux et vues de référence publiés | Concepts, pas de nouveaux modèles ; inventaire non exhaustif |
 
-Points de contrôle : [restrictions du passage](../../scripts/fissure_passage.gd), [format v8](../../scripts/colony_save.gd), [rappel avant sauvegarde](../../scripts/game.gd), [lumière portée](../../scripts/carried_torches.gd), [chantiers](../../scripts/construction_logistics.gd), [dépôts](../../scripts/local_depots.gd). La séparation entre missions de fissure et missions lumineuses est une dépendance à résoudre en 6A.
+Points de contrôle : [restrictions du passage](../../scripts/fissure_passage.gd), [format v8](../../scripts/colony_save.gd), [rappel avant sauvegarde](../../scripts/game.gd), [lumière portée](../../scripts/carried_torches.gd), [chantiers](../../scripts/construction_logistics.gd), [dépôts](../../scripts/local_depots.gd). Le passage dirige les déplacements de la mission lumineuse ; la lanterne garde la gestion du combustible et du rangement au refuge.
 
 ### Livraisons closes, à ne pas refaire
 
@@ -67,6 +67,8 @@ La livraison est terminée si le résultat est observable, les blocages sont exp
 L’ancienne étape 6 est découpée. **6A et 6B restent intermédiaires ; l’étape 6 n’est terminée qu’après 6C.**
 
 ### 6A — Reconnaître le secteur adjacent avec une lanterne
+
+**Réalisé et validé par le joueur le 27 septembre 2026.** Démo `-- --demo-alcove`. Voir [lot 19](gameplay-lot-19.md).
 
 **Démonstration.** Un habitant équipé traverse la fissure ouverte, explore une petite zone adjacente et revient. Le joueur peut le suivre et savoir dans quel secteur il se trouve.
 
@@ -166,4 +168,4 @@ Ces reports ne suppriment pas la ville, les relations, le milieu ou la domestica
 
 À chaque lot : conservation des ressources, réservations libérées, besoins/rappel, pause/vitesse, migration et reprise selon périmètre. Réutiliser les suites navigation, livraisons, construction, dépôts, besoins, éclairage et fissure ; ajouter les cas nouveaux utiles. Mesurer progressivement 10, 20 puis 30–50 habitants. Cette dernière cible n’est pas démontrée.
 
-**Prochaine livraison à engager : 6A, reconnaissance équipée du secteur adjacent, avec réemploi des assets.**
+**6A / lot 19 validé. Prochaine livraison : 6B, récolte et retour chargé.**

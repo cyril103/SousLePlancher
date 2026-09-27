@@ -51,6 +51,7 @@ var light_kind: OptionButton
 var light_recipe: Label
 var lantern_east: Button
 var lantern_haul: Button
+var fissure_resident: Label
 var fissure_summary: Label
 var fissure_picker: OptionButton
 var fissure_inspect: Button
@@ -771,18 +772,22 @@ func _make_fissure() -> void:
 	box.add_child(scroll)
 	fissure_summary = wrapped(scroll, "", 16)
 	fissure_summary.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	fissure_resident = wrapped(box, "", 16)
 	fissure_picker = OptionButton.new()
 	box.add_child(fissure_picker)
 	fissure_picker.item_selected.connect(func(index: int): resident_index = index; refresh())
+	button(box, "Équiper H sélectionné d’une lanterne", func(): game.torches.equip(resident_index, "lantern"); refresh())
+	button(box, "Fabriquer une lanterne à l’atelier", func(): game.torches.request_craft("lantern"); refresh())
 	var visits := row(box)
 	fissure_inspect = button(visits, "Inspecter", func(): game.fissure.start(resident_index, true); refresh())
-	fissure_visit = button(visits, "Visiter l’alcôve", func(): game.fissure.start(resident_index); refresh())
+	fissure_visit = button(visits, "Explorer à la lanterne", func(): game.fissure.start(resident_index); refresh())
 	fissure_build = button(box, "Dégager et étayer · 6 bois / 4 fibres", func(): game.fissure.request_build(); refresh())
 	var stops := row(box)
 	fissure_cancel = button(stops, "Annuler le chantier", func(): game.fissure.cancel_build(); refresh())
 	button(stops, "Rappeler", func(): game.workers[resident_index].delivery.cancel(); refresh())
 	button(box, "Centrer la caméra sur le passage", func(): game.focus = Vector3(4, .5, 6); game.zoom = 13; game._update_camera())
-	wrapped(box, "Visite avec retour automatique. Le rappel laisse finir la traversée. H rappelle toute la colonie.", 15)
+	button(box, "Suivre H sélectionné · flèches pour libérer", func(): game.fissure.follow = resident_index; game.focus = game.workers[resident_index].node.position; game.zoom = 13; game._update_camera())
+	wrapped(box, "Lanterne équipée → Explorer. Reconnaissance et retour automatiques. Le rappel laisse finir la traversée. H rappelle toute la colonie.", 15)
 
 func _refresh_fissure() -> void:
 	if fissure_summary == null: return
@@ -791,13 +796,18 @@ func _refresh_fissure() -> void:
 		for i in range(game.workers.size()): fissure_picker.add_item("Habitant %d" % (i + 1))
 	fissure_picker.select(resident_index)
 	fissure_summary.text = game.fissure.summary()
+	var selected_worker: WorkerDelivery = game.workers[resident_index].delivery
+	fissure_resident.text = "H%d · %s" % [resident_index + 1, "Alcôve" if selected_worker.sector_id == game.fissure.ALCOVE_SECTOR else "Refuge"]
+	var lamp: int = game.torches.held(resident_index)
+	if lamp >= 0:
+		fissure_resident.text += " · %.0f s de lumière" % game.torches.items[lamp].fuel
 	var unavailable: bool = game.hiding or game.ended or game.pending_save
 	var c: WorkerDelivery = game.workers[resident_index].delivery
 	var busy: bool = not game.torches.available(c) or game.torches.occupied(resident_index)
 	fissure_inspect.disabled = unavailable or busy or game.fissure.discovered
 	fissure_build.disabled = unavailable or not game.fissure.discovered or not game.fissure.site.is_empty()
 	fissure_cancel.disabled = game.fissure.site.is_empty() or game.fissure.opened()
-	fissure_visit.disabled = unavailable or busy or not game.fissure.opened()
+	fissure_visit.disabled = unavailable or not game.torches.available(c) or not game.torches.can_haul(resident_index) or not game.fissure.opened()
 
 func _refresh_torches() -> void:
 	if torch_picker == null: return

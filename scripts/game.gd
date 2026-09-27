@@ -200,6 +200,7 @@ func _ready() -> void:
 	if "--demo-torches" in OS.get_cmdline_user_args(): prepare_torches_demo()
 	if "--demo-lanterns" in OS.get_cmdline_user_args(): prepare_lanterns_demo()
 	if "--demo-fissure" in OS.get_cmdline_user_args(): prepare_fissure_demo()
+	if "--demo-alcove" in OS.get_cmdline_user_args(): prepare_alcove_demo()
 	if "--demo-needs" in OS.get_cmdline_user_args(): prepare_needs_demo()
 
 func prepare_needs_demo() -> void:
@@ -564,9 +565,11 @@ func _process(delta: float) -> void:
 	if Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT): direction.x += 1
 	if Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP): direction.z -= 1
 	if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN): direction.z += 1
+	if direction != Vector3.ZERO: fissure.follow = -1
+	if fissure.follow >= 0: focus = workers[fissure.follow].node.position
 	focus += direction.rotated(Vector3.UP, yaw) * delta * 9
 	focus.x = clampf(focus.x, -7, 7)
-	focus.z = clampf(focus.z, -5, 9 if fissure.opened() else 6)
+	focus.z = clampf(focus.z, -5, 14 if fissure.opened() else 6)
 	_update_camera()
 	if is_instance_valid(ghost):
 		var point = ground_point(get_viewport().get_mouse_position())
@@ -1084,3 +1087,31 @@ func prepare_fissure_demo() -> void:
 	_update_camera()
 	_refresh_ui()
 	_news("Espace : H1 inspecte la fissure. Lancez ensuite les travaux, puis choisissez Visiter l’alcôve.")
+
+func prepare_alcove_demo() -> void:
+	prepare_fissure_demo()
+	save_path = "user://saves/alcove_demo.json"
+	get_window().title = "Sous le plancher — 6A · Reconnaissance à la lanterne"
+	for i in range(800):
+		simulate(.05)
+		if fissure.discovered: break
+	fissure.request_build()
+	for i in range(3000):
+		simulate(.05)
+		suspicion = 0
+		if fissure.opened() and torches.available(workers[0].delivery): break
+	# Demo provision only; normal games manufacture this lantern at the workshop.
+	torches.add_item(depots.entry(0), 180, "lantern")
+	torches.equip(0, "lantern")
+	for i in range(800):
+		simulate(.05)
+		if torches.can_haul(0): break
+	elapsed = 0
+	event_index = 0
+	suspicion = 0
+	focus = Vector3(4, .5, 8)
+	zoom = 19
+	paused = true
+	_update_camera()
+	_refresh_ui()
+	_news("Démo 6A : H1 est équipé, la fissure est ouverte. Cliquez Explorer à la lanterne, puis Espace. F5 utilise une sauvegarde de démo séparée.")

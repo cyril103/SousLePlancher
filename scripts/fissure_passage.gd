@@ -1,8 +1,11 @@
 extends RefCounted
-## Stage 5: one authored threshold. Annex visits do not yet create a remote economy.
+## Stage 6A: the threshold owns movement; the lantern owns equipment and fuel.
 const NEAR := Vector3(4, -.0105, 5)
 const FAR := Vector3(4, -.0105, 7.4)
-const LOOK := Vector3(4, -.0105, 8.8)
+const LOOK := Vector3(4, -.0105, 12.7)
+const HOME_SECTOR := "refuge_south"
+const ALCOVE_SECTOR := "alcove_north"
+const OBSERVE := 12.0
 const COST := {"wood": 6, "fiber": 4}
 const CONTRACT := {"id": "south_fissure", "from": "refuge_south", "to": "alcove_north", "width": .85, "height": 2.1, "capacity": 1, "cargo": false, "seconds": 3.0}
 var game: Node3D
@@ -10,6 +13,7 @@ var discovered := false
 var visited := false
 var site: Dictionary = {}
 var missions: Dictionary = {}
+var follow := -1
 var owner := -1
 var queue: Array[int] = []
 var wall: Node3D
@@ -24,7 +28,7 @@ func setup() -> void:
 	wall = game.Art.model(game, "fissure_18/fissure_frame", Vector3(4, 0, 6.2))
 	rubble = game.Art.model(game, "fissure_18/fissure_blocked", Vector3(4, 0, 6.2))
 	braces = game.Art.model(game, "fissure_18/fissure_braces", Vector3(4, 0, 6.2))
-	annex = game.Art.model(game, "fissure_18/fissure_alcove", Vector3(4, 0, 6.2))
+	annex = game.Art.model(game, "alcove_19/alcove_sector", Vector3(4, 0, 6.2))
 	label = game.Art.caption(game, "", Vector3(4, 3.1, 6.2))
 	label.pixel_size = .006
 	supplies = Node3D.new()
@@ -48,7 +52,7 @@ func refresh() -> void:
 	if not is_instance_valid(wall): return
 	rubble.visible = site.is_empty() or site.work < 8
 	braces.visible = not site.is_empty() and site.work >= 8
-	annex.visible = opened()
+	annex.visible = visited or observed()
 	label.text = "Fissure à inspecter" if not discovered else ("Passage ouvert · alcôve" if opened() else "Fissure bloquée")
 	if not site.is_empty() and not site.built:
 		label.text = "Dégagement / étaiement · %d %%" % int(site.work / site.required * 100)
@@ -91,7 +95,9 @@ func start(id: int, inspect: bool = false) -> bool:
 	if game.ended or game.hiding or game.pending_save: return reject("Reprenez les sorties avant de partir.")
 	var c: WorkerDelivery = game.workers[id].delivery
 	if c.worker.carrying > 0: return reject("Passage trop étroit pour une caisse : déposez la charge d’abord.")
-	if occupied(id) or not game.torches.available(c) or game.torches.occupied(id): return reject("Choisissez un habitant libre, sans équipement engagé.")
+	if occupied(id) or not game.torches.available(c): return reject("Choisissez un habitant libre.")
+	if inspect and game.torches.occupied(id): return reject("Rangez votre éclairage avant cette inspection de chantier.")
+	if not inspect and not game.torches.can_haul(id): return reject("Équipez une lanterne de ceinture avant d’explorer l’alcôve sombre.")
 	if c.worker.sleep_requested or minf(c.worker.nutrition, c.worker.hydration) <= 35: return reject("Cet habitant doit satisfaire ses besoins avant de partir.")
 	if not inspect and not opened(): return reject("Passage bloqué : inspectez, dégagez et étayez d’abord la fissure.")
 	if inspect and discovered: return reject("La fissure est déjà inspectée.")
@@ -100,9 +106,15 @@ func start(id: int, inspect: bool = false) -> bool:
 			if mission.inspect: return reject("Un habitant inspecte déjà la fissure.")
 	var from: Vector3 = game.home_position(id) if c.inside_refuge else c.actor.position
 	if game.travel_path(from, NEAR, id).is_empty(): return reject("L’entrée de la fissure est inaccessible.")
-	missions[id] = {"phase": "approach", "inspect": inspect, "returning": false, "clock": 0.0, "side": "near"}
+	if not inspect:
+		var required := required_fuel(c)
+		var item: Dictionary = game.torches.items[game.torches.held(id)]
+		if item.fuel < required: return reject("Autonomie insuffisante : %.0f s disponibles, %.0f s nécessaires, retour et marge compris." % [item.fuel, required])
+		game.torches.missions[id].phase = "sector"
+		item.lit = true
+	missions[id] = {"id": "south_fissure:H%d" % id, "phase": "approach", "inspect": inspect, "returning": false, "clock": 0.0, "side": "near"}
 	c.change("leave_home" if c.inside_refuge else "idle")
-	game._news("L’habitant part inspecter la fissure." if inspect else "L’habitant visitera l’alcôve, puis rentrera. Une personne à la fois sur le seuil.")
+	game._news("L’habitant part inspecter la fissure." if inspect else "L’éclaireur reconnaîtra l’alcôve à la lanterne, puis rentrera. Une personne à la fois sur le seuil.")
 	return true
 
 func cancel(c: WorkerDelivery) -> bool:
@@ -114,7 +126,7 @@ func cancel(c: WorkerDelivery) -> bool:
 	var m: Dictionary = missions[c.owner]
 	if m.returning: return true
 	m.returning = true
-	if m.phase == "cross": return true # Finish the committed crossing before turning back.
+	if m.phase in ["cross", "clear"]: return true # Finish the committed crossing before turning back.
 	queue.erase(c.owner)
 	if owner == c.owner: owner = -1
 	if m.side == "far": m.phase = "back"
@@ -125,8 +137,12 @@ func finish(c: WorkerDelivery) -> void:
 	queue.erase(c.owner)
 	if owner == c.owner: owner = -1
 	missions.erase(c.owner)
+	c.sector_id = HOME_SECTOR
 	c.navigation_issue = ""
+	if game.torches.missions.has(c.owner) and game.torches.missions[c.owner].phase == "sector":
+		game.torches.recall(c, "Retour de l’alcôve")
 	c.change("return_home")
+	refresh()
 
 func start_work(c: WorkerDelivery) -> bool:
 	if site.is_empty() or site.built or site.builder >= 0 or site.hauler >= 0: return false
@@ -174,6 +190,12 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 	if game.hiding or game.pending_save or c.worker.sleep_requested or minf(c.worker.nutrition, c.worker.hydration) <= 35:
 		cancel(c)
 		if not missions.has(c.owner): return false
+	if not m.inspect and not m.returning:
+		var item: Dictionary = game.torches.items[game.torches.held(c.owner)]
+		if item.fuel <= return_budget(c) + game.torches.margin(c.owner):
+			game._news("H%d : réserve de combustible atteinte, retour anticipé." % (c.owner + 1))
+			cancel(c)
+			if not missions.has(c.owner): return false
 	if c.inside_refuge or c.state == "leave_home": return false
 	match m.phase:
 		"approach":
@@ -205,25 +227,36 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 				m.clock = 0.0
 		"cross":
 			m.clock = minf(3, m.clock + dt)
+			annex.visible = visited or observed()
 			var a := FAR if m.side == "far" else NEAR
 			var b := NEAR if m.side == "far" else FAR
 			c.actor.position = a.lerp(b, m.clock / 3)
 			c.actor.rotation.y = PI if m.side == "far" else 0
 			c.pose("walk", fposmod(m.clock * .8 / float(ResidentAnimator.SPEEDS.walk), c.actor.player.get_animation("walk").length))
 			if m.clock >= 3:
-				owner = -1
 				m.side = "near" if m.side == "far" else "far"
 				if m.side == "near": finish(c)
-				else: m.phase = "back" if m.returning else "look_walk"
+				else:
+					c.sector_id = ALCOVE_SECTOR
+					m.phase = "clear"
+				refresh()
+		"clear":
+			if local_move(c, FAR + Vector3((c.owner - 1.5) * .5, 0, .7), dt):
+				owner = -1
+				m.phase = "back" if m.returning else "look_walk"
 		"look_walk":
 			if local_move(c, LOOK + Vector3(c.owner * .35, 0, 0), dt):
-				visited = true
 				m.phase = "look"
 				m.clock = 0.0
 		"look":
 			c.pose("idle", fposmod(c.timer, 4))
 			m.clock += dt
-			if m.clock >= 5: m.phase = "back"
+			if m.clock >= OBSERVE:
+				visited = true
+				m.returning = true
+				m.phase = "back"
+				refresh()
+				game._news("Alcôve reconnue : son décor restera mémorisé. L’éclaireur rentre au refuge.")
 		"back":
 			if local_move(c, FAR + Vector3((c.owner - 1.5) * .5, 0, .7), dt): m.phase = "wait"
 	return true
@@ -231,12 +264,14 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 func description(c: WorkerDelivery) -> String:
 	if not site.is_empty() and site.builder == c.owner: return "Dégage la fissure" if site.work < 8 else "Étaye la fissure"
 	if not missions.has(c.owner): return ""
-	return {"approach": "Va à la fissure", "inspect": "Inspecte la fissure", "wait": "Attend le passage étroit", "entry": "Rejoint le seuil", "cross": "Traverse la fissure", "look_walk": "Explore l’alcôve", "look": "Observe l’alcôve", "back": "Revient vers la fissure"}.get(missions[c.owner].phase, "Retour au refuge")
+	return ("Alcôve · " if c.sector_id == ALCOVE_SECTOR else "Refuge · ") + {"approach": "Va à la fissure", "inspect": "Inspecte la fissure", "wait": "Attend le passage étroit", "entry": "Rejoint le seuil", "cross": "Traverse la fissure", "clear": "Dégage le seuil", "look_walk": "Explore l’alcôve", "look": "Observe l’alcôve", "back": "Revient vers la fissure"}.get(missions[c.owner].phase, "Retour au refuge")
 
 func summary() -> String:
 	var text := "Fissure non inspectée" if not discovered else ("Passage ouvert" if opened() else "Fissure bloquée")
-	text += "\n6 bois · 4 fibres · 24 s de travaux\nPassage étroit · une personne · sans caisse"
+	if not opened(): text += "\n6 bois · 4 fibres · 24 s de travaux"
+	text += "\nUne personne à la fois · lanterne · sans caisse"
 	if not site.is_empty() and not site.built: text += "\n" + game.construction.quantities(site) + "\n" + game.construction.status(site)
+	text += "\nAlcôve : " + ("observée à la lanterne" if observed() else ("décor mémorisé" if visited else "inconnue"))
 	text += "\n%d habitant(s) en sortie · %d en attente" % [missions.size(), queue.size()]
 	return text
 
@@ -249,3 +284,23 @@ func restore(data: Dictionary) -> void:
 	if not data.site.is_empty():
 		site = {"fissure_site": true, "pos": NEAR, "materials": data.site.materials.duplicate(), "work": float(data.site.work), "built": data.site.built, "required": 24.0, "hauler": -1, "builder": -1}
 	refresh()
+
+func observed() -> bool:
+	for id in missions:
+		if missions[id].side == "far" or (missions[id].phase == "cross" and missions[id].clock >= 1.5):
+			var index: int = game.torches.held(id)
+			if index >= 0 and game.torches.items[index].lit: return true
+	return false
+
+func required_fuel(c: WorkerDelivery) -> float:
+	var from: Vector3 = game.home_position(c.owner) if c.inside_refuge else c.actor.position
+	return game.torches.travel_seconds(c, from, NEAR) + game.torches.travel_seconds(c, NEAR, game.HOME + game.Refuge.OUTSIDE) + 2 * FAR.distance_to(LOOK) / (1.4 * game.needs.movement_factor(c.worker)) + OBSERVE + 16.0 + 8.0 * missions.size() + game.torches.margin(c.owner)
+
+func return_budget(c: WorkerDelivery) -> float:
+	var m: Dictionary = missions[c.owner]
+	var walking: float = game.torches.travel_seconds(c, NEAR, game.HOME + game.Refuge.OUTSIDE)
+	if m.side == "far" or m.phase == "cross":
+		walking += c.actor.position.distance_to(FAR) / (1.4 * game.needs.movement_factor(c.worker)) + 6.0
+	else:
+		walking += game.torches.travel_seconds(c, c.actor.position, NEAR)
+	return walking + 8.0 * missions.size() + 4.0

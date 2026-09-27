@@ -8,6 +8,7 @@ var game: Node3D
 var worker: Dictionary
 var actor: ResidentAnimator
 var ledger: DeliveryLedger
+var sector_id := "refuge_south"
 var owner: int
 var job := -1
 var state := "idle"

@@ -32,6 +32,12 @@ func run() -> void:
 		g.simulate(.05)
 		g.suspicion = 0
 		if g.torches.available(g.workers[0].delivery) and g.torches.available(g.workers[1].delivery): break
+	for id in [0, 1]:
+		g.torches.add_item(g.depots.entry(0), 180, "lantern")
+		g.torches.equip(id, "lantern")
+	for i in range(800):
+		g.simulate(.05)
+		if g.torches.can_haul(0) and g.torches.can_haul(1): break
 	if not g.fissure.start(0) or not g.fissure.start(1):
 		push_error("Visual fixture could not start both visitors")
 		quit(1)
@@ -45,7 +51,7 @@ func run() -> void:
 	g.yaw = .65
 	g._show_tray("")
 	await shot(g, "crossing")
-	for i in range(200):
+	for i in range(700):
 		g.simulate(.05)
 		g.suspicion = 0
 		if g.fissure.visited: break

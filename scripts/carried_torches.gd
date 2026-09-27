@@ -198,6 +198,9 @@ func recall(c: WorkerDelivery, reason: String = "Rappel demandé") -> bool:
 		return true
 	if not missions.has(c.owner): return false
 	var mission: Dictionary = missions[c.owner]
+	if mission.phase == "sector" and game.fissure.missions.has(c.owner):
+		mission.reason = reason
+		return game.fissure.cancel(c)
 	if mission.phase == "equip":
 		items[mission.item].reserved = -1
 		missions.erase(c.owner)
@@ -288,6 +291,7 @@ func assisted(c: WorkerDelivery) -> bool:
 func tick(c: WorkerDelivery, dt: float) -> bool:
 	if not missions.has(c.owner): return craft_tick(c, dt)
 	var m: Dictionary = missions[c.owner]
+	if m.phase == "sector": return false # Fissure exclusively owns movement and safe return.
 	if m.phase == "equip":
 		if c.inside_refuge or c.state == "leave_home": return false
 		if c.move(items[m.item].pos, dt, false):
