@@ -67,6 +67,9 @@ var fissure_haul: Button
 var fissure_visit: Button
 var fissure_cancel: Button
 var depot_picker: OptionButton
+var room_picker: OptionButton
+var room_label: Label
+var room_actions: Array[Button] = []
 var fixed_label: Label
 var fixed_plan: Button
 var fixed_cancel: Button
@@ -333,6 +336,8 @@ func _make_trays() -> void:
 		build_buttons[kind] = control
 		wrapped(details, spec[3], 16, MUTED)
 	wrapped(build, "Choisissez un bâtiment, puis un emplacement libre. Clic droit pour annuler.", 16, MUTED)
+	button(build, "Construire une chambre", func(): game._show_tray("rooms"))
+	_make_rooms()
 	button(build, "Gérer les couchages", func(): game._show_tray("beds"))
 	build_buttons.depot = button(build, "Construire un dépôt · 6 bois / 4 fibres", func(): game._choose_build("depot"), "12 places après livraison des matériaux et fabrication")
 	button(build, "Planifier le dépôt de la réserve à l’étage", func(): game.plan_east_depot())
@@ -560,6 +565,7 @@ func _update_roster() -> void:
 func refresh() -> void:
 	_refresh_transfers()
 	_refresh_fixed_light()
+	_refresh_rooms()
 	_refresh_priorities()
 	if designation_label != null:
 		designation_label.text = game.designations.summary()
@@ -1016,3 +1022,46 @@ func _refresh_fixed_light() -> void:
 	fixed_auto.text = "Suspendre le ravitaillement et rappeler" if f.automatic else "Reprendre le ravitaillement"
 	fixed_switch.disabled = f.site.is_empty() or not f.site.built
 	fixed_switch.text = "Éteindre (conserver le combustible)" if f.enabled else "Rallumer"
+
+func _make_rooms() -> void:
+	var panel := tray("rooms", "Chambres construites")
+	button(panel, "Tracer une chambre sur la grille", func(): game._choose_build("room"))
+	wrapped(panel, "Plan compact sur la grille : 12 bois + 7 fibres, livrés en trois étapes. Lit séparé : 4 bois + 3 fibres.", 16)
+	room_picker = OptionButton.new()
+	panel.add_child(room_picker)
+	room_picker.item_selected.connect(func(id: int): game.rooms.selected = id; refresh())
+	room_label = wrapped(panel, "", 16)
+	room_actions.append(button(panel, "Fabriquer le lit à l’intérieur", func(): game.rooms.add_bed(game.rooms.selected); refresh()))
+	var actions := row(panel)
+	room_actions.append(button(actions, "Annuler le chantier", func(): game.rooms.cancel_plan(game.rooms.selected); refresh()))
+	room_actions.append(button(actions, "Reprendre", func(): game.rooms.resume(game.rooms.selected); refresh()))
+	var modes := row(panel)
+	for spec in [["auto", "Porte auto"], ["open", "Ouverte"], ["blocked", "Condamner"]]:
+		var mode: String = spec[0]
+		room_actions.append(button(modes, spec[1], func(): game.rooms.set_mode(game.rooms.selected, mode); refresh()))
+	room_actions.append(button(panel, "Voir la chambre", func(): game.focus = game.rooms.rooms[game.rooms.selected].pos; game.zoom = 12; game._update_camera()))
+	button(panel, "Propriétaires des lits et repos", func(): game._show_tray("beds"))
+	wrapped(panel, "Une porte automatique s’ouvre au passage. Condamner est refusé si cela isole un habitant, un lit ou un chantier. La détection des pièces et leur intimité arrivent en 8B.", 15)
+
+func _refresh_rooms() -> void:
+	if room_picker == null: return
+	var count: int = game.rooms.rooms.size()
+	if room_picker.item_count != count:
+		room_picker.clear()
+		for i in range(count): room_picker.add_item("Chambre %d" % (i + 1))
+	game.rooms.selected = clampi(game.rooms.selected, 0, maxi(0, count - 1))
+	if count > 0: room_picker.select(game.rooms.selected)
+	room_label.text = game.rooms.summary(game.rooms.selected) if count > 0 else "Aucune chambre tracée. Choisir un terrain libre devant la porte, orientée vers le bas de la carte."
+	for control in room_actions: control.disabled = count == 0
+	if count > 0:
+		var room: Dictionary = game.rooms.rooms[game.rooms.selected]
+		var has_bed := false
+		for bed in game.sleeping.beds:
+			if bed.pos == room.pos: has_bed = true
+		room_actions[0].disabled = not room.parts[2].built or has_bed
+		room_actions[0].text = "Lit déjà planifié dans la chambre" if has_bed else "Fabriquer le lit à l’intérieur"
+		room_actions[1].visible = not room.parts[2].built
+		room_actions[2].visible = not room.parts[2].built
+		room_actions[1].disabled = not room.active or room.parts[2].built
+		room_actions[2].disabled = room.active
+		for i in [3,4,5]: room_actions[i].disabled = not room.parts[2].built

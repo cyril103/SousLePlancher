@@ -6,6 +6,7 @@ var recovery: Array[Dictionary] = []
 var next_id := 1
 
 func cost(bed: Dictionary) -> Dictionary:
+	if bed.get("room_site", false): return game.rooms.COSTS[bed.phase]
 	if bed.get("fixed_site", false): return game.fixed_lighting.REFILL if bed.fuel_site else game.fixed_lighting.COST
 	if bed.get("depot_site", false): return game.depots.COST
 	if bed.get("fissure_site", false): return game.fissure.COST
@@ -13,16 +14,18 @@ func cost(bed: Dictionary) -> Dictionary:
 	return game.COSTS["private_bed" if bed.private else "bed"]
 
 func sites() -> Array:
-	return game.sleeping.beds + game.torches.orders + game.fissure.sites() + game.depots.sites.slice(1) + game.fixed_lighting.sites()
+	return game.sleeping.beds + game.torches.orders + game.fissure.sites() + game.depots.sites.slice(1) + game.fixed_lighting.sites() + game.rooms.sites()
 
 func entrance(site: Dictionary) -> Vector3:
+	if site.get("room_site", false): return site.pos + game.rooms.ENTRY
 	if site.get("fixed_site", false): return game.fixed_lighting.ENTRY
 	if site.get("depot_site", false): return game.depots.entrance(site.pos)
 	if site.get("fissure_site", false): return game.fissure.entrance(site)
 	return game.torches.entrance(site) if site.get("torch_site", false) else game.sleeping.entrance(site)
 
 func visual(site: Dictionary) -> void:
-	if site.get("fixed_site", false): game.fixed_lighting.refresh()
+	if site.get("room_site", false): game.rooms.refresh_site(site)
+	elif site.get("fixed_site", false): game.fixed_lighting.refresh()
 	elif site.get("depot_site", false): game.depots.refresh(game.depots.sites.find(site))
 	elif site.get("fissure_site", false): game.fissure.refresh()
 	elif site.get("torch_site", false): game.torches.refresh_site(site)

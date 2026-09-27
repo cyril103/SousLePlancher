@@ -13,6 +13,7 @@ const Depots = preload("res://scripts/local_depots.gd")
 const Torches = preload("res://scripts/carried_torches.gd")
 const Fissure = preload("res://scripts/fissure_passage.gd")
 var fissure := Fissure.new()
+var rooms := preload("res://scripts/constructed_rooms.gd").new()
 var fixed_lighting := preload("res://scripts/fixed_lighting.gd").new()
 var transfers := preload("res://scripts/depot_transfers.gd").new()
 var priorities := preload("res://scripts/work_priorities.gd").new()
@@ -94,6 +95,7 @@ var route_mesh: MeshInstance3D
 var route_timer := 0.0
 
 func _ready() -> void:
+	rooms.game = self
 	fixed_lighting.game = self
 	transfers.game = self
 	priorities.game = self
@@ -211,6 +213,7 @@ func _ready() -> void:
 	if "--demo-fissure" in OS.get_cmdline_user_args(): prepare_fissure_demo()
 	if "--demo-alcove" in OS.get_cmdline_user_args(): prepare_alcove_demo()
 	if "--demo-alcove-haul" in OS.get_cmdline_user_args(): prepare_alcove_haul_demo()
+	if "--demo-room" in OS.get_cmdline_user_args(): prepare_room_demo()
 	if "--demo-fixed-light" in OS.get_cmdline_user_args(): prepare_fixed_light_demo()
 	if "--demo-transfers" in OS.get_cmdline_user_args(): prepare_transfers_demo()
 	if "--demo-depot-build" in OS.get_cmdline_user_args(): prepare_depot_build_demo()
@@ -323,6 +326,7 @@ func _add_patch(kind: String, pos: Vector3, amount: int) -> void:
 	patches.append({"kind": kind, "pos": pos, "amount": amount, "reserved": 0, "node": node, "label": label, "discovered": true})
 
 func _exit_tree() -> void:
+	rooms.game = null
 	fixed_lighting.game = null
 	transfers.game = null
 	fissure.game = null
@@ -421,6 +425,7 @@ func _navigation_allows_build(pos: Vector3, kind: String) -> bool:
 		return true
 	var trial := Navigation.new()
 	var footprints: Array[Rect2] = navigation_obstacles.duplicate()
+	footprints.append_array(rooms.reserved())
 	footprints.append(Navigation.building(pos, kind))
 	if not kind in ["bed", "private_bed", "depot"]: footprints.append(Navigation.footprint(pos + Vector3(1.05, 0, 0.65), Vector2(0.12, 0.12)))
 	trial.configure(footprints, navigation_stands)
@@ -429,6 +434,10 @@ func _navigation_allows_build(pos: Vector3, kind: String) -> bool:
 	destinations.append(HOME + Refuge.OUTSIDE)
 	destinations.append_array(depot_slots)
 	for bed in sleeping.beds: destinations.append(sleeping.entrance(bed))
+	for room in rooms.rooms:
+		if room.active:
+			destinations.append(room.pos + rooms.ENTRY)
+			destinations.append(room.pos + Sleep.ENTRY)
 	for building in buildings:
 		if building.kind == "workshop": destinations.append(torches.entrance(building))
 	if kind == "workshop": destinations.append(pos + Vector3(0, -.0105, 1.15))
@@ -616,6 +625,7 @@ func _process(delta: float) -> void:
 	_update_routes(delta)
 
 func simulate(dt: float) -> void:
+	rooms.update(dt)
 	fixed_lighting.update(dt)
 	refuge.update(dt)
 	elapsed += dt
@@ -671,6 +681,8 @@ func release_worker() -> void:
 			return
 
 func _valid_site(pos: Vector3) -> bool:
+	if build_mode == "room": return rooms.can_plan(pos)
+	if not rooms.permits_build(pos, build_mode): return false
 	if pos.y > 1:
 		if build_mode != "depot" or not pos.is_equal_approx(Depots.EAST_POSITION): return false
 		if not east_discovered and not get_meta("restore_mode", false): return false
@@ -707,7 +719,7 @@ func _choose_build(kind: String) -> void:
 	_cancel_build()
 	build_mode = kind
 	_show_tray("")
-	ghost = Art.model(self, "depots_15/local_depot" if kind == "depot" else ("reference_01/matchbox_bed" if kind in ["bed", "private_bed"] else kind), Vector3.ZERO)
+	ghost = Art.model(self, "rooms_27/walls" if kind == "room" else "depots_15/local_depot" if kind == "depot" else ("reference_01/matchbox_bed" if kind in ["bed", "private_bed"] else kind), Vector3.ZERO)
 	if kind == "private_bed": Art.model(ghost, "sleep_12/privacy_partition", Vector3.ZERO)
 	_set_ghost(ghost)
 	_news("Cliquez sur un emplacement libre. Clic droit pour annuler.")
@@ -723,6 +735,12 @@ func _set_ghost(node: Node) -> void:
 func _place_build(point: Vector3) -> bool:
 	if build_mode == "" or ended: return false
 	var pos := Depots.EAST_POSITION if build_mode == "depot" and point.y > 1 else Vector3(snappedf(point.x, 1), 0, snappedf(point.z, 1))
+	if build_mode == "room":
+		var result: bool = rooms.plan(pos)
+		if result:
+			_cancel_build()
+			_show_tray("rooms")
+		return result
 	if not _valid_site(pos):
 		_news("Cet emplacement est occupé ou trop près du bord.")
 		return false
@@ -1335,3 +1353,20 @@ func prepare_fixed_light_demo() -> void:
 	_show_tray("fixed_light")
 	_refresh_ui()
 	_news("7C · Espace : construire, livrer le combustible, puis transporter. Le brasero commande les nouveaux départs sur la passerelle.")
+
+func prepare_room_demo() -> void:
+	start_panel.hide()
+	depots.sites[0].capacity = 160
+	stock = {"food": 40, "wood": 24, "fiber": 16, "water": 35}
+	rooms.plan(Vector3(0, 0, -4))
+	for w in workers: w.priorities = {"collect": 0, "transport": 1, "build": 2}
+	workers[0].priorities = {"collect": 0, "transport": 0, "build": 1}
+	save_path = "user://saves/room_demo.json"
+	get_window().title = "Sous le plancher — 8A · Chambre construite"
+	paused = true
+	focus = Vector3(-1, 0, -2.5)
+	zoom = 16
+	_show_tray("rooms")
+	_update_camera()
+	_refresh_ui()
+	_news("8A · Espace : livrer et construire sol, cloisons, porte. Commandez ensuite le lit dans la chambre.")

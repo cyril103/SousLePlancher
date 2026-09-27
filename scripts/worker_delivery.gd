@@ -138,6 +138,7 @@ func cancel(skip_light: bool = false) -> void:
 	waiting_ladder = false
 	navigation_issue = ""
 	game.needs.interrupt(self)
+	if game.rooms.cancel_worker(self): return
 	if game.fixed_lighting.cancel_worker(self): return
 	if game.transfers.cancel(self): return
 	if game.construction.cancel(self): return
@@ -277,6 +278,7 @@ func tick(dt: float) -> void:
 	retry_time = maxf(0, retry_time - dt)
 	if game.torches.tick(self, dt): return
 	if game.fissure.tick(self, dt): return
+	if game.rooms.tick(self, dt): return
 	if game.fixed_lighting.tick(self, dt): return
 	if game.transfers.tick(self, dt): return
 	if game.construction.tick(self, dt): return
@@ -388,6 +390,7 @@ func tick(dt: float) -> void:
 					change("return_home")
 
 func description() -> String:
+	if not game.rooms.owned(self).is_empty(): return "Construit la chambre"
 	if not game.fixed_lighting.site.is_empty() and game.fixed_lighting.site.builder == owner: return "Construit le brasero du palier"
 	var transfer_description: String = game.transfers.description(self)
 	if not transfer_description.is_empty(): return transfer_description
