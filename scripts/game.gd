@@ -202,6 +202,7 @@ func _ready() -> void:
 	if "--demo-fissure" in OS.get_cmdline_user_args(): prepare_fissure_demo()
 	if "--demo-alcove" in OS.get_cmdline_user_args(): prepare_alcove_demo()
 	if "--demo-alcove-haul" in OS.get_cmdline_user_args(): prepare_alcove_haul_demo()
+	if "--demo-live-save" in OS.get_cmdline_user_args(): prepare_live_save_demo()
 	if "--demo-needs" in OS.get_cmdline_user_args(): prepare_needs_demo()
 
 func prepare_needs_demo() -> void:
@@ -880,15 +881,14 @@ func request_checkpoint() -> bool:
 	if ended or start_panel.visible or pending_save: return false
 	pending_save = true
 	_cancel_build()
-	if not hiding: _toggle_hide()
-	save_status = "Rappel et livraisons en cours avant sauvegarde."
-	_news(save_status + (" Reprenez avec Espace pour laisser rentrer les habitants." if paused else ""))
+	save_status = "Sauvegarde de la simulation en cours."
+	_news(save_status)
 	_try_checkpoint()
 	return true
 
 func cancel_checkpoint() -> void:
 	pending_save = false
-	save_status = "Sauvegarde annulée. Le rappel au refuge reste actif."
+	save_status = "Sauvegarde annulée."
 	_news(save_status)
 
 func checkpoint_ready() -> bool:
@@ -912,7 +912,7 @@ func checkpoint_ready() -> bool:
 
 func _try_checkpoint() -> void:
 	if is_instance_valid(hud) and hud.load_panel.visible: return
-	if not pending_save or not checkpoint_ready(): return
+	if not pending_save: return
 	var error := Save.write_checkpoint(save_path, Save.capture(self))
 	pending_save = false
 	if not error.is_empty():
@@ -921,7 +921,7 @@ func _try_checkpoint() -> void:
 		return
 	paused = true
 	_refresh_save_state()
-	_news("Colonie sauvegardée et mise en pause. H prépare la sortie, Espace reprend le temps.")
+	_news("Situation sauvegardée sur place, en pause. Espace reprend les tâches en cours.")
 
 func apply_checkpoint(data: Dictionary) -> bool:
 	# Called on a fresh candidate scene. The active game is untouched until success.
@@ -983,10 +983,11 @@ func apply_checkpoint(data: Dictionary) -> bool:
 	hud.resident_index = int(data.view.resident)
 	refuge.set_cutaway(data.view.cutaway)
 	hiding = true
+	if data.version >= 10 and not Save.Live.restore(self, data): return false
 	paused = true
 	_update_camera()
 	_refresh_ui()
-	return checkpoint_ready()
+	return true if data.version >= 10 else checkpoint_ready()
 
 func load_checkpoint() -> Node3D:
 	var result := Save.read_checkpoint(save_path)
@@ -1005,7 +1006,7 @@ func load_checkpoint() -> Node3D:
 		_news(save_status)
 		return null
 	get_tree().current_scene = candidate
-	candidate._news(("Copie de secours chargée." if result.backup else "Colonie restaurée.") + " En pause : H prépare la sortie, Espace reprend le temps.")
+	candidate._news(("Copie de secours chargée." if result.backup else "Colonie restaurée.") + " En pause : Espace reprend les tâches sauvegardées.")
 	set_process(false)
 	queue_free()
 	return candidate
@@ -1162,3 +1163,22 @@ func prepare_alcove_haul_demo() -> void:
 	_show_tray("fissure")
 	_refresh_ui()
 	_news("Démo 6B : passage élargi, lit en attente de 3 fibres. Cliquez Rapporter des fibres, puis Espace. Le lit sera approvisionné après la livraison.")
+
+func prepare_live_save_demo() -> void:
+	prepare_alcove_haul_demo()
+	save_path = "user://saves/live_expedition_demo.json"
+	get_window().title = "Sous le plancher — 6C · Sauvegarde en expédition"
+	fissure.hauling.start(0)
+	for i in range(1800):
+		simulate(.05)
+		suspicion = 0
+		if fissure.missions.has(0) and workers[0].carrying > 0 and fissure.missions[0].phase == "cross" and fissure.missions[0].clock > 1.3: break
+	paused = true
+	focus = Vector3(4, .7, 6.3)
+	zoom = 9
+	yaw = .65
+	_show_tray("")
+	_refresh_save_state()
+	_update_camera()
+	_refresh_ui()
+	_news("Démo 6C · H1 traverse avec 3 fibres. F5 sauvegarde ici. Espace avance ; F9 recharge cette traversée en pause. Espace termine la livraison et le lit.")

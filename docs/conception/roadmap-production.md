@@ -1,6 +1,6 @@
 # Roadmap de production — terminer une boucle avant d’étendre le jeu
 
-Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B validé par le joueur ; commit et push autorisés.** Catalogue publié : `1d88614`.
+Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B publié : `ea3f133`. Lot 21 / 6C validé par le joueur ; commit et push autorisés.** Catalogue publié : `1d88614`.
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
@@ -12,7 +12,7 @@ Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [d
 
 Le projet reste un prototype intégré. Nous terminons cette boucle avant d’étendre la carte et le bestiaire. La refonte générale des personnages et du mobilier n’est pas prioritaire. Le catalogue sert aux assets nécessaires aux étapes engagées ; il ne commande pas douze chantiers 3D.
 
-**Étape validée : 6B, récolte et retour chargé. Prochaine livraison : 6C, sauvegarde en expédition.** La fourmi viendra sur le parcours cuisine, après les transports et la sauvegarde nécessaires, plutôt que dans une démonstration isolée.
+**Étape validée : 6C, sauvegarde et reprise en expédition. Prochaine livraison : désignations et tâches autonomes (9A), conformément à la cible de gameplay confirmée.** La fourmi viendra sur le parcours cuisine, après les transports et la sauvegarde nécessaires, plutôt que dans une démonstration isolée.
 
 ## Cible de gameplay confirmée avec le joueur
 
@@ -22,7 +22,7 @@ Après 6C, prioriser le système général de tâches autonomes et les commandes
 
 ## État constaté
 
-Bilan actualisé au lot 20 validé. Tests du passage élargi, récolte distante, 6A, fissure, lanternes, chantiers et sauvegardes exécutés sous Godot 4.7.2 ; détail dans [la fiche du lot 20](gameplay-lot-20.md). 6A et 6B sont validées par le joueur.
+Bilan actualisé au lot 21, validé par le joueur. Tests du passage élargi, récolte distante, 6A, fissure, lanternes, chantiers et sauvegardes exécutés sous Godot 4.7.2 ; détail des nouvelles vérifications dans [la fiche du lot 21](gameplay-lot-21.md). 6A, 6B et 6C sont validées.
 
 | Domaine | Disponible aujourd’hui | Limite réelle |
 | --- | --- | --- |
@@ -37,11 +37,11 @@ Bilan actualisé au lot 20 validé. Tests du passage élargi, récolte distante,
 | Éclairage | Torche au sol ; lanterne compatible avec caisse et échelle ; autonomie et retour anticipé | Pas de recharge ni éclairage fixe construit ; remplacement par fabrication |
 | Exploration | Réserve découverte à l’étage ; fissure inspectée, dégagée et étayée | Alcôve adjacente agrandie et reconnue à la lanterne ; décor mémorisé et récolte d’une source finie de fibres |
 | Passage sud | Chantier 6 bois + 4 fibres puis traversée réservée dans les deux sens | Élargissement supplémentaire 6 bois + 4 fibres pour les caisses ; lanterne obligatoire |
-| Sauvegarde | Format v9, migrations, besoins, stocks et travaux conservés | F5 rappelle et stabilise au refuge ; aucune reprise en expédition |
+| Sauvegarde | Format v10 : positions, tâches, caisses, lumière, réservations et horloge conservées ; migrations antérieures | Rechargement en pause |
 | Faune et humains | Ambiance et menace humaine globale simplifiée | Pas de fourmi jouable, de perception animale locale ni de routines humaines détaillées |
 | Catalogue | 12 planches, matériaux et vues de référence publiés | Concepts, pas de nouveaux modèles ; inventaire non exhaustif |
 
-Points de contrôle : [restrictions du passage](../../scripts/fissure_passage.gd), [format v9](../../scripts/colony_save.gd), [rappel avant sauvegarde](../../scripts/game.gd), [lumière portée](../../scripts/carried_torches.gd), [chantiers](../../scripts/construction_logistics.gd), [dépôts](../../scripts/local_depots.gd). Le passage dirige les déplacements de la mission lumineuse ; la lanterne garde la gestion du combustible et du rangement au refuge.
+Points de contrôle : [restrictions du passage](../../scripts/fissure_passage.gd), [format v10](../../scripts/colony_save.gd), [sauvegarde sur place](../../scripts/game.gd), [lumière portée](../../scripts/carried_torches.gd), [chantiers](../../scripts/construction_logistics.gd), [dépôts](../../scripts/local_depots.gd). Le passage dirige les déplacements de la mission lumineuse ; la lanterne garde la gestion du combustible et du rangement au refuge.
 
 ### Livraisons closes, à ne pas refaire
 
@@ -102,6 +102,8 @@ L’ancienne étape 6 est découpée. **6A et 6B restent intermédiaires ; l’�
 
 ### 6C — Sauvegarder et reprendre l’expédition
 
+**Réalisé et validé par le joueur.** Démo `-- --demo-live-save` ; [fiche du lot 21](gameplay-lot-21.md).
+
 **Démonstration.** Sauvegarder un habitant dans l’autre secteur ou en trajet, recharger, poursuivre son retour avec sa charge et sa lanterne dans le même état.
 
 **À réaliser.** Sérialiser secteurs, découvertes, position, mission, charge, réservations, files et combustible. Restaurer les tâches une seule fois et garder la même horloge de besoins dans les deux secteurs. Migrer v9 (et conserver les migrations antérieures) en préservant stocks et travaux. Une capture cohérente en fin de pas de simulation est possible ; pas de rappel général caché sous le nom de sauvegarde en expédition.
@@ -114,16 +116,17 @@ L’ancienne étape 6 est découpée. **6A et 6B restent intermédiaires ; l’�
 
 ## Suite ordonnée après l’expédition
 
-Les numéros 7–11 sont conservés pour correspondre aux anciens documents. Tous sont **non commencés** au présent bilan. Chaque sous-lot sera présenté et validé séparément ; son détail sera fixé à son ouverture.
+Les numéros 7–11 sont conservés pour correspondre aux anciens documents. Les lots 9A–9B passent en tête pour respecter la priorité confirmée par le joueur : désignations et autonomie avant extension du contenu. Tous sont **non commencés** au présent bilan. Chaque sous-lot sera présenté et validé séparément ; son détail sera fixé à son ouverture.
 
 | Ordre | Résultat attendu | Preuve de fonctionnement | Assets strictement utiles |
 | --- | --- | --- | --- |
+| 9A — Désignations et attribution autonome | Désigner sur la carte un travail utilisant les mécaniques existantes ; un habitant disponible prend la tâche et prépare son équipement | Deux habitants peuvent exécuter un ordre sans sélectionner chaque porteur ; réservation unique, annulation et besoins prioritaires | Interface contextuelle, modèles actuels |
+| 9B — Priorités de travail | Collecte, transport et construction choisis selon priorités individuelles ; urgences vitales au-dessus | Artisan servi par porteur ; absence redistribuant le travail ; impossibilité expliquée et sauvegarde | Tableau de priorités, pas de nouvelles tenues |
 | 7A — Dépôt distant construit | Construire le casier par livraison et le remplir ; remplacer son installation gratuite par un chantier | Dépôt plein, filtre changé, annulation, reprise des stocks des deux côtés | Casier existant, états de chantier |
 | 7B — Transport régulier | Ordre simple de transfert entre deux dépôts, besoins et retour prioritaires | Plusieurs rotations sans ordonner chaque trajet ; arrêt expliqué si accès/capacité manquent | Aucun nouveau personnage ou véhicule |
 | 7C — Éclairage fixe entretenu | Construire un point lumineux et le ravitailler pour sécuriser la route | Panne, ravitaillement interrompu, reprise et suspension des trajets non sûrs | Support planche 08, combustible minimal à usage défini |
 | 8A — Chambre construite | Un niveau, grille, murs/sol/porte/lit, matériaux livrés | Pièce ouverte/fermée, porte bloquée, annulation ; aucun habitant enfermé | Lit/porte existants, modules de cloisons manquants |
 | 8B — Intimité réelle | Pièces détectées, propriété et intimité selon occupation, couchage au sol conservé | Chambre partagée puis individuelle, propriétaire absent, sauvegarde | Aucun nouvel ensemble décoratif |
-| 9 — Priorités de travail | Collecte, transport et construction choisis selon priorités individuelles ; urgences vitales au-dessus | Artisan servi par porteur ; absence redistribuant le travail ; impossibilité expliquée | Modèles actuels, pas de collection de tenues |
 | 10 — Soins et secours minimaux | Blessure de scénario, incapacité, secours au lit, soin consommant une ressource | Secouriste interrompu, lit inaccessible, reprise d’un blessé ; pas de mort soudaine ajoutée | Bandage, animations nécessaires, lit réutilisé |
 | 11A — Accès cuisine | Parcours artisanal vers des provisions et pont construit par livraison | Chantier, file au pont, passage chargé, retour et sauvegarde | Passerelle adaptée, complément cuisine limité |
 | 11B — Première fourmi | Une espèce riggée : recherche et transport de miettes, perception locale, réaction lisible | Observer puis contourner ou attendre une fenêtre ; aucune détection à travers obstacle | Planche 03, rig, animations et charge nécessaires |
@@ -176,4 +179,4 @@ Ces reports ne suppriment pas la ville, les relations, le milieu ou la domestica
 
 À chaque lot : conservation des ressources, réservations libérées, besoins/rappel, pause/vitesse, migration et reprise selon périmètre. Réutiliser les suites navigation, livraisons, construction, dépôts, besoins, éclairage et fissure ; ajouter les cas nouveaux utiles. Mesurer progressivement 10, 20 puis 30–50 habitants. Cette dernière cible n’est pas démontrée.
 
-**6B / lot 20 validé. Prochaine livraison : 6C, sauvegarde en expédition.**
+**6C / lot 21 validé. Prochaine livraison : 9A, désignations et tâches autonomes.**

@@ -1,6 +1,7 @@
 extends RefCounted
-## Plain, versioned data only. Transient jobs must settle before capture.
-const VERSION := 9
+## Versioned colony data and a data-only snapshot of active simulation.
+const VERSION := 10
+const Live = preload("res://scripts/live_checkpoint.gd")
 const DEFAULT_PATH := "user://saves/colony_v1.json"
 const KINDS := ["food", "food", "wood", "wood", "fiber", "fiber", "wood", "water"]
 
@@ -21,6 +22,7 @@ static func capture(game: Node) -> Dictionary:
 	return {
 		"format": "SousLePlancher/checkpoint", "version": VERSION,
 		"saved_at": Time.get_datetime_string_from_system(),
+		"runtime": Live.capture(game),
 		"stock": stocks, "patches": patches, "buildings": buildings,
 		"assignments": assignments, "speed": game.speed,
 		"needs": needs, "furnishings": game.sleeping.snapshot(),
@@ -117,7 +119,7 @@ static func validate(data: Variant) -> String:
 			if not fields(pile, ["pos", "materials"]) or not valid_vector(pile.pos) or not fields(pile.materials, ["wood", "fiber"]): return "Tas de récupération incomplet."
 			if absf(pile.pos[0]) > 10 or absf(pile.pos[2]) > 8 or absf(pile.pos[1] + .0105) > .001: return "Tas de récupération hors de la carte."
 			if not number(pile.materials.wood, 0, 6, true) or not number(pile.materials.fiber, 0, 5, true): return "Quantité à récupérer invalide."
-			if pile.materials.wood + pile.materials.fiber == 0: return "Tas de récupération vide."
+			if data.version < 10 and pile.materials.wood + pile.materials.fiber == 0: return "Tas de récupération vide."
 	if data.version >= 5:
 		if not data.has("depots") or not data.depots is Array or data.depots.size() != depot_count: return "Dépôts incomplets."
 		for i in range(depot_count):
@@ -186,6 +188,9 @@ static func validate(data: Variant) -> String:
 			if site.work > 0 and (site.materials.wood != 6 or site.materials.fiber != 4): return "Élargissement sans matériaux livrés."
 			if site.built != (site.work == 24): return "Avancement d’élargissement incohérent."
 		if passage.fiber < 24 and (passage.upgrade.is_empty() or not passage.upgrade.built): return "Récolte sans passage élargi."
+	if data.version >= 10:
+		var runtime_error := Live.validate(data)
+		if not runtime_error.is_empty(): return runtime_error
 	for assignment in data.assignments:
 		if not number(assignment, -1, count - 1, true): return "Affectation invalide."
 		if assignment >= 0 and not data.patches[int(assignment)].discovered: return "Affectation dans une zone inconnue."
@@ -238,9 +243,10 @@ static func write_checkpoint(path: String, data: Dictionary) -> String:
 	var problem := validate(data)
 	if not problem.is_empty(): return problem
 	if DirAccess.make_dir_recursive_absolute(path.get_base_dir()) != OK: return "Impossible de créer le dossier de sauvegarde."
-	var text := JSON.stringify(data, "\t")
+	var text := JSON.stringify(data, "\t", true, true)
 	if write_text(path + ".tmp", text) != OK: return "Écriture impossible : la sauvegarde précédente est conservée."
-	if not read_file(path + ".tmp").ok: return "Vérification du nouveau fichier impossible."
+	var verification := read_file(path + ".tmp")
+	if not verification.ok: return "Vérification du nouveau fichier impossible : " + verification.error
 	# Never replace the healthy backup with a corrupt primary save.
 	if read_file(path).ok:
 		if write_text(path + ".bak.tmp", FileAccess.get_file_as_string(path)) != OK: return "Impossible de conserver la copie de secours."

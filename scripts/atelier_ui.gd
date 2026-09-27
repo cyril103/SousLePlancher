@@ -390,7 +390,7 @@ func _make_trays() -> void:
 	var goals := tray("goals", "Votre premier foyer")
 	game.objective_label = wrapped(goals, "", 19)
 	save_label = wrapped(goals, "", 16, MUTED)
-	save_button = button(goals, "Sauvegarder au refuge [F5]", func():
+	save_button = button(goals, "Sauvegarder la situation [F5]", func():
 		if game.pending_save: game.cancel_checkpoint()
 		else: game.request_checkpoint()
 		refresh(), "Rappeler les habitants, livrer les charges, puis enregistrer la colonie")
@@ -524,7 +524,7 @@ func refresh() -> void:
 	_refresh_fissure()
 	if not is_instance_valid(game.start_panel): return
 	save_button.disabled = game.ended or game.start_panel.visible
-	save_button.text = "Annuler la sauvegarde en attente" if game.pending_save else "Sauvegarder au refuge [F5]"
+	save_button.text = "Annuler la sauvegarde en attente" if game.pending_save else "Sauvegarder la situation [F5]"
 	save_label.text = game.save_status
 	if game.pending_save:
 		var sheltered := 0
@@ -793,7 +793,7 @@ func _make_fissure() -> void:
 	button(stops, "Rappeler", func(): game.workers[resident_index].delivery.cancel(); refresh())
 	button(box, "Centrer la caméra sur le passage", func(): game.focus = Vector3(4, .5, 6); game.zoom = 13; game._update_camera())
 	button(box, "Suivre H sélectionné · flèches pour libérer", func(): game.fissure.follow = resident_index; game.focus = game.workers[resident_index].node.position; game.zoom = 13; game._update_camera())
-	wrapped(box, "Équiper → explorer, puis élargir et rapporter. H : rappel. F5 : sauvegarde après retour au refuge.", 15)
+	wrapped(box, "Équiper → explorer, puis élargir et rapporter. H : rappel. F5 : sauvegarder sur place. F9 : reprendre en pause.", 15)
 
 func _refresh_fissure() -> void:
 	if fissure_summary == null: return

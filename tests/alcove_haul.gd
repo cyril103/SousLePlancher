@@ -79,7 +79,7 @@ func run() -> void:
 	check(g.fissure.hauling.amount == 21 and g.fissure.hauling.reserved == 0, "Exactly one crate removed from source")
 	settle(g)
 	var saved: Dictionary = g.Save.capture(g)
-	check(g.Save.validate(saved).is_empty() and saved.version == 9, "v9 checkpoint validates")
+	check(g.Save.validate(saved).is_empty() and saved.version == g.Save.VERSION, "Checkpoint validates: " + g.Save.validate(saved))
 	var invalid := saved.duplicate(true)
 	invalid.fissure.upgrade.materials.wood = 5
 	check(not g.Save.validate(invalid).is_empty(), "Free widening rejected on load")

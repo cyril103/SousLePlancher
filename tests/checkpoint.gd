@@ -47,10 +47,9 @@ func run() -> void:
 		if c.bridge_active and game.workers[0].carrying > 0: break
 	check(c.bridge_active and game.workers[0].carrying > 0, "Save requested during loaded bridge crossing")
 	check(game.request_checkpoint(), "Checkpoint request accepted")
-	check(game.pending_save and not FileAccess.file_exists(path), "No partial snapshot during transit")
-	check(not game.request_checkpoint(), "Duplicate request ignored")
-	advance(game, 100)
-	check(not game.pending_save and game.paused and game.checkpoint_ready(), "Checkpoint waits for all residents, cargo and passage closure")
+	check(not game.pending_save and FileAccess.file_exists(path) and c.bridge_active, "Immediate snapshot preserves transit: " + game.save_status)
+	check(game.request_checkpoint(), "Repeated completed request is safe")
+	check(not game.pending_save and game.paused and not game.hiding, "Checkpoint pauses without recall")
 	check(wood_total(game) == total, "Recall conserves wood across active transports")
 	var result := Save.read_checkpoint(path)
 	check(result.ok and not result.backup, "Versioned checkpoint written and readable")
@@ -73,14 +72,13 @@ func run() -> void:
 	game = restored
 	game.set_process(false)
 	await process_frame
-	check(game.paused and game.hiding and game.checkpoint_ready(), "Load resumes paused and fully sheltered")
+	check(game.paused and not game.hiding and game.workers[0].delivery.bridge_active, "Load resumes paused during the loaded bridge crossing")
 	check(game.shelters == 1 and game.workshops == 1 and game.workers.size() == 5, "Buildings restore without charging or recruiting twice")
 	check(game.east_discovered and game.patches[6].node.visible and game.east_stand.visible, "Explored zone and resource visibility persist")
 	var recaptured := Save.capture(game)
 	for key in ["stock", "patches", "assignments", "clock", "view", "speed", "buildings"]:
-		check(JSON.parse_string(JSON.stringify(recaptured[key])) == snapshot[key], "Exact checkpoint field restored: " + key)
+		check(JSON.parse_string(JSON.stringify(recaptured[key], "", true, true)) == snapshot[key], "Exact checkpoint field restored: " + key)
 	check(wood_total(game) == total, "No cargo duplicated or lost on load")
-	game._toggle_hide()
 	game.paused = false
 	advance(game, 60)
 	check(game.workers[0].patch == 6 and game.workers[0].delivery.completed_deliveries > 0, "Restored remote assignment crosses links and delivers")
@@ -133,7 +131,7 @@ func run() -> void:
 	check(not game.pending_save, "Exit cancels pending checkpoint")
 	game.request_checkpoint()
 	game.cancel_checkpoint()
-	check(not game.pending_save and game.hiding, "Explicit cancellation preserves recall but stops saving")
+	check(not game.pending_save, "Explicit cancellation never changes completed snapshot")
 	game.free()
 	game = load("res://scenes/main.tscn").instantiate()
 	game.save_path = path.get_base_dir() + "/recruited_during_recall.json"
@@ -147,7 +145,7 @@ func run() -> void:
 	game._choose_build("shelter")
 	check(game._place_build(Vector3(0, 0, -3)), "Recruit during pending checkpoint")
 	advance(game, 60)
-	check(not game.pending_save and game.checkpoint_ready() and game.workers.size() == 5, "New arrival joins recall and does not stall saving")
+	check(not game.pending_save and game.workers.size() == 5, "Recruitment after snapshot remains playable")
 	game.free()
 	print("CHECKPOINT: %d failure(s)" % failures)
 	quit(failures)
