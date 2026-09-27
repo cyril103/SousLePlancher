@@ -201,6 +201,7 @@ func _ready() -> void:
 	if "--demo-lanterns" in OS.get_cmdline_user_args(): prepare_lanterns_demo()
 	if "--demo-fissure" in OS.get_cmdline_user_args(): prepare_fissure_demo()
 	if "--demo-alcove" in OS.get_cmdline_user_args(): prepare_alcove_demo()
+	if "--demo-alcove-haul" in OS.get_cmdline_user_args(): prepare_alcove_haul_demo()
 	if "--demo-needs" in OS.get_cmdline_user_args(): prepare_needs_demo()
 
 func prepare_needs_demo() -> void:
@@ -892,7 +893,8 @@ func cancel_checkpoint() -> void:
 
 func checkpoint_ready() -> bool:
 	if not fissure.missions.is_empty() or fissure.owner != -1 or not fissure.queue.is_empty(): return false
-	if not fissure.site.is_empty() and fissure.site.builder >= 0: return false
+	if not fissure.work_site().is_empty() and fissure.work_site().builder >= 0: return false
+	if fissure.hauling.reserved != 0: return false
 	if not torches.missions.is_empty() or not torches.crafting.is_empty(): return false
 	if not depots.settled(): return false
 	if not construction.jobs.is_empty(): return false
@@ -1115,3 +1117,48 @@ func prepare_alcove_demo() -> void:
 	_update_camera()
 	_refresh_ui()
 	_news("Démo 6A : H1 est équipé, la fissure est ouverte. Cliquez Explorer à la lanterne, puis Espace. F5 utilise une sauvegarde de démo séparée.")
+
+func prepare_alcove_haul_demo() -> void:
+	prepare_alcove_demo()
+	save_path = "user://saves/alcove_haul_demo.json"
+	get_window().title = "Sous le plancher — 6B · Des fibres pour un lit"
+	fissure.start(0)
+	for i in range(2200):
+		simulate(.05)
+		suspicion = 0
+		if fissure.missions.is_empty() and torches.missions.is_empty(): break
+	stock.wood = 10
+	stock.fiber = 4
+	# These four fibres fund only the passage; the bed must await remote fibres.
+	fissure.request_upgrade()
+	for i in range(3000):
+		simulate(.05)
+		suspicion = 0
+		if fissure.widened(): break
+	_choose_build("bed")
+	_place_build(Vector3(0, 0, -3))
+	for i in range(600):
+		simulate(.05)
+		suspicion = 0
+		if construction.jobs.is_empty() and sleeping.beds[-1].materials.wood == 4: break
+	for w in workers:
+		w.energy = 95
+		w.nutrition = 95
+		w.hydration = 95
+		w.sleep_requested = false
+	for i in range(600):
+		simulate(.05)
+		if torches.available(workers[0].delivery): break
+	torches.add_item(depots.entry(0), 180, "lantern")
+	torches.equip(0, "lantern")
+	for i in range(800):
+		simulate(.05)
+		if torches.can_haul(0): break
+	elapsed = 0
+	event_index = 0
+	suspicion = 0
+	paused = true
+	hud.resident_index = 0
+	_show_tray("fissure")
+	_refresh_ui()
+	_news("Démo 6B : passage élargi, lit en attente de 3 fibres. Cliquez Rapporter des fibres, puis Espace. Le lit sera approvisionné après la livraison.")

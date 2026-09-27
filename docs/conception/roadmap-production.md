@@ -1,6 +1,6 @@
 # Roadmap de production — terminer une boucle avant d’étendre le jeu
 
-Révision du 27 septembre 2026. **Lot 19 / 6A validé par le joueur ; commit et push autorisés.** Base précédente : `06226a1` (lot 18). Catalogue publié : `1d88614`.
+Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B validé par le joueur ; commit et push autorisés.** Catalogue publié : `1d88614`.
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
@@ -12,30 +12,36 @@ Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [d
 
 Le projet reste un prototype intégré. Nous terminons cette boucle avant d’étendre la carte et le bestiaire. La refonte générale des personnages et du mobilier n’est pas prioritaire. Le catalogue sert aux assets nécessaires aux étapes engagées ; il ne commande pas douze chantiers 3D.
 
-**Étape validée : 6A, reconnaissance équipée du secteur adjacent. Prochaine livraison : 6B, récolte et retour chargé.** La fourmi viendra sur le parcours cuisine, après les transports et la sauvegarde nécessaires, plutôt que dans une démonstration isolée.
+**Étape validée : 6B, récolte et retour chargé. Prochaine livraison : 6C, sauvegarde en expédition.** La fourmi viendra sur le parcours cuisine, après les transports et la sauvegarde nécessaires, plutôt que dans une démonstration isolée.
+
+## Cible de gameplay confirmée avec le joueur
+
+Les démos préparées servent à éprouver les mécaniques, pas à définir un déroulement imposé pour la partie finale. La cible est une gestion indirecte inspirée de RimWorld et Oxygen Not Included : le joueur désigne sur la carte les zones à explorer, les obstacles à creuser, les passages à étayer, les emplacements à éclairer et les constructions. Les habitants prennent les tâches selon leurs priorités, compétences, disponibilité et besoins ; ils récupèrent équipement et matériaux, travaillent et satisfont leurs besoins de façon autonome. Les ouvertures dangereuses restent soumises aux décisions du joueur.
+
+Après 6C, prioriser le système général de tâches autonomes et les commandes de désignation sur la carte, avant de multiplier secteurs, faune ou assets. Faire évoluer les panneaux de démonstration vers des commandes contextuelles au clic et un tableau de priorités ; ne pas imposer la sélection manuelle d’un habitant pour chaque transport. Cette cible est confirmée ; le système général de tâches et cette évolution d’interface restent à développer et à valider par lots.
 
 ## État constaté
 
-Bilan actualisé au lot 19 validé. Tests 6A, fissure, lanternes, torches et sauvegardes exécutés sous Godot 4.7.2 ; détail dans [la fiche du lot 19](gameplay-lot-19.md). Validation joueur reçue le 27 septembre 2026.
+Bilan actualisé au lot 20 validé. Tests du passage élargi, récolte distante, 6A, fissure, lanternes, chantiers et sauvegardes exécutés sous Godot 4.7.2 ; détail dans [la fiche du lot 20](gameplay-lot-20.md). 6A et 6B sont validées par le joueur.
 
 | Domaine | Disponible aujourd’hui | Limite réelle |
 | --- | --- | --- |
 | Habitants | Modèles Blender animés : marche, travail, caisse, montée/descente et transitions validés | Diversité et finition ultérieures ; aucune refonte nécessaire pour la prochaine étape |
 | Interface | Atelier miniature : affectations, stocks, travaux, besoins et exploration | Compléter les panneaux existants, sans nouvelle refonte |
 | Navigation | Obstacles au sol, porte, échelle, passerelle, réservations et files | Liens spécialisés ; pas de navigation générale entre secteurs ni de capacité démontrée à 30–50 habitants |
-| Transport | Prise, portage, dépose, annulation et rappel | Expédition lumineuse reliée à la fissure ; pas encore de caisse par ce passage |
+| Transport | Prise, portage, dépose, annulation et rappel | Caisses possibles après élargissement ; une mission par aller-retour, pas de liaison automatique permanente |
 | Besoins | Sommeil, faim et soif autonomes, accès physique à la nourriture et à l’eau | Pas de soins, humeur, relations ni milieu simulé |
 | Couchages | Lits fabriqués, propriétaire, confort et alcôves d’intimité | Meubles prédéfinis ; pas de pièces construites librement |
 | Chantiers | Livraisons physiques pour lits, équipements lumineux et fissure | Ateliers/anciens abris encore au paiement historique ; pas de pont construit par le joueur |
 | Dépôts | Stocks locaux, capacité, filtres et réservations, repas et approvisionnement | Casier gratuit et instantané ; pas de transfert automatique ni quotas |
 | Éclairage | Torche au sol ; lanterne compatible avec caisse et échelle ; autonomie et retour anticipé | Pas de recharge ni éclairage fixe construit ; remplacement par fabrication |
-| Exploration | Réserve découverte à l’étage ; fissure inspectée, dégagée et étayée | Alcôve adjacente agrandie et reconnue à la lanterne ; décor statique mémorisé, pas de récolte distante |
-| Passage sud | Chantier 6 bois + 4 fibres puis traversée réservée dans les deux sens | Caisse interdite ; lanterne de ceinture obligatoire ; aucune récolte distante |
-| Sauvegarde | Format v8, migrations, besoins, stocks et travaux conservés | F5 rappelle et stabilise au refuge ; aucune reprise en expédition |
+| Exploration | Réserve découverte à l’étage ; fissure inspectée, dégagée et étayée | Alcôve adjacente agrandie et reconnue à la lanterne ; décor mémorisé et récolte d’une source finie de fibres |
+| Passage sud | Chantier 6 bois + 4 fibres puis traversée réservée dans les deux sens | Élargissement supplémentaire 6 bois + 4 fibres pour les caisses ; lanterne obligatoire |
+| Sauvegarde | Format v9, migrations, besoins, stocks et travaux conservés | F5 rappelle et stabilise au refuge ; aucune reprise en expédition |
 | Faune et humains | Ambiance et menace humaine globale simplifiée | Pas de fourmi jouable, de perception animale locale ni de routines humaines détaillées |
 | Catalogue | 12 planches, matériaux et vues de référence publiés | Concepts, pas de nouveaux modèles ; inventaire non exhaustif |
 
-Points de contrôle : [restrictions du passage](../../scripts/fissure_passage.gd), [format v8](../../scripts/colony_save.gd), [rappel avant sauvegarde](../../scripts/game.gd), [lumière portée](../../scripts/carried_torches.gd), [chantiers](../../scripts/construction_logistics.gd), [dépôts](../../scripts/local_depots.gd). Le passage dirige les déplacements de la mission lumineuse ; la lanterne garde la gestion du combustible et du rangement au refuge.
+Points de contrôle : [restrictions du passage](../../scripts/fissure_passage.gd), [format v9](../../scripts/colony_save.gd), [rappel avant sauvegarde](../../scripts/game.gd), [lumière portée](../../scripts/carried_torches.gd), [chantiers](../../scripts/construction_logistics.gd), [dépôts](../../scripts/local_depots.gd). Le passage dirige les déplacements de la mission lumineuse ; la lanterne garde la gestion du combustible et du rangement au refuge.
 
 ### Livraisons closes, à ne pas refaire
 
@@ -82,9 +88,11 @@ L’ancienne étape 6 est découpée. **6A et 6B restent intermédiaires ; l’�
 
 ### 6B — Rapporter des ressources pour améliorer le refuge
 
+**Réalisé et validé par le joueur.** Démo `-- --demo-alcove-haul`. Voir [lot 20](gameplay-lot-20.md).
+
 **Démonstration.** Récolter des fibres dans la zone reconnue, revenir chargé, livrer au refuge puis utiliser les fibres dans un lit. Réutiliser une ressource avec modèle et recette existants ; ne pas ouvrir une chaîne de résine pour justifier l’expédition.
 
-**Dépendance obligatoire : le gabarit du passage.** La fissure actuelle interdit réellement les caisses. Prévoir une amélioration approvisionnée physiquement, avec largeur et modèle adaptés au portage ; coût à fixer avant implémentation. Avant achèvement, le passage chargé reste interdit. Ne pas supprimer seulement le contrôle logiciel en laissant la caisse traverser les parois.
+**Dépendance obligatoire : le gabarit du passage.** La fissure actuelle interdit réellement les caisses. Prévoir une amélioration approvisionnée physiquement, avec largeur et modèle adaptés au portage ; coût fixé pour ce lot : 6 bois, 4 fibres, puis 24 secondes de travaux. Avant achèvement, le passage chargé reste interdit. Ne pas supprimer seulement le contrôle logiciel en laissant la caisse traverser les parois.
 
 **À réaliser.** Une source distante, une mission de récolte puis livraison, réservation du prélèvement et de la place au dépôt. Conserver charge et propriétaire lors du retour. Utiliser la lanterne de ceinture et les règles de besoins/rappel. La sauvegarde reste stabilisée au refuge, limite indiquée dans la démo.
 
@@ -96,11 +104,11 @@ L’ancienne étape 6 est découpée. **6A et 6B restent intermédiaires ; l’�
 
 **Démonstration.** Sauvegarder un habitant dans l’autre secteur ou en trajet, recharger, poursuivre son retour avec sa charge et sa lanterne dans le même état.
 
-**À réaliser.** Sérialiser secteurs, découvertes, position, mission, charge, réservations, files et combustible. Restaurer les tâches une seule fois et garder la même horloge de besoins dans les deux secteurs. Migrer v8 en préservant stocks et travaux. Une capture cohérente en fin de pas de simulation est possible ; pas de rappel général caché sous le nom de sauvegarde en expédition.
+**À réaliser.** Sérialiser secteurs, découvertes, position, mission, charge, réservations, files et combustible. Restaurer les tâches une seule fois et garder la même horloge de besoins dans les deux secteurs. Migrer v9 (et conserver les migrations antérieures) en préservant stocks et travaux. Une capture cohérente en fin de pas de simulation est possible ; pas de rappel général caché sous le nom de sauvegarde en expédition.
 
 **Assets.** Aucun nouveau modèle ; indications de sauvegarde dans l’interface existante.
 
-**Validation.** Sauvegarde avant départ, en attente, pendant traversée, pendant prélèvement et au retour chargé ; demandes répétées ; migration v8 ; fichier précédent protégé si données invalides. Comparer habitants, ressources, équipement et réservations. Rejouer 6A–6B depuis une partie ordinaire.
+**Validation.** Sauvegarde avant départ, en attente, pendant traversée, pendant prélèvement et au retour chargé ; demandes répétées ; migration v9 ; fichier précédent protégé si données invalides. Comparer habitants, ressources, équipement et réservations. Rejouer 6A–6B depuis une partie ordinaire.
 
 **Point d’arrêt.** Une expédition utile et persistante fonctionne. On évalue la boucle avant d’étendre son contenu.
 
@@ -168,4 +176,4 @@ Ces reports ne suppriment pas la ville, les relations, le milieu ou la domestica
 
 À chaque lot : conservation des ressources, réservations libérées, besoins/rappel, pause/vitesse, migration et reprise selon périmètre. Réutiliser les suites navigation, livraisons, construction, dépôts, besoins, éclairage et fissure ; ajouter les cas nouveaux utiles. Mesurer progressivement 10, 20 puis 30–50 habitants. Cette dernière cible n’est pas démontrée.
 
-**6A / lot 19 validé. Prochaine livraison : 6B, récolte et retour chargé.**
+**6B / lot 20 validé. Prochaine livraison : 6C, sauvegarde en expédition.**

@@ -1,6 +1,6 @@
 extends RefCounted
 ## Plain, versioned data only. Transient jobs must settle before capture.
-const VERSION := 8
+const VERSION := 9
 const DEFAULT_PATH := "user://saves/colony_v1.json"
 const KINDS := ["food", "food", "wood", "wood", "fiber", "fiber", "wood", "water"]
 
@@ -174,6 +174,18 @@ static func validate(data: Variant) -> String:
 			if site.work > 0 and (site.materials.wood != 6 or site.materials.fiber != 4): return "Passage étayé sans matériaux."
 			if site.built != (site.work == 24): return "Ouverture du passage incohérente."
 		if passage.visited and (passage.site.is_empty() or not passage.site.built): return "Alcôve visitée sans passage ouvert."
+	if data.version >= 9:
+		var passage: Dictionary = data.fissure
+		if not fields(passage, ["upgrade", "fiber", "known_fiber"]) or not passage.upgrade is Dictionary: return "Élargissement incomplet."
+		if not number(passage.fiber, 0, 24, true) or not number(passage.known_fiber, -1, 24, true): return "Fibres distantes invalides."
+		if passage.known_fiber != -1 and passage.known_fiber < passage.fiber: return "Connaissance des fibres incohérente."
+		if not passage.upgrade.is_empty():
+			var site: Dictionary = passage.upgrade
+			if not passage.visited or not fields(site, ["materials", "work", "built"]) or not fields(site.materials, ["wood", "fiber"]): return "Élargissement sans reconnaissance ou matériaux."
+			if not site.built is bool or not number(site.work, 0, 24) or not number(site.materials.wood, 0, 6, true) or not number(site.materials.fiber, 0, 4, true): return "Chantier d’élargissement invalide."
+			if site.work > 0 and (site.materials.wood != 6 or site.materials.fiber != 4): return "Élargissement sans matériaux livrés."
+			if site.built != (site.work == 24): return "Avancement d’élargissement incohérent."
+		if passage.fiber < 24 and (passage.upgrade.is_empty() or not passage.upgrade.built): return "Récolte sans passage élargi."
 	for assignment in data.assignments:
 		if not number(assignment, -1, count - 1, true): return "Affectation invalide."
 		if assignment >= 0 and not data.patches[int(assignment)].discovered: return "Affectation dans une zone inconnue."
