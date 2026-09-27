@@ -68,6 +68,9 @@ var fissure_visit: Button
 var fissure_cancel: Button
 var depot_picker: OptionButton
 var room_owner: OptionButton
+var health_people: VBoxContainer
+var health_label: Label
+var health_controls: Array[Button] = []
 var room_privacy: Label
 var room_picker: OptionButton
 var room_label: Label
@@ -352,8 +355,10 @@ func _make_trays() -> void:
 	bed_list = column(bed_scroll, 12)
 	bed_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button(beds, "Fabriquer un couchage", func(): game._show_tray("build"))
+	_make_health()
 	_make_priorities()
 	var people := tray("people", "Habitants & affectations")
+	button(people, "Santé et secours", func(): game._show_tray("health"))
 	button(people, "Priorités de travail", func(): game._show_tray("priorities"))
 	game.patch_picker = OptionButton.new()
 	game.patch_picker.focus_mode = Control.FOCUS_NONE
@@ -565,6 +570,7 @@ func _update_roster() -> void:
 		worker_rows.append(control)
 
 func refresh() -> void:
+	_refresh_health()
 	_refresh_transfers()
 	_refresh_fixed_light()
 	_refresh_rooms()
@@ -1088,3 +1094,31 @@ func _refresh_rooms() -> void:
 		room_actions[1].disabled = not room.active or room.parts[2].built
 		room_actions[2].disabled = room.active
 		for i in [3,4,5]: room_actions[i].disabled = not room.parts[2].built
+
+func _make_health() -> void:
+	var outer := tray("health", "Santé et secours")
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size.y = 510
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	outer.add_child(scroll)
+	var panel := column(scroll, 8)
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	health_label = wrapped(panel, "", 16)
+	wrapped(panel, "Habitants autorisés à secourir et soigner :", 16)
+	health_people = column(panel, 6)
+	button(panel, "Voir le blessé / convalescent", func():
+		if not game.health.patients.is_empty():
+			game.focus = game.workers[game.health.patients.keys()[0]].node.position
+			game.zoom = 12
+			game._update_camera())
+	button(panel, "Couchages et attributions", func(): game._show_tray("beds"))
+	wrapped(panel, "Lit personnel ou collectif libre. Secours au rez-de-chaussée uniquement. Les besoins du secouriste et le rappel interrompent sa tâche ; le blessé reste récupérable. Aucun décès ni combat dans ce lot.", 15)
+
+func _refresh_health() -> void:
+	if health_label == null: return
+	health_label.text = game.health.summary()
+	while health_controls.size() < game.workers.size():
+		var id := health_controls.size()
+		health_controls.append(button(health_people, "", func(): game.health.toggle(id); refresh()))
+	for id in range(health_controls.size()):
+		health_controls[id].text = "H%d · Secours %s" % [id + 1, "autorisé" if game.health.allowed.get(id, true) else "désactivé"]

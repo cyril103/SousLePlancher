@@ -49,7 +49,7 @@ func caption(index: int) -> void:
 	var bed := beds[index]
 	bed.label.text = ("Alcôve" if bed.private else "Lit") + " %d" % (index + 1)
 	if not bed.built: bed.label.text += " · " + game.construction.status(bed) + "\n" + game.construction.quantities(bed)
-	elif bed.occupant >= 0: bed.label.text += " · Zzz"
+	elif bed.occupant >= 0: bed.label.text += " · Soins" if game.health.patients.has(bed.occupant) else " · Zzz"
 	elif bed.owner >= 0: bed.label.text += " · H%d" % (bed.owner + 1)
 
 func owned_bed(owner: int) -> int:
@@ -112,7 +112,7 @@ func request_rest(owner: int) -> void:
 	game._news("L’habitant %d déposera sa charge avant de se reposer." % (owner + 1))
 
 func update_need(c: WorkerDelivery, dt: float) -> void:
-	if c.state in ["sleep", "floor_sleep"]: return
+	if c.state in ["sleep", "floor_sleep", "injured"]: return
 	var active := not c.state in ["idle", "return_home"]
 	c.worker.energy = maxf(0, c.worker.energy - dt * (.16 if active else .10))
 	if c.worker.energy <= THRESHOLD and not c.worker.sleep_requested:

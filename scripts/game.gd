@@ -13,6 +13,7 @@ const Depots = preload("res://scripts/local_depots.gd")
 const Torches = preload("res://scripts/carried_torches.gd")
 const Fissure = preload("res://scripts/fissure_passage.gd")
 var fissure := Fissure.new()
+var health := preload("res://scripts/colony_health.gd").new()
 var rooms := preload("res://scripts/constructed_rooms.gd").new()
 var fixed_lighting := preload("res://scripts/fixed_lighting.gd").new()
 var transfers := preload("res://scripts/depot_transfers.gd").new()
@@ -95,6 +96,7 @@ var route_mesh: MeshInstance3D
 var route_timer := 0.0
 
 func _ready() -> void:
+	health.game = self
 	rooms.game = self
 	fixed_lighting.game = self
 	transfers.game = self
@@ -213,6 +215,7 @@ func _ready() -> void:
 	if "--demo-fissure" in OS.get_cmdline_user_args(): prepare_fissure_demo()
 	if "--demo-alcove" in OS.get_cmdline_user_args(): prepare_alcove_demo()
 	if "--demo-alcove-haul" in OS.get_cmdline_user_args(): prepare_alcove_haul_demo()
+	if "--demo-health" in OS.get_cmdline_user_args(): prepare_health_demo()
 	if "--demo-privacy" in OS.get_cmdline_user_args(): prepare_privacy_demo()
 	if "--demo-room" in OS.get_cmdline_user_args(): prepare_room_demo()
 	if "--demo-fixed-light" in OS.get_cmdline_user_args(): prepare_fixed_light_demo()
@@ -327,6 +330,7 @@ func _add_patch(kind: String, pos: Vector3, amount: int) -> void:
 	patches.append({"kind": kind, "pos": pos, "amount": amount, "reserved": 0, "node": node, "label": label, "discovered": true})
 
 func _exit_tree() -> void:
+	health.game = null
 	rooms.game = null
 	fixed_lighting.game = null
 	transfers.game = null
@@ -644,6 +648,7 @@ func simulate(dt: float) -> void:
 	for worker in workers:
 		worker.delivery.update(dt)
 		if not worker.delivery.at_refuge(): exposed += 1
+	health.refresh_visuals()
 	designations.tick()
 	if active:
 		suspicion += dt * exposed * 0.8
@@ -1405,3 +1410,20 @@ func prepare_privacy_demo() -> void:
 	_update_camera()
 	_refresh_ui()
 	_news("8B · Terrain quatre fois plus grand. Espace : chacun rejoint son lit. Comparer porte auto et ouverte ; attribution après le repos.")
+
+func prepare_health_demo() -> void:
+	prepare_privacy_demo()
+	for w in workers:
+		w.energy = 100.0
+		w.sleep_requested = false
+	health.demo = true
+	workers[0].node.position = Vector3(-10, WorkerDelivery.GROUND_Y, 2)
+	health.injure(0)
+	save_path = "user://saves/health_demo.json"
+	get_window().title = "Sous le plancher — 10 · Soins et secours"
+	focus = Vector3(-11, 0, -3)
+	zoom = 23
+	_show_tray("health")
+	_update_camera()
+	_refresh_ui()
+	_news("Soins · Espace : un habitant disponible secourt H1, puis apporte deux fibres pour le soigner. F5/F9 : reprise sur place.")

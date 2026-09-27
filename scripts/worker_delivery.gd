@@ -100,6 +100,7 @@ func change(next: String) -> void:
 	retry_time = 0.0
 
 func cancel(skip_light: bool = false) -> void:
+	if game.health.cancel(self): return
 	if game.depots.cancel_worker(self): return
 	if game.fissure.cancel(self):
 		if door_active: recall_after_door = true
@@ -276,6 +277,7 @@ func tick(dt: float) -> void:
 		ladder_exit = Vector3.INF
 	timer += dt
 	retry_time = maxf(0, retry_time - dt)
+	if game.health.tick(self, dt): return
 	if game.torches.tick(self, dt): return
 	if game.fissure.tick(self, dt): return
 	if game.rooms.tick(self, dt): return
@@ -286,6 +288,7 @@ func tick(dt: float) -> void:
 	if game.torches.held(owner) < 0 and game.needs.tick(self, dt): return
 	if game.torches.held(owner) < 0 and needs_supply < 0 and not (need_interrupt and state == "return_home"):
 		if game.sleeping.tick(self, dt): return
+	if game.health.start(self): return
 	if game.priorities.start(self): return
 	match state:
 		"idle":
@@ -390,6 +393,8 @@ func tick(dt: float) -> void:
 					change("return_home")
 
 func description() -> String:
+	var health_description: String = game.health.description(owner)
+	if not health_description.is_empty(): return health_description
 	if not game.rooms.owned(self).is_empty(): return "Construit la chambre"
 	if not game.fixed_lighting.site.is_empty() and game.fixed_lighting.site.builder == owner: return "Construit le brasero du palier"
 	var transfer_description: String = game.transfers.description(self)

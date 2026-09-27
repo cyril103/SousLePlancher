@@ -36,7 +36,7 @@ func update(c: WorkerDelivery, dt: float) -> void:
 	var rate := .65 if c.state in ["sleep", "floor_sleep"] else 1.0
 	c.worker.nutrition = maxf(0, c.worker.nutrition - .24 * rate * dt)
 	c.worker.hydration = maxf(0, c.worker.hydration - .32 * rate * dt)
-	if consuming(c): return
+	if consuming(c) or game.health.patients.has(c.owner): return
 	var kind := priority(c)
 	if kind.is_empty():
 		c.need_interrupt = false

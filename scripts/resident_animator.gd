@@ -1,8 +1,8 @@
 class_name ResidentAnimator
 extends Node3D
 ## Baked Blender clips. The caller owns navigation and actual translation.
-const SPEEDS := {"torch_idle": 0.0, "torch_walk": .55555556, "eat": 0.0, "drink": 0.0, "sleep": 0.0, "floor_rest": 0.0, "idle": 0.0, "walk": 0.55555556, "carry_walk": 0.36796537, "work": 0.0, "climb": 0.31875, "climb_down": -0.28333333}
-const ONE_SHOTS := ["bed_enter", "bed_exit", "pick_up", "put_down", "climb_enter", "climb_exit", "carry_turn_right", "carry_turn_left", "descend_enter", "descend_exit"]
+const SPEEDS := {"health_pull": .36796537, "health_care": 0.0, "torch_idle": 0.0, "torch_walk": .55555556, "eat": 0.0, "drink": 0.0, "sleep": 0.0, "floor_rest": 0.0, "idle": 0.0, "walk": 0.55555556, "carry_walk": 0.36796537, "work": 0.0, "climb": 0.31875, "climb_down": -0.28333333}
+const ONE_SHOTS := ["health_place", "bed_enter", "bed_exit", "pick_up", "put_down", "climb_enter", "climb_exit", "carry_turn_right", "carry_turn_left", "descend_enter", "descend_exit"]
 var manage_cargo_visibility := true
 var player: AnimationPlayer
 var skeleton: Skeleton3D
@@ -27,6 +27,11 @@ func _ready() -> void:
 	add_child(model)
 	player = model.find_children("*", "AnimationPlayer", true, false)[0]
 	skeleton = model.find_children("*", "Skeleton3D", true, false)[0]
+	var health_model := preload("res://assets/models/health_29/rescue_animations.glb").instantiate()
+	var health_player: AnimationPlayer = health_model.find_children("*", "AnimationPlayer", true, false)[0]
+	for clip in ["health_pull", "health_care", "health_place"]:
+		player.get_animation_library("").add_animation(clip, health_player.get_animation(clip).duplicate())
+	health_model.free()
 	for clip in SPEEDS:
 		assert(player.has_animation(clip), "Missing resident clip: " + clip)
 		player.get_animation(clip).loop_mode = Animation.LOOP_LINEAR
