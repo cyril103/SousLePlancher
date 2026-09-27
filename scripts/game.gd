@@ -13,6 +13,7 @@ const Depots = preload("res://scripts/local_depots.gd")
 const Torches = preload("res://scripts/carried_torches.gd")
 const Fissure = preload("res://scripts/fissure_passage.gd")
 var fissure := Fissure.new()
+var transfers := preload("res://scripts/depot_transfers.gd").new()
 var priorities := preload("res://scripts/work_priorities.gd").new()
 var designations := preload("res://scripts/work_designations.gd").new()
 const HOME := Vector3(-3, 0, 1)
@@ -92,6 +93,7 @@ var route_mesh: MeshInstance3D
 var route_timer := 0.0
 
 func _ready() -> void:
+	transfers.game = self
 	priorities.game = self
 	fissure.game = self
 	torches.game = self
@@ -207,6 +209,7 @@ func _ready() -> void:
 	if "--demo-fissure" in OS.get_cmdline_user_args(): prepare_fissure_demo()
 	if "--demo-alcove" in OS.get_cmdline_user_args(): prepare_alcove_demo()
 	if "--demo-alcove-haul" in OS.get_cmdline_user_args(): prepare_alcove_haul_demo()
+	if "--demo-transfers" in OS.get_cmdline_user_args(): prepare_transfers_demo()
 	if "--demo-depot-build" in OS.get_cmdline_user_args(): prepare_depot_build_demo()
 	if "--demo-priorities" in OS.get_cmdline_user_args(): prepare_priorities_demo()
 	if "--demo-designations" in OS.get_cmdline_user_args(): prepare_designations_demo()
@@ -317,6 +320,7 @@ func _add_patch(kind: String, pos: Vector3, amount: int) -> void:
 	patches.append({"kind": kind, "pos": pos, "amount": amount, "reserved": 0, "node": node, "label": label, "discovered": true})
 
 func _exit_tree() -> void:
+	transfers.game = null
 	fissure.game = null
 	torches.game = null
 	depots.game = null
@@ -930,7 +934,7 @@ func checkpoint_ready() -> bool:
 	if not fissure.work_site().is_empty() and fissure.work_site().builder >= 0: return false
 	if fissure.hauling.reserved != 0: return false
 	if not torches.missions.is_empty() or not torches.crafting.is_empty(): return false
-	if not depots.settled(): return false
+	if not depots.settled() or not transfers.jobs.is_empty(): return false
 	if not construction.jobs.is_empty(): return false
 	if ended or not hiding or not delivery_ledger.jobs.is_empty() or delivery_ledger.destination_owner != -1: return false
 	for patch in patches:
@@ -1292,3 +1296,27 @@ func prepare_depot_build_demo() -> void:
 	_update_camera()
 	_refresh_ui()
 	_news("7A · Espace : H1 livre bois et fibres à l’étage, H2 construit, H3 remplit le dépôt. Annulez/relancez le plan dans Stocks → Dépôts ; F5/F9 conserve le chantier.")
+
+func prepare_transfers_demo() -> void:
+	start_panel.hide()
+	discover_east()
+	plan_east_depot()
+	depots.restore_site(1, {}) # Existing, completed infrastructure for this transport test.
+	depots.stocks(1).wood = 12
+	depots.refresh(1)
+	for w in workers: w.priorities = {"collect": 0, "transport": 0, "build": 0}
+	workers[0].priorities.transport = 1
+	workers[1].priorities.transport = 1
+	transfers.add(1, 0, "wood")
+	save_path = "user://saves/transfers_demo.json"
+	get_window().title = "Sous le plancher — 7B · Transferts réguliers"
+	paused = true
+	focus = Vector3(4, 0, -2)
+	zoom = 21
+	_show_tray("transfers")
+	_update_camera()
+	_refresh_ui()
+	hud.transfer_source.select(1)
+	hud.transfer_target.select(0)
+	hud.transfer_kind.select(Depots.KINDS.find("wood"))
+	_news("7B · Espace : deux porteurs vident les 12 bois du dépôt de l’étage vers le refuge. Essayez Pause, Arrêter et rappeler, puis Reprendre. F5/F9 conserve la liaison et les caisses.")

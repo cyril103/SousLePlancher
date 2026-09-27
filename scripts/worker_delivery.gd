@@ -138,6 +138,7 @@ func cancel(skip_light: bool = false) -> void:
 	waiting_ladder = false
 	navigation_issue = ""
 	game.needs.interrupt(self)
+	if game.transfers.cancel(self): return
 	if game.construction.cancel(self): return
 	if game.sleeping.interrupt(self): return
 	if state == "putdown": return # Complete an unloading already in progress.
@@ -275,6 +276,7 @@ func tick(dt: float) -> void:
 	retry_time = maxf(0, retry_time - dt)
 	if game.torches.tick(self, dt): return
 	if game.fissure.tick(self, dt): return
+	if game.transfers.tick(self, dt): return
 	if game.construction.tick(self, dt): return
 	if game.depots.tick(self, dt): return
 	if game.torches.held(owner) < 0 and game.needs.tick(self, dt): return
@@ -384,6 +386,8 @@ func tick(dt: float) -> void:
 					change("return_home")
 
 func description() -> String:
+	var transfer_description: String = game.transfers.description(self)
+	if not transfer_description.is_empty(): return transfer_description
 	if depot_order >= 0: return "Construit le dépôt %d" % depot_order
 	var fissure_description: String = game.fissure.description(self)
 	if not fissure_description.is_empty(): return fissure_description

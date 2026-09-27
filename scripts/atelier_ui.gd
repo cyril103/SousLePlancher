@@ -67,6 +67,12 @@ var fissure_haul: Button
 var fissure_visit: Button
 var fissure_cancel: Button
 var depot_picker: OptionButton
+var transfer_source: OptionButton
+var transfer_target: OptionButton
+var transfer_kind: OptionButton
+var transfer_list: VBoxContainer
+var transfer_rows: Array[Dictionary] = []
+var transfer_depot_count := -1
 var depot_summary: Label
 var depot_cancel: Button
 var depot_resume: Button
@@ -383,7 +389,9 @@ func _make_trays() -> void:
 	explore_button = button(work, "Explorer la réserve de l’Est", func(): game.start_exploration(); refresh(), "Envoyer un habitant disponible au-delà de la passerelle")
 	routes_button = button(work, "Afficher le trajet sélectionné [N]", func(): game.show_paths = not game.show_paths; refresh())
 	button(work, "Organiser les affectations", func(): game._show_tray("people"))
+	_make_transfers()
 	var stocks := tray("stocks", "Le garde-manger")
+	button(stocks, "Transferts réguliers entre dépôts", func(): game._show_tray("transfers"))
 	button(stocks, "Gérer les dépôts et leurs filtres", func(): game._show_tray("depots"))
 	stocks_label = wrapped(stocks, "", 18)
 	wrapped(stocks, "Les matériaux sont disponibles pour construire après leur livraison au dépôt.", 16, MUTED)
@@ -407,7 +415,7 @@ func _make_trays() -> void:
 		filter_row.add_child(control)
 		control.toggled.connect(func(enabled: bool): game.depots.set_filter(depot_picker.selected, key, enabled); _refresh_depots())
 		depot_filters[key] = control
-	wrapped(storage, "Les livraisons réservées arrivent même si leur filtre est décoché. Le stock présent reste utilisable. Aucun transfert automatique entre dépôts.", 15, MUTED)
+	wrapped(storage, "Les livraisons réservées arrivent même si leur filtre est décoché. Le stock présent reste utilisable. Les liaisons se règlent dans Stocks → Transferts.", 15, MUTED)
 	button(storage, "Voir ce dépôt", func(): game.focus = game.depots.sites[depot_picker.selected].pos; game._update_camera())
 	button(storage, "Planifier un dépôt · 6 bois / 4 fibres", func(): game._choose_build("depot"))
 	var goals := tray("goals", "Votre premier foyer")
@@ -543,6 +551,7 @@ func _update_roster() -> void:
 		worker_rows.append(control)
 
 func refresh() -> void:
+	_refresh_transfers()
 	_refresh_priorities()
 	if designation_label != null:
 		designation_label.text = game.designations.summary()
@@ -924,3 +933,53 @@ func _refresh_priorities() -> void:
 			var rank: int = game.priorities.value(cell.id, cell.kind)
 			cell.button.text = "—" if rank == 0 else str(rank)
 	priority_note.text = game.priorities.summary()
+
+func _make_transfers() -> void:
+	var panel := tray("transfers", "Liaisons de transport")
+	wrapped(panel, "Choisissez une source, une destination et une ressource. Les porteurs répètent le trajet tant que le stock et la place le permettent.", 16)
+	var source_line := row(panel)
+	label(source_line, "Source", 16).custom_minimum_size.x = 110
+	transfer_source = OptionButton.new()
+	transfer_source.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	source_line.add_child(transfer_source)
+	var target_line := row(panel)
+	label(target_line, "Destination", 16).custom_minimum_size.x = 110
+	transfer_target = OptionButton.new()
+	transfer_target.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	target_line.add_child(transfer_target)
+	transfer_kind = OptionButton.new()
+	for kind in game.Depots.KINDS: transfer_kind.add_item(game.NAMES[kind])
+	panel.add_child(transfer_kind)
+	button(panel, "Créer la liaison", func(): game.transfers.add(transfer_source.selected, transfer_target.selected, game.Depots.KINDS[transfer_kind.selected]); refresh())
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size.y = 270
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	panel.add_child(scroll)
+	transfer_list = column(scroll, 8)
+	transfer_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	wrapped(panel, "Transport dans les priorités individuelles. Deux porteurs par liaison. Les chantiers passent avant ces transferts. Pause termine les trajets ; Arrêter rappelle les charges.", 15)
+
+func _refresh_transfers() -> void:
+	if transfer_list == null: return
+	if transfer_depot_count != game.depots.sites.size():
+		var previous := [maxi(0, transfer_source.selected), maxi(0, transfer_target.selected)]
+		for picker in [transfer_source, transfer_target]:
+			picker.clear()
+			for i in range(game.depots.sites.size()): picker.add_item("Refuge" if i == 0 else "Dépôt %d" % i)
+		transfer_source.select(mini(previous[0], game.depots.sites.size() - 1))
+		transfer_target.select(mini(1, game.depots.sites.size() - 1) if transfer_depot_count < 0 else mini(previous[1], game.depots.sites.size() - 1))
+		transfer_depot_count = game.depots.sites.size()
+	while transfer_rows.size() > game.transfers.orders.size():
+		var removed: Dictionary = transfer_rows.pop_back()
+		removed.box.queue_free()
+	while transfer_rows.size() < game.transfers.orders.size():
+		var id := transfer_rows.size()
+		var box := column(transfer_list, 5)
+		var text := wrapped(box, "", 16)
+		var actions := row(box)
+		var toggle := button(actions, "", func(): game.transfers.toggle(id); refresh())
+		button(actions, "Arrêter et rappeler", func(): game.transfers.stop(id); refresh())
+		transfer_rows.append({"box": box, "label": text, "toggle": toggle})
+	for i in range(transfer_rows.size()):
+		transfer_rows[i].label.text = game.transfers.summary(i)
+		transfer_rows[i].toggle.text = "Pause" if game.transfers.orders[i].active else "Reprendre"

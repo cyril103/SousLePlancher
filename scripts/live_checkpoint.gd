@@ -118,6 +118,7 @@ static func capture(g: Node) -> Dictionary:
 		job.source = -1 if job.source.is_empty() else g.construction.recovery.find(job.source)
 		job.target = -1 if job.target.is_empty() else sites.find(job.target)
 		r.construction_jobs[id] = job
+	r.transfers = g.transfers.snapshot()
 	r.depot_sites = []
 	for depot in g.depots.sites.slice(1): r.depot_sites.append(plain(depot))
 	r.designations = g.designations.snapshot()
@@ -173,6 +174,7 @@ static func validate(data: Dictionary) -> String:
 			for key in ["builder", "hauler"]:
 				if not site[key] is int or site[key] < -1 or site[key] >= n: return "Responsable de dépôt invalide."
 			if site.builder >= 0 and r.workers[site.builder].controller.get("depot_order", -1) != i + 1: return "Artisan de dépôt orphelin."
+	if data.version >= 12 and not preload("res://scripts/depot_transfers.gd").valid(r.get("transfers"), r, data): return "Liaison ou charge de transfert incohérente."
 	var source_reserved := 0
 	for i in range(n):
 		var w = r.workers[i]
@@ -246,6 +248,7 @@ static func merge(target: Dictionary, values: Dictionary) -> void:
 
 static func restore(g: Node, data: Dictionary) -> bool:
 	var r: Dictionary = unpack(data.runtime.data)
+	g.transfers.restore(r.get("transfers", {}))
 	g.designations.restore(r.get("designations", {}))
 	for key in ["elapsed", "meal_timer", "suspicion", "hunger", "event_index"]: g.set(key, r.clock[key])
 	# Recreate render nodes through trusted existing constructors, then relink data.

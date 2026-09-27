@@ -31,6 +31,8 @@ Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une 
 
 **Priorité proposée après le catalogue : terminer l’expédition vers le secteur adjacent.** La [roadmap actualisée](docs/conception/roadmap-production.md) sépare reconnaissance avec lanterne (6A), récolte et retour chargé (6B), puis sauvegarde en expédition (6C). Les assets fonctionnels sont réutilisés ; la fourmi et la refonte visuelle ne sont pas les prochains lots. Cette révision documentaire est validée par le joueur ; les lots futurs gardent leur validation séparée.
 
+Le **lot 25 / étape 7B**, validé par le joueur, ajoute les **transferts réguliers entre dépôts** : Stocks → Transferts réguliers entre dépôts. Les porteurs prennent les rotations selon leur priorité Transport, avec réservations, pause, rappel chargé et sauvegarde v12. Démo `-- --demo-transfers` ; [fiche du lot](docs/conception/gameplay-lot-25.md).
+
 Le **lot 24 / étape 7A**, validé par le joueur, remplace les dépôts instantanés par des chantiers : **6 bois, 4 fibres, 16 s de fabrication**, puis 12 places. Un dépôt peut être construit dans la réserve à l’étage, approvisionné par l’échelle et le pont. Annulation/récupération, filtres et sauvegarde v11 sont intégrés. Démo `-- --demo-depot-build` ; [fiche du lot](docs/conception/gameplay-lot-24.md).
 
 Le **lot 23 / étape 9B**, validé par le joueur, ajoute les **priorités de travail individuelles** (Habitants ou Travaux → Priorités). Récolte, transport et construction : 0 désactivé, 1 prioritaire, 2 normal, 3 secondaire. Besoins et charges en cours restent protégés ; préférences sauvegardées. Démo `-- --demo-priorities` ; [fiche du lot](docs/conception/gameplay-lot-23.md).

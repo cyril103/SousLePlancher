@@ -29,7 +29,7 @@ func start(c: WorkerDelivery) -> bool:
 				"build":
 					if game.torches.start_work(c) or game.fissure.start_work(c) or game.sleeping.start_work(c) or game.depots.start_work(c): return true
 				"transport":
-					if game.construction.start(c): return true
+					if game.construction.start(c) or game.transfers.start(c): return true
 				"collect":
 					if c.worker.patch >= 0:
 						if c.inside_refuge:
