@@ -237,6 +237,7 @@ func _ready() -> void:
 	if "--demo-local-harvest" in OS.get_cmdline_user_args(): prepare_local_harvest_demo()
 	if "--demo-harvest-source" in OS.get_cmdline_user_args(): prepare_harvest_source_demo()
 	if "--demo-harvest-markers" in OS.get_cmdline_user_args(): prepare_harvest_markers_demo()
+	if "--demo-kitchen-board" in OS.get_cmdline_user_args(): prepare_kitchen_board_demo()
 	if "--demo-harvest-targets" in OS.get_cmdline_user_args(): prepare_harvest_targets_demo()
 	if "--demo-harvest-status" in OS.get_cmdline_user_args(): prepare_harvest_status_demo()
 	if "--demo-lantern-production" in OS.get_cmdline_user_args(): prepare_lantern_production_demo()
@@ -1529,6 +1530,15 @@ func prepare_kitchen_demo() -> void:
 	_update_camera()
 	_refresh_ui()
 	_news("11A · Désigner une reconnaissance, puis commander le pont et la récolte. Espace : reprendre. Les lanternes de cette démo sont fournies.")
+
+func prepare_kitchen_board_demo() -> void:
+	prepare_kitchen_demo()
+	kitchen.known = true
+	kitchen.plan()
+	for w in workers: w.priorities = {"collect": 0, "transport": 0, "build": 0}
+	save_path = "user://saves/kitchen_board_demo.json"
+	_show_tray("construction_board")
+	_news("Pont cuisine · Autorisez Transport et Construction dans les priorités, puis Espace. Commandes ouvre la suspension ; matériaux livrés et charges en retour restent visibles.")
 
 func prepare_ant_demo() -> void:
 	prepare_kitchen_demo()

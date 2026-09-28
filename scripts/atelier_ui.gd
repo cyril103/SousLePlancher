@@ -1330,7 +1330,7 @@ func _make_construction_board() -> void:
 	construction_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button(panel, "Régler les priorités de travail", func(): game._show_tray("priorities"))
 	button(panel, "Accès cuisine et pont", func(): game._show_tray("kitchen"))
-	wrapped(panel, "Chantiers actifs et matériaux récupérables. Le pont cuisine garde son suivi dédié. Les quantités indiquent les matériaux déjà livrés.", 14)
+	wrapped(panel, "Chantiers et matériaux récupérables, pont cuisine compris même suspendu. Les quantités principales sont déjà livrées ; réservations et charges de retour du pont sont indiquées séparément.", 14)
 
 func _refresh_construction_board() -> void:
 	if construction_list == null or game.active_tray != "construction_board": return

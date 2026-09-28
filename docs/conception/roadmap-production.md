@@ -4,7 +4,11 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
-## Livraison autorisée — lot 50 : état des récoltes sur la carte
+## Livraison autorisée — lot 51 : pont cuisine dans le suivi des chantiers
+
+Le tableau commun affiche le pont commandé, même suspendu, avec ses livraisons, réservations, retours et habitants engagés. Il le retire après achèvement et fin des missions de construction. Voir [lot 51](gameplay-lot-51.md). Commit et push autorisés par le joueur.
+
+## Livraison publiée — lot 50 : état des récoltes sur la carte (`856ef04`)
 
 Les étiquettes des cinq gisements du refuge indiquent les ordres, quotas couverts, rappels et porteurs engagés. Un clic sur leur texte ouvre les commandes du gisement. Voir [lot 50](gameplay-lot-50.md). Commit et push autorisés par le joueur.
 

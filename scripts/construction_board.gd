@@ -50,7 +50,38 @@ static func entries(g: Node) -> Array[Dictionary]:
 		elif not permitted(g, "transport"): detail += "\nTransport : aucun habitant autorisé (priorité 0)."
 		else: detail += "\nAttend un porteur et une place au dépôt."
 		result.append({"key": "recovery:%d" % i, "title": "Matériaux récupérables", "detail": detail, "panel": "depots", "selection": -1, "pos": pile.pos})
+	var bridge := kitchen_entry(g)
+	if not bridge.is_empty(): result.append(bridge)
 	return result
+
+static func kitchen_entry(g: Node) -> Dictionary:
+	var k = g.kitchen
+	var crew: Array[int] = []
+	for id in k.tasks:
+		if k.tasks[id].kind in ["supply", "build"]: crew.append(id)
+	if not k.planned or (k.built and crew.is_empty()): return {}
+	var state := "Terminé · derniers retours" if k.built else "Suspendu · matériaux livrés conservés" if not k.active else "Construction" if k.supplied() else "Approvisionnement"
+	var detail := "%s · %d %%\nBois %d/%d · Fibres %d/%d" % [state, int(100.0 * k.work / k.WORK), k.materials.wood, k.COST.wood, k.materials.fiber, k.COST.fiber]
+	var incoming := {"wood": 0, "fiber": 0}
+	var returning := {"wood": 0, "fiber": 0}
+	crew.sort()
+	for id in crew:
+		var task: Dictionary = k.tasks[id]
+		if task.kind == "supply":
+			if task.returning:
+				returning[task.resource] += g.workers[id].carrying
+			elif not task.deposited and not task.released:
+				incoming[task.resource] += task.quantity
+	if incoming.wood + incoming.fiber > 0: detail += "\nRéservé vers le pont : Bois %d · Fibres %d" % [incoming.wood, incoming.fiber]
+	if returning.wood + returning.fiber > 0: detail += "\nEn retour au dépôt : Bois %d · Fibres %d" % [returning.wood, returning.fiber]
+	for id in crew:
+		var task: Dictionary = k.tasks[id]
+		detail += "\nH%d · %s%s" % [id + 1, k.description(id), " · équipement" if task.stage == "equip" else ""]
+	if not k.built and k.active and crew.is_empty():
+		var priority := "build" if k.supplied() else "transport"
+		if not permitted(g, priority): detail += "\n%s : aucun habitant autorisé (priorité 0)." % g.priorities.NAMES[priority]
+		else: detail += "\nAttend un habitant disponible, une lanterne chargée et les accès nécessaires."
+	return {"key": "kitchen:bridge", "title": "Pont de la cuisine", "detail": detail, "panel": "kitchen", "selection": -1, "pos": k.NEAR}
 
 static func permitted(g: Node, kind: String) -> bool:
 	for id in range(g.workers.size()):

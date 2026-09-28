@@ -63,6 +63,8 @@ Le **lot 49** apporte les **commandes de récolte au clic sur les gisements du r
 
 Le **lot 50** affiche l’**état des récoltes sur la carte** : réserve couverte, objectif 0, rappel, épuisement et porteurs engagés. Cliquer sur une étiquette ouvre le gisement. Démo `-- --demo-harvest-markers`, sauvegarde v27 inchangée ; [règles et essais](docs/conception/gameplay-lot-50.md).
 
+Le **lot 51** intègre le **pont de la cuisine au suivi des chantiers** : matériaux livrés, caisses réservées, retours après suspension et avancement, avec accès aux commandes du pont. Démo `-- --demo-kitchen-board`, sauvegarde v27 inchangée ; [règles et essais](docs/conception/gameplay-lot-51.md).
+
 ## Suite de production
 
 Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une carte d’ensemble, une coupe verticale, neuf fiches de zones et un registre des passages. L’existant, la campagne prévue et les extensions différées y sont distingués. Publication autorisée par le joueur ; les implantations futures restent à éprouver, sans changement de l’ordre de réalisation.
