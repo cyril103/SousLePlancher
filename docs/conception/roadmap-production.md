@@ -4,6 +4,10 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
+## Livraison validée — guidage 11C / lot 32
+
+Le guidage du premier chapitre est validé par le joueur le 28 septembre 2026 : dix objectifs issus de la simulation, prochaine action et accès direct aux commandes. Voir [lot 32](gameplay-lot-32.md). Le parcours intégral depuis une nouvelle partie et son équilibrage restent à valider ; 11C n’est pas déclarée terminée.
+
 ## Cap immédiat
 
 **Atlas proposé le 25 septembre 2026 :** [carte du monde et fiches des secteurs](../atlas-monde-v01/index.html). Les tracés futurs restent à valider. Ce document de conception ne change ni l’ordre des lots ni le périmètre de 6A.

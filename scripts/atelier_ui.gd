@@ -1,5 +1,7 @@
 extends Control
 ## Live workshop HUD; all panels read the simulation, never a baked screenshot.
+const Chapter = preload("res://scripts/first_chapter.gd")
+var chapter_action: Button
 const Frame = preload("res://scripts/atelier_panel.gd")
 const ICONS = preload("res://assets/ui/atelier/icons.png")
 const PORTRAIT = preload("res://assets/ui/atelier/portrait.png")
@@ -441,16 +443,22 @@ func _make_trays() -> void:
 	wrapped(storage, "Les livraisons réservées arrivent même si leur filtre est décoché. Le stock présent reste utilisable. Les liaisons se règlent dans Stocks → Transferts.", 15, MUTED)
 	button(storage, "Voir ce dépôt", func(): game.focus = game.depots.sites[depot_picker.selected].pos; game._update_camera())
 	button(storage, "Planifier un dépôt · 6 bois / 4 fibres", func(): game._choose_build("depot"))
-	var goals := tray("goals", "Votre premier foyer")
-	game.objective_label = wrapped(goals, "", 19)
+	var goals := tray("goals", "Premier chapitre")
+	var chapter_scroll := ScrollContainer.new()
+	chapter_scroll.custom_minimum_size.y = 260
+	chapter_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	goals.add_child(chapter_scroll)
+	game.objective_label = wrapped(chapter_scroll, "", 17)
+	game.objective_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	chapter_action = button(goals, "", func(): game._show_tray(Chapter.current(game).tray))
 	save_label = wrapped(goals, "", 16, MUTED)
 	save_button = button(goals, "Sauvegarder la situation [F5]", func():
 		if game.pending_save: game.cancel_checkpoint()
 		else: game.request_checkpoint()
-		refresh(), "Rappeler les habitants, livrer les charges, puis enregistrer la colonie")
+		refresh(), "Enregistrer les positions et tâches en cours, puis mettre en pause")
 	load_button = button(goals, "Charger la sauvegarde [F9]", ask_load)
 	var help := tray("help", "Les gestes essentiels")
-	wrapped(help, "Flèches / WASD : déplacer la caméra\nMolette : zoom · Bouton central : rotation\nB : construire · C : habitants · T : travaux\nI : stocks · O : objectifs · H : au refuge\nN : trajet · V : vue intérieure du refuge\nF5 : sauvegarder au refuge · F9 : charger\nEspace : pause · F11 : plein écran\n1 : lit · 2 : atelier · 3 : alcôve individuelle\nÉchap : fermer / annuler · R : recommencer\n\nLes panneaux n’arrêtent pas le temps. Utilisez Espace pour planifier tranquillement.", 17)
+	wrapped(help, "Flèches / WASD : déplacer la caméra\nMolette : zoom · Bouton central : rotation\nB : construire · C : habitants · T : travaux\nI : stocks · O : objectifs · H : au refuge\nN : trajet · V : vue intérieure du refuge\nF5 : sauvegarder sur place · F9 : charger\nEspace : pause · F11 : plein écran\n1 : lit · 2 : atelier · 3 : alcôve individuelle\nÉchap : fermer / annuler · R : recommencer\n\nLes panneaux n’arrêtent pas le temps. Utilisez Espace pour planifier tranquillement.", 17)
 
 func _make_resident() -> void:
 	resident_card = frame(self, true, true)
@@ -510,7 +518,7 @@ func _make_modals() -> void:
 	label(intro, "Sous le Plancher", 36, INK, true).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label(intro, "Une petite civilisation, une grande maison.", 19, MUTED).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	wrapped(intro, "Quatre habitants. Quelques miettes. Tout à construire.\n\n1. Affectez vos habitants aux ressources.\n2. Faites fabriquer des lits et des cloisons.\n3. Veillez aux réserves de nourriture et d’eau.\nIls mangent, boivent et dorment seuls selon leurs besoins.\n\nLes humains passent entre 68 et 88 secondes de chaque cycle. Rappelez vos habitants avec H avant leur arrivée.", 20)
-	button(intro, "Fonder la colonie", func(): game.start_panel.hide(); game.paused = false; refresh()).custom_minimum_size.y = 48
+	button(intro, "Fonder la colonie", func(): game.start_panel.hide(); game.paused = false; game._show_tray("goals"); refresh()).custom_minimum_size.y = 48
 	continue_button = button(intro, "Reprendre la sauvegarde", ask_load)
 	game.end_panel = frame(self, true, true)
 	game.end_panel.custom_minimum_size.x = 560
@@ -632,7 +640,9 @@ func refresh() -> void:
 	game.time_label.add_theme_color_override("font_color", Color("ffb18b") if danger else GOLD)
 	game.alert_bar.value = game.suspicion
 	game.alert_bar.tooltip_text = "Soupçons : %d / 100" % int(game.suspicion)
-	game.objective_label.text = "Installer la vie quotidienne\n\n%d/%d lits terminés\n%d/%d couchages avec intimité\n\nRécolter, fabriquer, dormir, reprendre ses tâches. La colonie continue après le premier cycle." % [game.sleeping.ready_count(), game.workers.size(), game.sleeping.ready_count(true), game.workers.size()]
+	var chapter := Chapter.current(game)
+	game.objective_label.text = chapter.text
+	chapter_action.text = chapter.action + " →"
 	game.patch_picker.select(game.selected + 1)
 	# Compute first, then apply once: disabling a held button cancels its click.
 	var can_assign := false
