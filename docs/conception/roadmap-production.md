@@ -4,7 +4,11 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
-## Livraison autorisée — lot 47 : provisions de cuisine régulées
+## Livraison autorisée — lot 48 : diagnostic des expéditions
+
+Les objectifs de réserve distinguent les sources du refuge et les expéditions de l’alcôve ou de la cuisine. Les raisons d’attente proposent un accès aux commandes correspondantes. Lecture seule, sauvegarde v27 inchangée. Voir [lot 48](gameplay-lot-48.md). Commit et push autorisés par le joueur.
+
+## Livraison publiée — lot 47 : provisions de cuisine régulées (`ebe03c5`)
 
 La cuisine partage l’objectif alimentaire du refuge : réservation des caisses dès l’équipement, quota commun, caisse partielle et reprise après les repas. Le chapitre explique les seuils qui empêchent une première livraison. Format v27 inchangé. Voir [lot 47](gameplay-lot-47.md). Commit et push autorisés par le joueur.
 

@@ -224,6 +224,7 @@ func _ready() -> void:
 	if "--demo-inspection" in OS.get_cmdline_user_args(): prepare_inspection_demo()
 	if "--demo-auto-scout" in OS.get_cmdline_user_args(): prepare_auto_scout_demo()
 	if "--demo-alcove-target" in OS.get_cmdline_user_args(): prepare_alcove_target_demo()
+	if "--demo-remote-harvest-status" in OS.get_cmdline_user_args(): prepare_remote_harvest_status_demo()
 	if "--demo-kitchen-target" in OS.get_cmdline_user_args(): prepare_kitchen_target_demo()
 	if "--demo-alcove" in OS.get_cmdline_user_args(): prepare_alcove_demo()
 	if "--demo-alcove-haul" in OS.get_cmdline_user_args(): prepare_alcove_haul_demo()
@@ -1627,3 +1628,14 @@ func prepare_lantern_production_demo() -> void:
 	paused = true
 	_show_tray("lantern_production")
 	_news("Fabrication · Espace : livrer et fabriquer deux lanternes. Objectif 0 termine la commande engagée. Les lanternes portées comptent ; l’entretien se règle séparément.")
+
+func prepare_remote_harvest_status_demo() -> void:
+	prepare_ant_demo()
+	local_harvest.set_target("food", 29)
+	local_harvest.set_target("fiber", 20)
+	kitchen.designate_food()
+	designations.designate()
+	for lamp in torches.items: lamp.fuel = 1
+	save_path = "user://saves/remote_harvest_status_demo.json"
+	_show_tray("harvest_targets")
+	_news("Réserves · Les expéditions attendent des lanternes suffisamment remplies. Le diagnostic ouvre l’entretien ; les sources du refuge restent indépendantes.")

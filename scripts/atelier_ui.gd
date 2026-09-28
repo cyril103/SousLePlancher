@@ -1,6 +1,7 @@
 extends Control
 ## Live workshop HUD; all panels read the simulation, never a baked screenshot.
 const HarvestStatus = preload("res://scripts/harvest_status.gd")
+const RemoteHarvestStatus = preload("res://scripts/remote_harvest_status.gd")
 const ConstructionBoard = preload("res://scripts/construction_board.gd")
 var harvest_target_controls: Array[Dictionary] = []
 var local_harvest_rows: Array[Dictionary] = []
@@ -1417,7 +1418,9 @@ func _make_harvest_targets() -> void:
 		var detail := wrapped(list, "", 15)
 		var diagnostic := wrapped(list, "", 15)
 		var action := button(list, "", func(): _open_harvest_diagnostic(kind))
-		harvest_target_controls.append({"kind": kind, "target": target, "detail": detail, "diagnostic": diagnostic, "action": action})
+		var remote := wrapped(list, "", 15)
+		var remote_action := button(list, "", func(): _open_remote_harvest_diagnostic(kind))
+		harvest_target_controls.append({"kind": kind, "target": target, "detail": detail, "diagnostic": diagnostic, "action": action, "remote": remote, "remote_action": remote_action})
 	button(panel, "Désigner les gisements", func(): game._show_tray("local_harvest"))
 	wrapped(panel, "Un objectif n’active pas la récolte. Une baisse laisse finir les caisses engagées. Les récoltes manuelles et urgentes restent libres ; les ressources réservées au retour d’un chantier comptent jusqu’à sa dépose.", 14)
 
@@ -1427,7 +1430,13 @@ func _refresh_harvest_targets() -> void:
 		var goal: int = game.local_harvest.targets[controls.kind]
 		var expected: int = game.local_harvest.expected(controls.kind)
 		var state := HarvestStatus.inspect(game, controls.kind)
-		controls.diagnostic.text = state.text
+		controls.diagnostic.text = "Refuge · " + state.text
+		var remote := RemoteHarvestStatus.inspect(game, controls.kind)
+		controls.remote.visible = not remote.is_empty()
+		controls.remote_action.visible = not remote.is_empty() and not remote.panel.is_empty()
+		if not remote.is_empty():
+			controls.remote.text = ("Alcôve · " if controls.kind == "fiber" else "Cuisine · ") + remote.text
+			controls.remote_action.text = remote.action
 		controls.action.text = state.action
 		controls.action.visible = not state.panel.is_empty()
 		controls.target.set_value_no_signal(goal)
@@ -1436,6 +1445,10 @@ func _refresh_harvest_targets() -> void:
 func _open_harvest_diagnostic(kind: String) -> void:
 	var state := HarvestStatus.inspect(game, kind)
 	if not state.panel.is_empty(): game._show_tray(state.panel)
+
+func _open_remote_harvest_diagnostic(kind: String) -> void:
+	var state := RemoteHarvestStatus.inspect(game, kind)
+	if not state.is_empty() and not state.panel.is_empty(): game._show_tray(state.panel)
 
 func _make_lantern_production() -> void:
 	var panel := tray("lantern_production", "Fabriquer des lanternes")
