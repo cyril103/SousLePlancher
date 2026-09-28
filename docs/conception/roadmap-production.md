@@ -4,7 +4,11 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
-## Livraison autorisée — lot 52 : priorités des gisements du refuge
+## Livraison autorisée — lot 53 : splashscreen aléatoire
+
+Les cinq illustrations retenues apparaissent au lancement, au hasard sans répétition immédiate. Fondu vers l’accueil, passage au clic ou au clavier ; historique indépendant des sauvegardes. Voir [lot 53](gameplay-lot-53.md). Commit et push autorisés par le joueur.
+
+## Livraison publiée — lot 52 : priorités des gisements du refuge (`2084ed1`)
 
 Chaque gisement du refuge reçoit une priorité 1–3 pour les prochains départs automatiques. Les charges engagées, les besoins et les quotas sont préservés. Sauvegarde v28, migration à priorité normale. Voir [lot 52](gameplay-lot-52.md). Commit et push autorisés par le joueur.
 

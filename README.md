@@ -67,6 +67,8 @@ Le **lot 51** intègre le **pont de la cuisine au suivi des chantiers** : matér
 
 Le **lot 52** ajoute les **priorités des gisements du refuge** : haute, normale ou basse pour les prochains départs automatiques, sans interrompre les charges engagées. Démo `-- --demo-harvest-priority`, sauvegarde v28 avec migration des anciennes parties ; [règles et essais](docs/conception/gameplay-lot-52.md).
 
+Le **lot 53** ajoute un **splashscreen aléatoire au lancement** parmi les cinq visuels retenus, sans répétition immédiate, avec fondu et passage par clic ou clavier. Lancer le jeu normalement ; [comportement et essais](docs/conception/gameplay-lot-53.md).
+
 ## Suite de production
 
 Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une carte d’ensemble, une coupe verticale, neuf fiches de zones et un registre des passages. L’existant, la campagne prévue et les extensions différées y sont distingués. Publication autorisée par le joueur ; les implantations futures restent à éprouver, sans changement de l’ordre de réalisation.

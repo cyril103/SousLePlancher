@@ -16,7 +16,8 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="Sous le plancher"
 config/description="Une petite civilisation, une grande maison."
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://scenes/startup.tscn"
+boot_splash/show_image=false
 config/features=PackedStringArray("4.7", "GL Compatibility")
 
 [display]
