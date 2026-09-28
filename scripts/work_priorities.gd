@@ -17,11 +17,15 @@ static func valid(data: Variant) -> bool:
 		if not data.has(kind) or not data[kind] is int or data[kind] < 0 or data[kind] > 3: return false
 	return true
 
-func start(c: WorkerDelivery) -> bool:
+func available(c: WorkerDelivery) -> bool:
 	if game.hiding or game.pending_save or game.ended or c.state != "idle" or c.personal_recall or c.exploring: return false
 	if c.job >= 0 or c.supply_job >= 0 or c.furniture_order >= 0 or c.worker.carrying > 0 or c.door_active or c.climbing or c.bridge_active: return false
 	if game.torches.occupied(c.owner) or game.fissure.occupied(c.owner): return false
 	if c.worker.sleep_requested or c.needs_supply >= 0 or c.need_interrupt or minf(c.worker.nutrition, c.worker.hydration) <= 35: return false
+	return true
+
+func start(c: WorkerDelivery) -> bool:
+	if not available(c): return false
 	for rank in range(1, 4):
 		for kind in KINDS:
 			if value(c.owner, kind) != rank: continue

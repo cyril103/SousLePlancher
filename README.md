@@ -41,6 +41,8 @@ Le **lot 38** ajoute les **récoltes autonomes du refuge** : désigner les cinq 
 
 Le **lot 39** ajoute les **objectifs de réserve** aux récoltes autonomes : seuil commun par ressource, caisses engagées incluses, dernière caisse partielle et reprise après consommation. Récoltes du refuge → Objectifs de réserve. Démo `-- --demo-harvest-targets`, sauvegarde v23 ; [règles et essais](docs/conception/gameplay-lot-39.md).
 
+Le **lot 40** explique les attentes dans **Objectifs de réserve** : désignation, épuisement, priorités, affectations, filtres, capacité et accès, avec raccourcis vers les commandes utiles. Démo `-- --demo-harvest-status`, sauvegarde v23 inchangée ; [périmètre et essais](docs/conception/gameplay-lot-40.md).
+
 ## Suite de production
 
 Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une carte d’ensemble, une coupe verticale, neuf fiches de zones et un registre des passages. L’existant, la campagne prévue et les extensions différées y sont distingués. Publication autorisée par le joueur ; les implantations futures restent à éprouver, sans changement de l’ordre de réalisation.

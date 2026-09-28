@@ -4,7 +4,11 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
-## Livraison autorisée — lot 39 : objectifs de réserve
+## Livraison autorisée — lot 40 : diagnostic des réserves
+
+Les objectifs de réserve indiquent les raisons d’attente et ouvrent les commandes correspondantes. Lecture des conditions de départ, sans lancer de travail ; panneau défilant et sauvegarde v23 inchangée. Voir [lot 40](gameplay-lot-40.md). Commit et push autorisés par le joueur.
+
+## Livraison publiée — lot 39 : objectifs de réserve (`c209b8e`)
 
 Seuil commun par ressource pour les récoltes autonomes au sol ; stocks et charges engagées pris en compte, transferts internes comptés une fois, caisses partielles et reprise après consommation. Sauvegarde v23. Voir [lot 39](gameplay-lot-39.md). Commit et push autorisés par le joueur.
 

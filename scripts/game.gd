@@ -231,6 +231,7 @@ func _ready() -> void:
 	if "--demo-construction-board" in OS.get_cmdline_user_args(): prepare_construction_board_demo()
 	if "--demo-local-harvest" in OS.get_cmdline_user_args(): prepare_local_harvest_demo()
 	if "--demo-harvest-targets" in OS.get_cmdline_user_args(): prepare_harvest_targets_demo()
+	if "--demo-harvest-status" in OS.get_cmdline_user_args(): prepare_harvest_status_demo()
 	if "--demo-health" in OS.get_cmdline_user_args(): prepare_health_demo()
 	if "--demo-privacy" in OS.get_cmdline_user_args(): prepare_privacy_demo()
 	if "--demo-room" in OS.get_cmdline_user_args(): prepare_room_demo()
@@ -1560,3 +1561,12 @@ func prepare_harvest_targets_demo() -> void:
 	save_path = "user://saves/harvest_targets_demo.json"
 	_show_tray("harvest_targets")
 	_news("Objectifs · Espace : récolter 5 bois et 4 fibres. Construire un lit consomme la réserve et relance les récoltes. F5/F9 conserve les objectifs et caisses.")
+
+func prepare_harvest_status_demo() -> void:
+	prepare_harvest_targets_demo()
+	local_harvest.set_target("food", 30)
+	for w in workers: w.priorities.collect = 0
+	local_harvest.set_target("water", 0)
+	save_path = "user://saves/harvest_status_demo.json"
+	_show_tray("harvest_targets")
+	_news("Diagnostic · Désignez les miettes, autorisez Récolte pour un habitant, puis Espace. Les raisons d’attente se mettent à jour sans modifier les ordres.")

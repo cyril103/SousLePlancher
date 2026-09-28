@@ -1,5 +1,6 @@
 extends Control
 ## Live workshop HUD; all panels read the simulation, never a baked screenshot.
+const HarvestStatus = preload("res://scripts/harvest_status.gd")
 const ConstructionBoard = preload("res://scripts/construction_board.gd")
 var harvest_target_controls: Array[Dictionary] = []
 var local_harvest_rows: Array[Dictionary] = []
@@ -1322,8 +1323,14 @@ func _refresh_local_harvest() -> void:
 func _make_harvest_targets() -> void:
 	var panel := tray("harvest_targets", "Objectifs de réserve")
 	wrapped(panel, "Stock visé dans tous les dépôts. Les charges engagées sont comptées. −1 : sans limite ; 0 : aucun nouveau départ automatique.", 15)
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size.y = 310
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	panel.add_child(scroll)
+	var list := column(scroll, 12)
+	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	for kind in game.Depots.KINDS:
-		var line := row(panel, 8)
+		var line := row(list, 8)
 		label(line, game.NAMES[kind], 16).custom_minimum_size.x = 80
 		var target := SpinBox.new()
 		target.min_value = -1
@@ -1332,8 +1339,10 @@ func _make_harvest_targets() -> void:
 		target.custom_minimum_size.x = 125
 		line.add_child(target)
 		target.value_changed.connect(func(value: float): game.local_harvest.set_target(kind, int(value)); refresh())
-		var detail := wrapped(panel, "", 15)
-		harvest_target_controls.append({"kind": kind, "target": target, "detail": detail})
+		var detail := wrapped(list, "", 15)
+		var diagnostic := wrapped(list, "", 15)
+		var action := button(list, "", func(): _open_harvest_diagnostic(kind))
+		harvest_target_controls.append({"kind": kind, "target": target, "detail": detail, "diagnostic": diagnostic, "action": action})
 	button(panel, "Désigner les gisements", func(): game._show_tray("local_harvest"))
 	wrapped(panel, "Un objectif n’active pas la récolte. Une baisse laisse finir les caisses engagées. Les récoltes manuelles et urgentes restent libres ; les ressources réservées au retour d’un chantier comptent jusqu’à sa dépose.", 14)
 
@@ -1342,5 +1351,13 @@ func _refresh_harvest_targets() -> void:
 	for controls in harvest_target_controls:
 		var goal: int = game.local_harvest.targets[controls.kind]
 		var expected: int = game.local_harvest.expected(controls.kind)
+		var state := HarvestStatus.inspect(game, controls.kind)
+		controls.diagnostic.text = state.text
+		controls.action.text = state.action
+		controls.action.visible = not state.panel.is_empty()
 		controls.target.set_value_no_signal(goal)
 		controls.detail.text = "Stock %d · Prévu %d · %s" % [game.depots.total(controls.kind), expected, "Sans limite" if goal < 0 else "Objectif couvert" if expected >= goal else "%d à récolter" % (goal - expected)]
+
+func _open_harvest_diagnostic(kind: String) -> void:
+	var state := HarvestStatus.inspect(game, kind)
+	if not state.panel.is_empty(): game._show_tray(state.panel)
