@@ -1,0 +1,3875 @@
+{
+  "title": "Une lumière sous les lames",
+  "bpm": 72,
+  "meter": "6/8",
+  "bars": 32,
+  "duration": 80.0,
+  "harmony": [
+    "Dm9",
+    "Bb7",
+    "Dm9",
+    "Asus",
+    "Dm9",
+    "Bb7",
+    "F9",
+    "C9",
+    "Gm9",
+    "DmF",
+    "Bb7",
+    "A7",
+    "Dm9",
+    "F9",
+    "Gm9",
+    "A7",
+    "Bb7",
+    "C9",
+    "Dm9",
+    "F9",
+    "Bb7",
+    "Gm9",
+    "Asus",
+    "A7",
+    "Dm9",
+    "Bb7",
+    "F9",
+    "C9",
+    "Gm9",
+    "DmF",
+    "Bb7",
+    "Asus"
+  ],
+  "events": [
+    {
+      "instrument": "piano",
+      "time": 0.0,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 46.99848882744504,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 0.6376629048114253,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 40.41167996523353,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 1.3397899855399222,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 41.172734470229656,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 1.8661014733589065,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 40.10126607986081,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 0.0,
+      "note": 50,
+      "duration": 2.4166666666666665,
+      "velocity": 39.32981092441969,
+      "pan": -0.2
+    },
+    {
+      "instrument": "piano",
+      "time": 2.4980759576383313,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 45.46559593013008,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 3.106853051108657,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 38.46477005384707,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 3.83317220155075,
+      "note": 70,
+      "duration": 1.3333333333333335,
+      "velocity": 43.53411750380615,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 4.373748749480602,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 38.67034569615362,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 2.498321053167154,
+      "note": 58,
+      "duration": 2.4166666666666665,
+      "velocity": 32.717338393015574,
+      "pan": -0.2
+    },
+    {
+      "instrument": "piano",
+      "time": 4.989514253070447,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 46.41811042186812,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 5.613687961821538,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 40.68015651191842,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 6.330834633314472,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 41.55799910258268,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 6.881715965483235,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 37.45481558953105,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 4.984464129534668,
+      "note": 50,
+      "duration": 2.4166666666666665,
+      "velocity": 35.457577828882485,
+      "pan": -0.2
+    },
+    {
+      "instrument": "piano",
+      "time": 7.500959118630128,
+      "note": 55,
+      "duration": 1.3333333333333335,
+      "velocity": 46.886265740340995,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 8.10550625142755,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 38.95111899248714,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 8.826494485501906,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 37.26955853100218,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 9.375556534184968,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 41.049026127713574,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 7.500175657563287,
+      "note": 57,
+      "duration": 2.4166666666666665,
+      "velocity": 39.13265454407562,
+      "pan": -0.2
+    },
+    {
+      "instrument": "piano",
+      "time": 10.022579912689974,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 51.08511481577807,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 10.4214880504524,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 40.49527219416408,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 10.822539156984247,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 44.90703197267457,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 11.2436272832109,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 43.47287763152283,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 11.674612200101986,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 42.69481213100289,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 12.082843852521377,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 45.0892237099226,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 9.992100237380132,
+      "note": 50,
+      "duration": 2.4166666666666665,
+      "velocity": 37.10528303214884,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 10.014816402662198,
+      "note": 38,
+      "duration": 2.291666666666667,
+      "velocity": 39.99029078580154,
+      "pan": 0.2
+    },
+    {
+      "instrument": "piano",
+      "time": 12.49314685485472,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 48.347180381360644,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 12.910471260073514,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 41.67272720978146,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 13.33697917894491,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 42.12144638646561,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 13.744226313336934,
+      "note": 70,
+      "duration": 1.3333333333333335,
+      "velocity": 39.946716119758214,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 14.155145238317967,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 41.83375410990667,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 14.570889037693881,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 46.54970315049816,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 12.490609287032514,
+      "note": 58,
+      "duration": 2.4166666666666665,
+      "velocity": 43.61535102919773,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 12.529849022164987,
+      "note": 46,
+      "duration": 2.291666666666667,
+      "velocity": 36.008142366532695,
+      "pan": 0.2
+    },
+    {
+      "instrument": "piano",
+      "time": 15.005106165090574,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 50.06954422985584,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 15.422967407900918,
+      "note": 60,
+      "duration": 1.3333333333333335,
+      "velocity": 41.04770738279866,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 15.839141740725784,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 46.726164010475195,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 16.256459978301418,
+      "note": 67,
+      "duration": 1.3333333333333335,
+      "velocity": 45.1653048030276,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 16.652442055415825,
+      "note": 60,
+      "duration": 1.3333333333333335,
+      "velocity": 43.34244556873646,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 17.081210332024742,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 43.555880133666186,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 15.008964040205216,
+      "note": 57,
+      "duration": 2.4166666666666665,
+      "velocity": 38.91518179533144,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 15.008465533308108,
+      "note": 45,
+      "duration": 2.291666666666667,
+      "velocity": 37.189769485195164,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 15.09924917921932,
+      "note": 57,
+      "duration": 2.2291666666666665,
+      "velocity": 32.79957129687385,
+      "pan": -0.24
+    },
+    {
+      "instrument": "piano",
+      "time": 17.487709847466764,
+      "note": 55,
+      "duration": 1.3333333333333335,
+      "velocity": 50.682226795559096,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 17.928326826752855,
+      "note": 60,
+      "duration": 1.3333333333333335,
+      "velocity": 42.80814090912953,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 18.337437867009328,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 43.346202168149624,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 18.747786080365636,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 42.95579506608523,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 19.168985709520136,
+      "note": 60,
+      "duration": 1.3333333333333335,
+      "velocity": 41.234814288547064,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 19.577068320326703,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 44.30847099800933,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 17.498292563390944,
+      "note": 55,
+      "duration": 2.4166666666666665,
+      "velocity": 38.62839142934423,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 17.51513953526868,
+      "note": 43,
+      "duration": 2.291666666666667,
+      "velocity": 39.37478928027775,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 17.54500673233819,
+      "note": 55,
+      "duration": 2.2291666666666665,
+      "velocity": 29.257481080392967,
+      "pan": -0.24
+    },
+    {
+      "instrument": "piano",
+      "time": 20.01381109302582,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 48.94635496080527,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 20.421826944663557,
+      "note": 58,
+      "duration": 1.3333333333333335,
+      "velocity": 44.85196788633887,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 20.82515996385128,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 46.36044197479815,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 21.247022344073304,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 43.320204893932996,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 21.65388142510211,
+      "note": 58,
+      "duration": 1.3333333333333335,
+      "velocity": 44.478643301185635,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 22.076135172113613,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 45.07742955271578,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 19.99780561796182,
+      "note": 55,
+      "duration": 2.4166666666666665,
+      "velocity": 38.282613822235874,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 20.01457929636739,
+      "note": 43,
+      "duration": 2.291666666666667,
+      "velocity": 37.41531886641088,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 20.041672482454043,
+      "note": 57,
+      "duration": 2.2291666666666665,
+      "velocity": 33.091338279068665,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 20.09583215994982,
+      "note": 74,
+      "duration": 2.125,
+      "velocity": 27.88212648223709,
+      "pan": -0.36
+    },
+    {
+      "instrument": "piano",
+      "time": 22.492861578829576,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 52.526866624632675,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 22.929631891861632,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 44.048676528017054,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 23.32586755804996,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 45.350890448737125,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 23.759435638751718,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 41.58074680588872,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 24.148990560785265,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 46.89316528482156,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 24.587833563791218,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 42.5621158541533,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 22.510870976293724,
+      "note": 53,
+      "duration": 2.4166666666666665,
+      "velocity": 38.63193120072565,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 22.537717232719856,
+      "note": 41,
+      "duration": 2.291666666666667,
+      "velocity": 36.670036791412805,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 22.576950226934116,
+      "note": 57,
+      "duration": 2.2291666666666665,
+      "velocity": 32.27564604684398,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 22.59639235231084,
+      "note": 76,
+      "duration": 2.125,
+      "velocity": 30.431401922930576,
+      "pan": -0.36
+    },
+    {
+      "instrument": "piano",
+      "time": 25.002342342626882,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 51.48373653277855,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 25.412364419881417,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 44.789502385297915,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 25.833914699131373,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 47.05341139594021,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 26.265860590971663,
+      "note": 70,
+      "duration": 1.3333333333333335,
+      "velocity": 42.677707261671884,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 26.666659515446995,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 44.652732948033226,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 27.084561169825687,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 44.02941374872652,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 24.982779133038957,
+      "note": 58,
+      "duration": 2.4166666666666665,
+      "velocity": 39.98523489279554,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 25.00625387833835,
+      "note": 46,
+      "duration": 2.291666666666667,
+      "velocity": 35.08392480828777,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 25.075071243877538,
+      "note": 57,
+      "duration": 2.2291666666666665,
+      "velocity": 30.456566963613348,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 25.1195836401594,
+      "note": 77,
+      "duration": 2.125,
+      "velocity": 28.06765706031687,
+      "pan": -0.36
+    },
+    {
+      "instrument": "piano",
+      "time": 27.49691554479944,
+      "note": 55,
+      "duration": 1.3333333333333335,
+      "velocity": 50.22517662607068,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 27.904027503552346,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 45.15636478053007,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 28.336986541357955,
+      "note": 61,
+      "duration": 1.3333333333333335,
+      "velocity": 43.4370863956907,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 28.757938880288258,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 42.43667985453722,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 27.512521570909243,
+      "note": 57,
+      "duration": 2.4166666666666665,
+      "velocity": 40.35599570558997,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 27.523880295317788,
+      "note": 45,
+      "duration": 2.291666666666667,
+      "velocity": 36.03644418705917,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 27.559039123998158,
+      "note": 55,
+      "duration": 2.2291666666666665,
+      "velocity": 32.90046159837475,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 27.59966530606536,
+      "note": 73,
+      "duration": 2.125,
+      "velocity": 26.61251320731231,
+      "pan": -0.36
+    },
+    {
+      "instrument": "piano",
+      "time": 29.98764384812238,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 50.43843406149331,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 30.422438903924178,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 45.79867629632821,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 30.828254736440577,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 42.13216005576851,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 31.237730946851713,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 39.801134093414575,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 31.679202883019762,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 42.64166470420005,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 32.080900370884436,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 45.17349374573544,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 30.0023439447015,
+      "note": 50,
+      "duration": 2.4166666666666665,
+      "velocity": 38.89484814666359,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 30.01816261779473,
+      "note": 38,
+      "duration": 2.291666666666667,
+      "velocity": 39.66795575574103,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 30.067894264880874,
+      "note": 57,
+      "duration": 2.2291666666666665,
+      "velocity": 30.62427472583871,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 30.110129020684127,
+      "note": 76,
+      "duration": 2.125,
+      "velocity": 28.03881208433037,
+      "pan": -0.36
+    },
+    {
+      "instrument": "harp",
+      "time": 29.996450021952302,
+      "note": 74,
+      "duration": 1.1666666666666667,
+      "velocity": 25.549111461429685,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 31.04671361782413,
+      "note": 76,
+      "duration": 1.1666666666666667,
+      "velocity": 24.016939968383628,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 31.44662716892809,
+      "note": 77,
+      "duration": 1.1666666666666667,
+      "velocity": 24.221498229707848,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 32.08638857545545,
+      "note": 76,
+      "duration": 1.1666666666666667,
+      "velocity": 25.370457830798394,
+      "pan": 0.38
+    },
+    {
+      "instrument": "piano",
+      "time": 32.497781539404464,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 51.41790299513587,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 32.91714441294452,
+      "note": 60,
+      "duration": 1.3333333333333335,
+      "velocity": 41.981421102690184,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 33.338487043193595,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 44.679074514083226,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 33.75510761632638,
+      "note": 67,
+      "duration": 1.3333333333333335,
+      "velocity": 43.27570858574104,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 34.15287560255695,
+      "note": 60,
+      "duration": 1.3333333333333335,
+      "velocity": 42.11343107376846,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 34.583330232345794,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 43.53682130649315,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 32.49833684948198,
+      "note": 57,
+      "duration": 2.4166666666666665,
+      "velocity": 39.134492236391424,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 32.528380996927694,
+      "note": 45,
+      "duration": 2.291666666666667,
+      "velocity": 36.69483470438786,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 32.55006817327208,
+      "note": 57,
+      "duration": 2.2291666666666665,
+      "velocity": 29.682633612581988,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 32.60029984961446,
+      "note": 77,
+      "duration": 2.125,
+      "velocity": 34.140374196470724,
+      "pan": -0.36
+    },
+    {
+      "instrument": "harp",
+      "time": 32.49592301745009,
+      "note": 72,
+      "duration": 1.1666666666666667,
+      "velocity": 26.18859243444678,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 33.54289058575689,
+      "note": 77,
+      "duration": 1.1666666666666667,
+      "velocity": 24.019504711846995,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 33.94636263445822,
+      "note": 79,
+      "duration": 1.1666666666666667,
+      "velocity": 25.62683054138036,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 34.59952239282644,
+      "note": 77,
+      "duration": 1.1666666666666667,
+      "velocity": 27.998085439307506,
+      "pan": 0.38
+    },
+    {
+      "instrument": "piano",
+      "time": 35.00029061703061,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 50.52872326844314,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 35.41032387334452,
+      "note": 58,
+      "duration": 1.3333333333333335,
+      "velocity": 43.33824880947864,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 35.86067075113534,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 42.19861312418122,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 36.244698854416015,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 42.598452317069885,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 36.66657154006187,
+      "note": 58,
+      "duration": 1.3333333333333335,
+      "velocity": 48.200185748330945,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 37.087738281850115,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 44.743998115640906,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 34.98707263667015,
+      "note": 55,
+      "duration": 2.4166666666666665,
+      "velocity": 36.68339764990737,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 35.01588437274469,
+      "note": 43,
+      "duration": 2.291666666666667,
+      "velocity": 36.91958721420892,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 35.0444167650202,
+      "note": 57,
+      "duration": 2.2291666666666665,
+      "velocity": 33.04762448172177,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 35.118037749243136,
+      "note": 74,
+      "duration": 2.125,
+      "velocity": 26.13070088056557,
+      "pan": -0.36
+    },
+    {
+      "instrument": "harp",
+      "time": 35.00047558888578,
+      "note": 70,
+      "duration": 1.1666666666666667,
+      "velocity": 28.833029758481675,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 36.03749595775554,
+      "note": 74,
+      "duration": 1.1666666666666667,
+      "velocity": 25.473586996645487,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 36.44739418311694,
+      "note": 77,
+      "duration": 1.1666666666666667,
+      "velocity": 26.040810970404902,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 37.0888530148386,
+      "note": 74,
+      "duration": 1.1666666666666667,
+      "velocity": 25.11202057837558,
+      "pan": 0.38
+    },
+    {
+      "instrument": "piano",
+      "time": 37.49923704072898,
+      "note": 55,
+      "duration": 1.3333333333333335,
+      "velocity": 51.39646241116004,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 37.90911321109819,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 42.290088640625115,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 38.33135260653341,
+      "note": 61,
+      "duration": 1.3333333333333335,
+      "velocity": 43.857156693156185,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 38.739593337665184,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 45.789833276373166,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 37.49382960962662,
+      "note": 57,
+      "duration": 2.4166666666666665,
+      "velocity": 39.57567276374983,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 37.52955738614056,
+      "note": 45,
+      "duration": 2.291666666666667,
+      "velocity": 35.710901157379226,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 37.56610890819173,
+      "note": 55,
+      "duration": 2.2291666666666665,
+      "velocity": 29.835854296488044,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 37.619130487839534,
+      "note": 73,
+      "duration": 2.125,
+      "velocity": 28.301492408147805,
+      "pan": -0.36
+    },
+    {
+      "instrument": "harp",
+      "time": 37.49559810478856,
+      "note": 69,
+      "duration": 1.1666666666666667,
+      "velocity": 25.496073954513957,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 38.541547888673,
+      "note": 73,
+      "duration": 1.1666666666666667,
+      "velocity": 21.495692179692565,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 38.96378781465122,
+      "note": 76,
+      "duration": 1.1666666666666667,
+      "velocity": 22.667175452697144,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 39.58273741077305,
+      "note": 73,
+      "duration": 1.1666666666666667,
+      "velocity": 25.495824086912318,
+      "pan": 0.38
+    },
+    {
+      "instrument": "piano",
+      "time": 40.0027774990497,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 55.38856951704895,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 40.42405371444114,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 48.06824990327419,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 40.843656757505,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 52.1475585099224,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 41.250343587225956,
+      "note": 70,
+      "duration": 1.3333333333333335,
+      "velocity": 50.477820080249884,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 41.673561881599056,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 50.307316033109835,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 42.08865121303773,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 46.0148291560875,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 40.01569687880333,
+      "note": 58,
+      "duration": 2.4166666666666665,
+      "velocity": 48.06272170345824,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 39.98454172115953,
+      "note": 46,
+      "duration": 2.291666666666667,
+      "velocity": 45.2301241325197,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 40.05733753735061,
+      "note": 57,
+      "duration": 2.2291666666666665,
+      "velocity": 43.48144450859375,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 40.11758418482016,
+      "note": 77,
+      "duration": 2.125,
+      "velocity": 38.53407778683302,
+      "pan": -0.36
+    },
+    {
+      "instrument": "harp",
+      "time": 40.01226674762237,
+      "note": 74,
+      "duration": 1.1666666666666667,
+      "velocity": 31.612530656311396,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 41.027580956323476,
+      "note": 77,
+      "duration": 1.1666666666666667,
+      "velocity": 32.12741683506107,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 41.453093856040574,
+      "note": 82,
+      "duration": 1.1666666666666667,
+      "velocity": 32.02626311350536,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 42.09427195083148,
+      "note": 77,
+      "duration": 1.1666666666666667,
+      "velocity": 32.9487052651712,
+      "pan": 0.38
+    },
+    {
+      "instrument": "wood",
+      "time": 39.995581532463255,
+      "note": 48,
+      "duration": 0.16666666666666669,
+      "velocity": 33.05717405893551,
+      "pan": -0.35
+    },
+    {
+      "instrument": "wood",
+      "time": 41.25157232473922,
+      "note": 55,
+      "duration": 0.16666666666666669,
+      "velocity": 27.017092278647198,
+      "pan": 0.35
+    },
+    {
+      "instrument": "piano",
+      "time": 42.49533961687179,
+      "note": 55,
+      "duration": 1.3333333333333335,
+      "velocity": 57.85745110454311,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 42.913085390853496,
+      "note": 60,
+      "duration": 1.3333333333333335,
+      "velocity": 46.996136687456435,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 43.33389342900426,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 48.887119937105126,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 43.75924000748263,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 48.85097111331491,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 44.169407655748145,
+      "note": 60,
+      "duration": 1.3333333333333335,
+      "velocity": 49.0269106648965,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 44.56741313526337,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 48.83341814014703,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 42.49344419243573,
+      "note": 55,
+      "duration": 2.4166666666666665,
+      "velocity": 43.47740529376848,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 42.53890262389905,
+      "note": 43,
+      "duration": 2.291666666666667,
+      "velocity": 47.54409754429693,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 42.56199253972783,
+      "note": 55,
+      "duration": 2.2291666666666665,
+      "velocity": 39.14727135224951,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 42.60329512214959,
+      "note": 74,
+      "duration": 2.125,
+      "velocity": 43.6470301886395,
+      "pan": -0.36
+    },
+    {
+      "instrument": "harp",
+      "time": 42.49700097324436,
+      "note": 72,
+      "duration": 1.1666666666666667,
+      "velocity": 29.67741837540888,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 43.54824690344526,
+      "note": 74,
+      "duration": 1.1666666666666667,
+      "velocity": 32.35741969922355,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 43.952790765672816,
+      "note": 76,
+      "duration": 1.1666666666666667,
+      "velocity": 30.41431048992244,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 44.580617729507054,
+      "note": 74,
+      "duration": 1.1666666666666667,
+      "velocity": 34.021071180773816,
+      "pan": 0.38
+    },
+    {
+      "instrument": "wood",
+      "time": 42.49524725788355,
+      "note": 48,
+      "duration": 0.16666666666666669,
+      "velocity": 35.629402010066904,
+      "pan": -0.35
+    },
+    {
+      "instrument": "wood",
+      "time": 43.741146316565334,
+      "note": 55,
+      "duration": 0.16666666666666669,
+      "velocity": 22.84686194503809,
+      "pan": 0.35
+    },
+    {
+      "instrument": "piano",
+      "time": 45.00765990988503,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 56.68896211679196,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 45.41526436038983,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 51.18971845704025,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 45.8494752261824,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 49.09475212155872,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 46.234061732389726,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 52.89178593934447,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 46.666595055723185,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 49.71694617294619,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 47.08736609326868,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 50.117842060640356,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 44.98249998470991,
+      "note": 50,
+      "duration": 2.4166666666666665,
+      "velocity": 45.546188632061536,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 45.006427534963386,
+      "note": 38,
+      "duration": 2.291666666666667,
+      "velocity": 48.31531027456108,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 45.08032309677868,
+      "note": 57,
+      "duration": 2.2291666666666665,
+      "velocity": 39.165523695666494,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 45.09433015578748,
+      "note": 76,
+      "duration": 2.125,
+      "velocity": 40.27193000420138,
+      "pan": -0.36
+    },
+    {
+      "instrument": "harp",
+      "time": 45.00353236861767,
+      "note": 74,
+      "duration": 1.1666666666666667,
+      "velocity": 33.361781773272156,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 46.043576958970675,
+      "note": 76,
+      "duration": 1.1666666666666667,
+      "velocity": 30.920970538194837,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 46.44418196373853,
+      "note": 77,
+      "duration": 1.1666666666666667,
+      "velocity": 32.37050090854136,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 47.060217374067605,
+      "note": 76,
+      "duration": 1.1666666666666667,
+      "velocity": 34.07518772688368,
+      "pan": 0.38
+    },
+    {
+      "instrument": "wood",
+      "time": 45.00576009745128,
+      "note": 48,
+      "duration": 0.16666666666666669,
+      "velocity": 32.038768575136054,
+      "pan": -0.35
+    },
+    {
+      "instrument": "wood",
+      "time": 46.25189674384385,
+      "note": 55,
+      "duration": 0.16666666666666669,
+      "velocity": 25.376882573151804,
+      "pan": 0.35
+    },
+    {
+      "instrument": "piano",
+      "time": 47.48541050387005,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 56.6014544729842,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 47.92112198891502,
+      "note": 60,
+      "duration": 1.3333333333333335,
+      "velocity": 51.84968202526896,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 48.329691132964655,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 50.34915471094842,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 48.75285657960719,
+      "note": 67,
+      "duration": 1.3333333333333335,
+      "velocity": 47.40396934860221,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 49.1618947466278,
+      "note": 60,
+      "duration": 1.3333333333333335,
+      "velocity": 49.98063539241998,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 49.59363986784812,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 46.83857506994562,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 47.503607293768034,
+      "note": 57,
+      "duration": 2.4166666666666665,
+      "velocity": 47.28149892417873,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 47.52499437274048,
+      "note": 45,
+      "duration": 2.291666666666667,
+      "velocity": 48.81096867858208,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 47.53535181049288,
+      "note": 57,
+      "duration": 2.2291666666666665,
+      "velocity": 43.315717910069594,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 47.57083358920094,
+      "note": 77,
+      "duration": 2.125,
+      "velocity": 39.58079659564389,
+      "pan": -0.36
+    },
+    {
+      "instrument": "harp",
+      "time": 47.49364641250771,
+      "note": 72,
+      "duration": 1.1666666666666667,
+      "velocity": 34.98631415064921,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 48.54476552841608,
+      "note": 77,
+      "duration": 1.1666666666666667,
+      "velocity": 36.42479223122573,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 48.959216226226616,
+      "note": 79,
+      "duration": 1.1666666666666667,
+      "velocity": 28.68671675829302,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 49.591347710157855,
+      "note": 77,
+      "duration": 1.1666666666666667,
+      "velocity": 27.7228651405265,
+      "pan": 0.38
+    },
+    {
+      "instrument": "wood",
+      "time": 47.483618511666286,
+      "note": 48,
+      "duration": 0.16666666666666669,
+      "velocity": 32.16496592511438,
+      "pan": -0.35
+    },
+    {
+      "instrument": "wood",
+      "time": 48.75293757532969,
+      "note": 55,
+      "duration": 0.16666666666666669,
+      "velocity": 25.189166025607243,
+      "pan": 0.35
+    },
+    {
+      "instrument": "piano",
+      "time": 50.00414097409473,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 59.01041269624695,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 50.415605341949934,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 50.88327079844498,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 50.85793293361883,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 49.54773086704825,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 51.241044635747684,
+      "note": 70,
+      "duration": 1.3333333333333335,
+      "velocity": 50.05477004042512,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 51.67852487789206,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 50.56158906443808,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 52.06803628624127,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 51.56469160412305,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 50.00055236312734,
+      "note": 58,
+      "duration": 2.4166666666666665,
+      "velocity": 46.094157427426154,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 50.0321006505751,
+      "note": 46,
+      "duration": 2.291666666666667,
+      "velocity": 47.3897485997857,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 50.054490580393825,
+      "note": 57,
+      "duration": 2.2291666666666665,
+      "velocity": 35.57517586076642,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 50.10084071048653,
+      "note": 77,
+      "duration": 2.125,
+      "velocity": 44.6914956089138,
+      "pan": -0.36
+    },
+    {
+      "instrument": "harp",
+      "time": 50.00063317685596,
+      "note": 74,
+      "duration": 1.1666666666666667,
+      "velocity": 33.004004563928795,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 51.026721820535336,
+      "note": 77,
+      "duration": 1.1666666666666667,
+      "velocity": 31.071568059648698,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 51.44372329022947,
+      "note": 82,
+      "duration": 1.1666666666666667,
+      "velocity": 33.38742536872345,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 52.078254638909485,
+      "note": 77,
+      "duration": 1.1666666666666667,
+      "velocity": 34.57331939159109,
+      "pan": 0.38
+    },
+    {
+      "instrument": "wood",
+      "time": 49.98839344280297,
+      "note": 48,
+      "duration": 0.16666666666666669,
+      "velocity": 36.423625304785524,
+      "pan": -0.35
+    },
+    {
+      "instrument": "wood",
+      "time": 51.257429302113614,
+      "note": 55,
+      "duration": 0.16666666666666669,
+      "velocity": 21.976271395744092,
+      "pan": 0.35
+    },
+    {
+      "instrument": "piano",
+      "time": 52.500386804692674,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 57.514263418470854,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 52.921568501090505,
+      "note": 58,
+      "duration": 1.3333333333333335,
+      "velocity": 46.4647095580561,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 53.34611097434499,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 53.675290098542305,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 53.75196522443075,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 49.756003947023224,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 54.160852800729764,
+      "note": 58,
+      "duration": 1.3333333333333335,
+      "velocity": 48.70936048576469,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 54.59190476877258,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 51.84931680997304,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 52.49543751315113,
+      "note": 55,
+      "duration": 2.4166666666666665,
+      "velocity": 47.20486888264477,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 52.528953229999175,
+      "note": 43,
+      "duration": 2.291666666666667,
+      "velocity": 49.576127624668885,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 52.54596216786116,
+      "note": 57,
+      "duration": 2.2291666666666665,
+      "velocity": 37.758436842877835,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 52.59606981436739,
+      "note": 74,
+      "duration": 2.125,
+      "velocity": 39.582150159612034,
+      "pan": -0.36
+    },
+    {
+      "instrument": "harp",
+      "time": 52.499857426824,
+      "note": 70,
+      "duration": 1.1666666666666667,
+      "velocity": 35.32931546949547,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 53.54446465928987,
+      "note": 74,
+      "duration": 1.1666666666666667,
+      "velocity": 32.38152130840957,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 53.95275214546023,
+      "note": 77,
+      "duration": 1.1666666666666667,
+      "velocity": 31.64604571257843,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 54.59825416258771,
+      "note": 74,
+      "duration": 1.1666666666666667,
+      "velocity": 30.871433465323,
+      "pan": 0.38
+    },
+    {
+      "instrument": "wood",
+      "time": 52.494874970280385,
+      "note": 48,
+      "duration": 0.16666666666666669,
+      "velocity": 33.215102073410826,
+      "pan": -0.35
+    },
+    {
+      "instrument": "wood",
+      "time": 53.76221181551763,
+      "note": 55,
+      "duration": 0.16666666666666669,
+      "velocity": 24.078422835276506,
+      "pan": 0.35
+    },
+    {
+      "instrument": "piano",
+      "time": 55.005243092398096,
+      "note": 55,
+      "duration": 1.3333333333333335,
+      "velocity": 55.825278023050544,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 55.419320405598874,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 51.9845404349629,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 55.8426987809063,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 48.75670705966885,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 56.234903730299564,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 51.25722636451802,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 56.67059720614514,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 49.99369226427236,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 57.07368044490834,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 48.12709149871332,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 55.00527696367286,
+      "note": 57,
+      "duration": 2.4166666666666665,
+      "velocity": 47.31262641872188,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 55.027442358672,
+      "note": 45,
+      "duration": 2.291666666666667,
+      "velocity": 47.903368139923465,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 55.074019579946885,
+      "note": 55,
+      "duration": 2.2291666666666665,
+      "velocity": 45.800525962624555,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 55.13151934083249,
+      "note": 74,
+      "duration": 2.125,
+      "velocity": 43.930674423698704,
+      "pan": -0.36
+    },
+    {
+      "instrument": "harp",
+      "time": 54.99325436492518,
+      "note": 69,
+      "duration": 1.1666666666666667,
+      "velocity": 31.54816480852667,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 56.04464100637297,
+      "note": 74,
+      "duration": 1.1666666666666667,
+      "velocity": 34.6742290065255,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 56.46441892171637,
+      "note": 76,
+      "duration": 1.1666666666666667,
+      "velocity": 30.769232464405988,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 57.065272609477965,
+      "note": 74,
+      "duration": 1.1666666666666667,
+      "velocity": 29.11674969170359,
+      "pan": 0.38
+    },
+    {
+      "instrument": "wood",
+      "time": 55.00873784094762,
+      "note": 48,
+      "duration": 0.16666666666666669,
+      "velocity": 34.45238331682071,
+      "pan": -0.35
+    },
+    {
+      "instrument": "wood",
+      "time": 56.226822709876714,
+      "note": 55,
+      "duration": 0.16666666666666669,
+      "velocity": 23.230835641880226,
+      "pan": 0.35
+    },
+    {
+      "instrument": "piano",
+      "time": 57.514605477107885,
+      "note": 55,
+      "duration": 1.3333333333333335,
+      "velocity": 56.860254113831544,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 57.931055018871,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 50.13034298203392,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 58.334516742480375,
+      "note": 61,
+      "duration": 1.3333333333333335,
+      "velocity": 50.68655735158518,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 58.76753496506869,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 50.743524963390385,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 57.50309419826146,
+      "note": 57,
+      "duration": 2.4166666666666665,
+      "velocity": 51.6417615422299,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 57.55518552614296,
+      "note": 45,
+      "duration": 2.291666666666667,
+      "velocity": 48.21704846429525,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 57.55679570187671,
+      "note": 55,
+      "duration": 2.2291666666666665,
+      "velocity": 39.48574820031182,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 57.60630487149005,
+      "note": 73,
+      "duration": 2.125,
+      "velocity": 40.57826037530629,
+      "pan": -0.36
+    },
+    {
+      "instrument": "harp",
+      "time": 57.494198554701775,
+      "note": 69,
+      "duration": 1.1666666666666667,
+      "velocity": 33.12863859165852,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 58.556952436511416,
+      "note": 73,
+      "duration": 1.1666666666666667,
+      "velocity": 32.665528143611006,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 58.96370109673804,
+      "note": 76,
+      "duration": 1.1666666666666667,
+      "velocity": 30.802578544937035,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 59.583051391594886,
+      "note": 73,
+      "duration": 1.1666666666666667,
+      "velocity": 29.46417193444618,
+      "pan": 0.38
+    },
+    {
+      "instrument": "wood",
+      "time": 57.527069903943264,
+      "note": 48,
+      "duration": 0.16666666666666669,
+      "velocity": 36.61693596175617,
+      "pan": -0.35
+    },
+    {
+      "instrument": "wood",
+      "time": 58.75339989047065,
+      "note": 55,
+      "duration": 0.16666666666666669,
+      "velocity": 21.696540862055624,
+      "pan": 0.35
+    },
+    {
+      "instrument": "piano",
+      "time": 59.998576399282754,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 50.92184038635993,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 60.42596776207245,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 44.67732557901158,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 60.822566298158826,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 41.655143528455376,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 61.24413779861466,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 41.70929295010477,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 61.671575705605115,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 43.20790078518779,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 62.08587522973652,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 43.252139215137404,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 60.01667260851675,
+      "note": 50,
+      "duration": 2.4166666666666665,
+      "velocity": 40.09603554806018,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 60.02990039828094,
+      "note": 38,
+      "duration": 2.291666666666667,
+      "velocity": 35.62116695321217,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 60.060274302383,
+      "note": 57,
+      "duration": 2.2291666666666665,
+      "velocity": 32.67002708234194,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 60.11760040483186,
+      "note": 76,
+      "duration": 2.125,
+      "velocity": 27.452290066754106,
+      "pan": -0.36
+    },
+    {
+      "instrument": "harp",
+      "time": 60.00988900458586,
+      "note": 74,
+      "duration": 1.1666666666666667,
+      "velocity": 26.2182893573029,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 61.0410980649716,
+      "note": 76,
+      "duration": 1.1666666666666667,
+      "velocity": 25.81758909265635,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 61.46009562760468,
+      "note": 77,
+      "duration": 1.1666666666666667,
+      "velocity": 24.59790384460575,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 62.09056217179487,
+      "note": 76,
+      "duration": 1.1666666666666667,
+      "velocity": 24.34306403219602,
+      "pan": 0.38
+    },
+    {
+      "instrument": "piano",
+      "time": 62.500298877993956,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 52.451306843936294,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 62.913238639197566,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 45.63676112853818,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 63.32530117437281,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 44.46461727243738,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 63.75392646589456,
+      "note": 70,
+      "duration": 1.3333333333333335,
+      "velocity": 41.999279053686166,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 64.16857236117325,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 42.847680330849656,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 64.57299872849833,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 42.51016374224782,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 62.50052612306111,
+      "note": 58,
+      "duration": 2.4166666666666665,
+      "velocity": 40.44379866665195,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 62.53382206940103,
+      "note": 46,
+      "duration": 2.291666666666667,
+      "velocity": 37.26997795654974,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 62.54625458021219,
+      "note": 57,
+      "duration": 2.2291666666666665,
+      "velocity": 30.060081667845676,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 62.60028842530966,
+      "note": 77,
+      "duration": 2.125,
+      "velocity": 28.827740316972662,
+      "pan": -0.36
+    },
+    {
+      "instrument": "harp",
+      "time": 62.482025938736406,
+      "note": 74,
+      "duration": 1.1666666666666667,
+      "velocity": 22.738571035196767,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 63.53546801869116,
+      "note": 77,
+      "duration": 1.1666666666666667,
+      "velocity": 24.800548133907746,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 63.96151819783106,
+      "note": 82,
+      "duration": 1.1666666666666667,
+      "velocity": 27.15364478697824,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 64.57601092082724,
+      "note": 77,
+      "duration": 1.1666666666666667,
+      "velocity": 27.110892581156087,
+      "pan": 0.38
+    },
+    {
+      "instrument": "piano",
+      "time": 65.0125279061864,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 52.10261416257298,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 65.41267039935865,
+      "note": 60,
+      "duration": 1.3333333333333335,
+      "velocity": 45.59322302154075,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 65.84186147984818,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 43.25998170615388,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 66.25915203807745,
+      "note": 67,
+      "duration": 1.3333333333333335,
+      "velocity": 44.77009855155787,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 66.64698929455922,
+      "note": 60,
+      "duration": 1.3333333333333335,
+      "velocity": 42.44253593987131,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 67.07720871701454,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 43.664145845068326,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 65.00134308979052,
+      "note": 57,
+      "duration": 2.4166666666666665,
+      "velocity": 38.93206399581883,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 65.02421049098503,
+      "note": 45,
+      "duration": 2.291666666666667,
+      "velocity": 36.48824129550749,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 65.06115540448653,
+      "note": 57,
+      "duration": 2.2291666666666665,
+      "velocity": 32.157797780683666,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 65.10455309176673,
+      "note": 77,
+      "duration": 2.125,
+      "velocity": 29.305421239136454,
+      "pan": -0.36
+    },
+    {
+      "instrument": "harp",
+      "time": 65.0028344801107,
+      "note": 72,
+      "duration": 1.1666666666666667,
+      "velocity": 26.217679226038534,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 66.03878692508654,
+      "note": 77,
+      "duration": 1.1666666666666667,
+      "velocity": 25.616458219326404,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 66.44457286679395,
+      "note": 79,
+      "duration": 1.1666666666666667,
+      "velocity": 22.03911683015314,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 67.08975192133205,
+      "note": 77,
+      "duration": 1.1666666666666667,
+      "velocity": 24.73083656314828,
+      "pan": 0.38
+    },
+    {
+      "instrument": "piano",
+      "time": 67.5097456213465,
+      "note": 55,
+      "duration": 1.3333333333333335,
+      "velocity": 51.11583498767413,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 67.91581876370736,
+      "note": 60,
+      "duration": 1.3333333333333335,
+      "velocity": 47.80614480001385,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 68.33124813316661,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 42.95485777870558,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 68.74107805919853,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 44.96498995227426,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 69.16979374661821,
+      "note": 60,
+      "duration": 1.3333333333333335,
+      "velocity": 42.63580937980335,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 69.58031192663765,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 43.16724256759572,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 67.49805668939416,
+      "note": 55,
+      "duration": 2.4166666666666665,
+      "velocity": 41.44929480754817,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 67.49732239775462,
+      "note": 43,
+      "duration": 2.291666666666667,
+      "velocity": 38.49829043246397,
+      "pan": 0.2
+    },
+    {
+      "instrument": "viola",
+      "time": 67.54510677742512,
+      "note": 55,
+      "duration": 2.2291666666666665,
+      "velocity": 37.39328626866317,
+      "pan": -0.24
+    },
+    {
+      "instrument": "violin",
+      "time": 67.58969898758805,
+      "note": 74,
+      "duration": 2.125,
+      "velocity": 30.458019790180703,
+      "pan": -0.36
+    },
+    {
+      "instrument": "harp",
+      "time": 67.49649067981052,
+      "note": 72,
+      "duration": 1.1666666666666667,
+      "velocity": 25.48850815574511,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 68.55319711333031,
+      "note": 74,
+      "duration": 1.1666666666666667,
+      "velocity": 20.163797260186872,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 68.96447257732075,
+      "note": 76,
+      "duration": 1.1666666666666667,
+      "velocity": 27.05539260763413,
+      "pan": 0.38
+    },
+    {
+      "instrument": "harp",
+      "time": 69.5975594984416,
+      "note": 74,
+      "duration": 1.1666666666666667,
+      "velocity": 22.546609456507564,
+      "pan": 0.38
+    },
+    {
+      "instrument": "piano",
+      "time": 70.0023431155964,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 43.1931511349197,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 70.61608969648012,
+      "note": 58,
+      "duration": 1.3333333333333335,
+      "velocity": 37.28064313727321,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 71.3356180051014,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 34.845747100851156,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 71.86813633512011,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 35.607181281608824,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 69.98923397694684,
+      "note": 55,
+      "duration": 2.4166666666666665,
+      "velocity": 29.183290791204904,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 70.02790296243782,
+      "note": 43,
+      "duration": 2.291666666666667,
+      "velocity": 43.63524916271082,
+      "pan": 0.2
+    },
+    {
+      "instrument": "piano",
+      "time": 72.5028512009814,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 39.636851196106,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 73.13428603169062,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 33.862759463597506,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 73.82817000133655,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 34.95916784722189,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 74.37336342193177,
+      "note": 64,
+      "duration": 1.3333333333333335,
+      "velocity": 33.76024909568614,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 72.50533452744504,
+      "note": 53,
+      "duration": 2.4166666666666665,
+      "velocity": 34.97601479689879,
+      "pan": -0.2
+    },
+    {
+      "instrument": "cello",
+      "time": 72.51576142537975,
+      "note": 41,
+      "duration": 2.291666666666667,
+      "velocity": 38.65139116163285,
+      "pan": 0.2
+    },
+    {
+      "instrument": "piano",
+      "time": 75.0089613545445,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 41.23626832764196,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 75.62665493052974,
+      "note": 62,
+      "duration": 1.3333333333333335,
+      "velocity": 34.87295658228103,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 76.32038512355238,
+      "note": 70,
+      "duration": 1.3333333333333335,
+      "velocity": 33.91943974159799,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 76.87656954324574,
+      "note": 65,
+      "duration": 1.3333333333333335,
+      "velocity": 36.8302867455238,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 74.9960536413838,
+      "note": 58,
+      "duration": 2.4166666666666665,
+      "velocity": 32.04172638950848,
+      "pan": -0.2
+    },
+    {
+      "instrument": "piano",
+      "time": 77.5147147434195,
+      "note": 55,
+      "duration": 1.3333333333333335,
+      "velocity": 43.22421190734996,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 78.12874741015787,
+      "note": 57,
+      "duration": 1.3333333333333335,
+      "velocity": 32.91122790384712,
+      "pan": -0.14
+    },
+    {
+      "instrument": "piano",
+      "time": 77.50352308839324,
+      "note": 57,
+      "duration": 2.4166666666666665,
+      "velocity": 33.46961431670527,
+      "pan": -0.2
+    },
+    {
+      "instrument": "piano",
+      "time": 10.013745142384659,
+      "note": 69,
+      "duration": 0.4166666666666667,
+      "velocity": 67.17681502528062,
+      "pan": 0.06
+    },
+    {
+      "instrument": "glock",
+      "time": 10.044147227870805,
+      "note": 81,
+      "duration": 1.25,
+      "velocity": 41.75237066421801,
+      "pan": 0.23
+    },
+    {
+      "instrument": "piano",
+      "time": 10.425549578237398,
+      "note": 74,
+      "duration": 0.8333333333333334,
+      "velocity": 68.41146465857994,
+      "pan": 0.06
+    },
+    {
+      "instrument": "glock",
+      "time": 10.444536127178882,
+      "note": 86,
+      "duration": 1.6666666666666667,
+      "velocity": 40.99644851907268,
+      "pan": 0.23
+    },
+    {
+      "instrument": "piano",
+      "time": 11.256998484395538,
+      "note": 76,
+      "duration": 0.4166666666666667,
+      "velocity": 69.48639112283122,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 11.68396303535471,
+      "note": 77,
+      "duration": 0.7083333333333334,
+      "velocity": 66.60348326701757,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 12.533295901114311,
+      "note": 76,
+      "duration": 0.4166666666666667,
+      "velocity": 66.05700193208048,
+      "pan": 0.06
+    },
+    {
+      "instrument": "glock",
+      "time": 12.524427393127063,
+      "note": 88,
+      "duration": 1.25,
+      "velocity": 39.22361840688064,
+      "pan": 0.23
+    },
+    {
+      "instrument": "piano",
+      "time": 12.938040386421529,
+      "note": 74,
+      "duration": 0.8333333333333334,
+      "velocity": 71.2956687146486,
+      "pan": 0.06
+    },
+    {
+      "instrument": "glock",
+      "time": 12.945286457509203,
+      "note": 86,
+      "duration": 1.6666666666666667,
+      "velocity": 39.91448256157686,
+      "pan": 0.23
+    },
+    {
+      "instrument": "piano",
+      "time": 13.75113169440443,
+      "note": 69,
+      "duration": 1.0833333333333335,
+      "velocity": 64.62413449083463,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 15.017619277486386,
+      "note": 72,
+      "duration": 0.625,
+      "velocity": 64.17403381025598,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 15.64824094918286,
+      "note": 69,
+      "duration": 0.625,
+      "velocity": 69.02187762676205,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 16.26366035117139,
+      "note": 67,
+      "duration": 0.4166666666666667,
+      "velocity": 67.81524189473622,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 16.684081855721367,
+      "note": 69,
+      "duration": 0.6666666666666667,
+      "velocity": 64.66048003673214,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 17.532721175599832,
+      "note": 67,
+      "duration": 1.5416666666666667,
+      "velocity": 68.95947439588437,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 19.167498491507967,
+      "note": 64,
+      "duration": 0.5416666666666667,
+      "velocity": 70.62535207919615,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 20.015574320334228,
+      "note": 67,
+      "duration": 0.4166666666666667,
+      "velocity": 67.73842781535545,
+      "pan": 0.06
+    },
+    {
+      "instrument": "glock",
+      "time": 20.04537217412523,
+      "note": 79,
+      "duration": 1.25,
+      "velocity": 38.551509961352195,
+      "pan": 0.23
+    },
+    {
+      "instrument": "piano",
+      "time": 20.434106264110763,
+      "note": 69,
+      "duration": 0.4166666666666667,
+      "velocity": 67.64357964313817,
+      "pan": 0.06
+    },
+    {
+      "instrument": "glock",
+      "time": 20.450351795249585,
+      "note": 81,
+      "duration": 1.25,
+      "velocity": 40.55200332432169,
+      "pan": 0.23
+    },
+    {
+      "instrument": "piano",
+      "time": 20.84512466606655,
+      "note": 70,
+      "duration": 0.4166666666666667,
+      "velocity": 65.93032451869402,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 21.27877495332959,
+      "note": 74,
+      "duration": 1.0,
+      "velocity": 65.95902951767778,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 22.51557453038526,
+      "note": 72,
+      "duration": 0.4166666666666667,
+      "velocity": 64.73508241040484,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 22.93285826755025,
+      "note": 69,
+      "duration": 0.8333333333333334,
+      "velocity": 70.09651514208677,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 23.759781000778425,
+      "note": 65,
+      "duration": 1.0833333333333335,
+      "velocity": 64.82452785954045,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 25.02014870608103,
+      "note": 65,
+      "duration": 0.4166666666666667,
+      "velocity": 64.84358245200329,
+      "pan": 0.06
+    },
+    {
+      "instrument": "glock",
+      "time": 25.041401774909104,
+      "note": 77,
+      "duration": 1.25,
+      "velocity": 38.4299299938549,
+      "pan": 0.23
+    },
+    {
+      "instrument": "piano",
+      "time": 25.42794153305531,
+      "note": 69,
+      "duration": 0.8333333333333334,
+      "velocity": 68.87468032215182,
+      "pan": 0.06
+    },
+    {
+      "instrument": "glock",
+      "time": 25.45795654232738,
+      "note": 81,
+      "duration": 1.6666666666666667,
+      "velocity": 34.81994911402943,
+      "pan": 0.23
+    },
+    {
+      "instrument": "piano",
+      "time": 26.261203508925227,
+      "note": 74,
+      "duration": 0.6666666666666667,
+      "velocity": 67.5637746474608,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 27.09269881448405,
+      "note": 72,
+      "duration": 0.2916666666666667,
+      "velocity": 63.26314227546982,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 27.51858728998193,
+      "note": 71,
+      "duration": 0.4166666666666667,
+      "velocity": 67.81902704773964,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 27.938278337706475,
+      "note": 69,
+      "duration": 0.625,
+      "velocity": 67.78906741697473,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 28.76549313775299,
+      "note": 67,
+      "duration": 0.4166666666666667,
+      "velocity": 65.52774943986786,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 29.197965048288157,
+      "note": 64,
+      "duration": 0.5416666666666667,
+      "velocity": 68.82415867147212,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 60.00947242581609,
+      "note": 69,
+      "duration": 0.4166666666666667,
+      "velocity": 58.101130092040556,
+      "pan": 0.06
+    },
+    {
+      "instrument": "glock",
+      "time": 60.03750821231554,
+      "note": 81,
+      "duration": 1.25,
+      "velocity": 24.102694523518117,
+      "pan": 0.23
+    },
+    {
+      "instrument": "piano",
+      "time": 60.41974975286214,
+      "note": 74,
+      "duration": 0.8333333333333334,
+      "velocity": 61.29395622433869,
+      "pan": 0.06
+    },
+    {
+      "instrument": "glock",
+      "time": 60.46880000845136,
+      "note": 86,
+      "duration": 1.6666666666666667,
+      "velocity": 29.478713319456695,
+      "pan": 0.23
+    },
+    {
+      "instrument": "piano",
+      "time": 61.25807643431693,
+      "note": 76,
+      "duration": 0.4166666666666667,
+      "velocity": 57.64296328463505,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 61.70141433252958,
+      "note": 77,
+      "duration": 0.7083333333333334,
+      "velocity": 57.68328955949644,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 62.52067523855622,
+      "note": 76,
+      "duration": 0.4166666666666667,
+      "velocity": 58.162447541542264,
+      "pan": 0.06
+    },
+    {
+      "instrument": "glock",
+      "time": 62.54890189982841,
+      "note": 88,
+      "duration": 1.25,
+      "velocity": 29.25045700884748,
+      "pan": 0.23
+    },
+    {
+      "instrument": "piano",
+      "time": 62.93122832047865,
+      "note": 74,
+      "duration": 0.8333333333333334,
+      "velocity": 61.34172662423864,
+      "pan": 0.06
+    },
+    {
+      "instrument": "glock",
+      "time": 62.939993581602586,
+      "note": 86,
+      "duration": 1.6666666666666667,
+      "velocity": 29.263212485237194,
+      "pan": 0.23
+    },
+    {
+      "instrument": "piano",
+      "time": 63.77929358432418,
+      "note": 69,
+      "duration": 1.0833333333333335,
+      "velocity": 56.743714657688,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 65.02692728650267,
+      "note": 72,
+      "duration": 0.625,
+      "velocity": 58.01275138220824,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 65.6424967870472,
+      "note": 69,
+      "duration": 0.625,
+      "velocity": 63.221931330811266,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 66.26045028369337,
+      "note": 67,
+      "duration": 0.4166666666666667,
+      "velocity": 56.898183341357075,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 66.6687469869024,
+      "note": 69,
+      "duration": 0.6666666666666667,
+      "velocity": 56.40076057500609,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 67.522137529401,
+      "note": 67,
+      "duration": 1.5416666666666667,
+      "velocity": 59.89954874785802,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 69.18497596181672,
+      "note": 64,
+      "duration": 0.5416666666666667,
+      "velocity": 60.56497028782914,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 70.01323966745385,
+      "note": 67,
+      "duration": 0.4166666666666667,
+      "velocity": 57.7228697939114,
+      "pan": 0.06
+    },
+    {
+      "instrument": "glock",
+      "time": 70.02589190852363,
+      "note": 79,
+      "duration": 1.25,
+      "velocity": 31.1255482189761,
+      "pan": 0.23
+    },
+    {
+      "instrument": "piano",
+      "time": 70.43135993081366,
+      "note": 69,
+      "duration": 0.4166666666666667,
+      "velocity": 62.43906858251863,
+      "pan": 0.06
+    },
+    {
+      "instrument": "glock",
+      "time": 70.4472842616075,
+      "note": 81,
+      "duration": 1.25,
+      "velocity": 29.490299457245587,
+      "pan": 0.23
+    },
+    {
+      "instrument": "piano",
+      "time": 70.85828098684674,
+      "note": 70,
+      "duration": 0.4166666666666667,
+      "velocity": 58.04822371041952,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 71.28109804712618,
+      "note": 74,
+      "duration": 1.0,
+      "velocity": 61.64178962450814,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 72.52306698700914,
+      "note": 72,
+      "duration": 0.4166666666666667,
+      "velocity": 54.925580419146414,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 72.9363987559314,
+      "note": 69,
+      "duration": 0.8333333333333334,
+      "velocity": 59.692949587980856,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 73.75467993762315,
+      "note": 65,
+      "duration": 1.0833333333333335,
+      "velocity": 59.71386456958408,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 75.01067765765431,
+      "note": 65,
+      "duration": 0.4166666666666667,
+      "velocity": 59.52124438815619,
+      "pan": 0.06
+    },
+    {
+      "instrument": "glock",
+      "time": 75.031277284203,
+      "note": 77,
+      "duration": 1.25,
+      "velocity": 30.272102625729566,
+      "pan": 0.23
+    },
+    {
+      "instrument": "piano",
+      "time": 75.44269702913,
+      "note": 69,
+      "duration": 0.8333333333333334,
+      "velocity": 60.00790833090373,
+      "pan": 0.06
+    },
+    {
+      "instrument": "glock",
+      "time": 75.46875680883723,
+      "note": 81,
+      "duration": 1.6666666666666667,
+      "velocity": 32.48150183387192,
+      "pan": 0.23
+    },
+    {
+      "instrument": "piano",
+      "time": 77.51028134784136,
+      "note": 71,
+      "duration": 0.4166666666666667,
+      "velocity": 58.43226898146862,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 77.93148520140889,
+      "note": 69,
+      "duration": 0.625,
+      "velocity": 64.1321698749702,
+      "pan": 0.06
+    },
+    {
+      "instrument": "glock",
+      "time": 1.2572721783710967,
+      "note": 81,
+      "duration": 0.8333333333333334,
+      "velocity": 36.67859233015335,
+      "pan": 0.2
+    },
+    {
+      "instrument": "glock",
+      "time": 2.898226473483803,
+      "note": 86,
+      "duration": 1.25,
+      "velocity": 34.84919905145695,
+      "pan": 0.2
+    },
+    {
+      "instrument": "glock",
+      "time": 6.242592342006136,
+      "note": 88,
+      "duration": 0.8333333333333334,
+      "velocity": 34.6127769049208,
+      "pan": 0.2
+    },
+    {
+      "instrument": "glock",
+      "time": 7.504820446746382,
+      "note": 86,
+      "duration": 1.25,
+      "velocity": 33.093095246872515,
+      "pan": 0.2
+    },
+    {
+      "instrument": "piano",
+      "time": 30.004182348281695,
+      "note": 77,
+      "duration": 0.8333333333333334,
+      "velocity": 60.904466384031366,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 30.833320081993016,
+      "note": 76,
+      "duration": 0.4166666666666667,
+      "velocity": 62.84665358597594,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 31.241054499147545,
+      "note": 74,
+      "duration": 1.0416666666666667,
+      "velocity": 63.665953062272024,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 32.48152681105496,
+      "note": 72,
+      "duration": 0.8333333333333334,
+      "velocity": 64.00775481744923,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 33.74072759816585,
+      "note": 69,
+      "duration": 1.0,
+      "velocity": 64.72503554519325,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 35.00660752005512,
+      "note": 70,
+      "duration": 0.8333333333333334,
+      "velocity": 64.7855157642886,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 35.84704822912513,
+      "note": 69,
+      "duration": 0.4166666666666667,
+      "velocity": 60.84709853872596,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 36.25365856925044,
+      "note": 67,
+      "duration": 1.0416666666666667,
+      "velocity": 61.8126016019773,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 37.50728340872519,
+      "note": 76,
+      "duration": 0.8333333333333334,
+      "velocity": 64.81203061110254,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 38.32978447277247,
+      "note": 74,
+      "duration": 0.4166666666666667,
+      "velocity": 61.647738984606214,
+      "pan": 0.06
+    },
+    {
+      "instrument": "piano",
+      "time": 38.7542852341926,
+      "note": 73,
+      "duration": 1.0,
+      "velocity": 65.9450881642397,
+      "pan": 0.06
+    },
+    {
+      "instrument": "flute",
+      "time": 39.96952580566243,
+      "note": 74,
+      "duration": 0.8833333333333334,
+      "velocity": 63.905277229458164,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 39.99716563008557,
+      "note": 74,
+      "duration": 0.8333333333333334,
+      "velocity": 58.39980439266197,
+      "pan": 0.04
+    },
+    {
+      "instrument": "glock",
+      "time": 40.002917182434885,
+      "note": 86,
+      "duration": 0.8333333333333334,
+      "velocity": 29.129034473343058,
+      "pan": 0.26
+    },
+    {
+      "instrument": "flute",
+      "time": 40.83367106695115,
+      "note": 77,
+      "duration": 0.46666666666666673,
+      "velocity": 61.635846574718165,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 40.85058851366086,
+      "note": 77,
+      "duration": 0.4166666666666667,
+      "velocity": 56.64233180099142,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 41.25956241550931,
+      "note": 81,
+      "duration": 1.0916666666666668,
+      "velocity": 60.057716646379056,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 41.25115204444208,
+      "note": 81,
+      "duration": 1.0416666666666667,
+      "velocity": 60.80809638936879,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 42.5029793747409,
+      "note": 79,
+      "duration": 1.3,
+      "velocity": 59.502021826134,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 42.518314385815714,
+      "note": 79,
+      "duration": 1.25,
+      "velocity": 54.83407699969638,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 43.73386349585485,
+      "note": 76,
+      "duration": 1.0916666666666668,
+      "velocity": 60.35233359492916,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 43.75994512061563,
+      "note": 76,
+      "duration": 1.0416666666666667,
+      "velocity": 57.38254242563958,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 45.02414904810918,
+      "note": 77,
+      "duration": 0.8833333333333334,
+      "velocity": 58.91588476810399,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 45.01121122144695,
+      "note": 77,
+      "duration": 0.8333333333333334,
+      "velocity": 55.98711862156182,
+      "pan": 0.04
+    },
+    {
+      "instrument": "glock",
+      "time": 44.99666276272174,
+      "note": 89,
+      "duration": 0.8333333333333334,
+      "velocity": 31.679915115810505,
+      "pan": 0.26
+    },
+    {
+      "instrument": "flute",
+      "time": 45.804633170998265,
+      "note": 76,
+      "duration": 0.46666666666666673,
+      "velocity": 59.67523673003501,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 45.848872828218035,
+      "note": 76,
+      "duration": 0.4166666666666667,
+      "velocity": 56.58208896180694,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 46.238285618848536,
+      "note": 74,
+      "duration": 1.0916666666666668,
+      "velocity": 60.690873690807614,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 46.27003393794015,
+      "note": 74,
+      "duration": 1.0416666666666667,
+      "velocity": 52.391778623096634,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 47.51254147738667,
+      "note": 72,
+      "duration": 0.8833333333333334,
+      "velocity": 60.53183392118208,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 47.53516294922758,
+      "note": 72,
+      "duration": 0.8333333333333334,
+      "velocity": 55.664016864905555,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 48.35253761297992,
+      "note": 69,
+      "duration": 0.46666666666666673,
+      "velocity": 60.593382072471165,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 48.34247534455416,
+      "note": 69,
+      "duration": 0.4166666666666667,
+      "velocity": 57.936478947478385,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 48.76227762085409,
+      "note": 72,
+      "duration": 1.0916666666666668,
+      "velocity": 63.378678355223364,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 48.756132264013154,
+      "note": 72,
+      "duration": 1.0416666666666667,
+      "velocity": 56.6764812690052,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 50.00436754772932,
+      "note": 74,
+      "duration": 0.8833333333333334,
+      "velocity": 56.44982211636363,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 50.00546056077286,
+      "note": 74,
+      "duration": 0.8333333333333334,
+      "velocity": 58.87434240251002,
+      "pan": 0.04
+    },
+    {
+      "instrument": "glock",
+      "time": 49.99560643783959,
+      "note": 86,
+      "duration": 0.8333333333333334,
+      "velocity": 33.34530152624155,
+      "pan": 0.26
+    },
+    {
+      "instrument": "flute",
+      "time": 50.82065583512483,
+      "note": 77,
+      "duration": 0.46666666666666673,
+      "velocity": 53.65227736702927,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 50.85295196289646,
+      "note": 77,
+      "duration": 0.4166666666666667,
+      "velocity": 53.03018397398684,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 51.24353726403773,
+      "note": 76,
+      "duration": 1.0916666666666668,
+      "velocity": 52.52049979672843,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 51.24886255244813,
+      "note": 76,
+      "duration": 1.0416666666666667,
+      "velocity": 58.592061359940175,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 52.47781476318662,
+      "note": 74,
+      "duration": 1.3,
+      "velocity": 55.1315756685498,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 52.51888600496938,
+      "note": 74,
+      "duration": 1.25,
+      "velocity": 55.74732752126265,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 53.741078661045556,
+      "note": 70,
+      "duration": 1.0916666666666668,
+      "velocity": 55.91659506777172,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 53.76086768141323,
+      "note": 70,
+      "duration": 1.0416666666666667,
+      "velocity": 59.08613905648967,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 54.99480041834079,
+      "note": 69,
+      "duration": 0.8833333333333334,
+      "velocity": 55.594738018095434,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 55.00730556661251,
+      "note": 69,
+      "duration": 0.8333333333333334,
+      "velocity": 57.85857309615683,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 55.85168404499637,
+      "note": 74,
+      "duration": 0.46666666666666673,
+      "velocity": 58.297011511047884,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 55.8451788121106,
+      "note": 74,
+      "duration": 0.4166666666666667,
+      "velocity": 58.08154466324093,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 56.248509709327294,
+      "note": 76,
+      "duration": 1.0916666666666668,
+      "velocity": 56.16230856415241,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 56.265630630287646,
+      "note": 76,
+      "duration": 1.0416666666666667,
+      "velocity": 58.410514231781235,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 57.504083009974735,
+      "note": 74,
+      "duration": 0.8833333333333334,
+      "velocity": 54.44160465469235,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 57.51268082393111,
+      "note": 74,
+      "duration": 0.8333333333333334,
+      "velocity": 56.24038567329474,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 58.337880364871225,
+      "note": 73,
+      "duration": 0.46666666666666673,
+      "velocity": 54.93265781774505,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 58.340644364725655,
+      "note": 73,
+      "duration": 0.4166666666666667,
+      "velocity": 57.71212500608708,
+      "pan": 0.04
+    },
+    {
+      "instrument": "flute",
+      "time": 58.75901316350355,
+      "note": 69,
+      "duration": 1.05,
+      "velocity": 54.743831350870614,
+      "pan": 0.13
+    },
+    {
+      "instrument": "piano",
+      "time": 58.75506386625252,
+      "note": 69,
+      "duration": 1.0,
+      "velocity": 54.898080621995206,
+      "pan": 0.04
+    },
+    {
+      "instrument": "glock",
+      "time": 79.16594349875474,
+      "note": 76,
+      "duration": 1.25,
+      "velocity": 25.020769457718863,
+      "pan": 0.2
+    }
+  ]
+}

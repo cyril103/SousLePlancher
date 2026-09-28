@@ -1,0 +1,16 @@
+{
+  "duration_loop_seconds": 80.0,
+  "duration_listening_seconds": 88.0,
+  "sample_rate": 48000,
+  "samples_loop": 3840000,
+  "note_events": 479,
+  "peak_dbfs": -1.8888757228851318,
+  "rms_dbfs": -18.38701057434082,
+  "seam_step": 0.0019763410091400146,
+  "max_sample_step": 0.13937361538410187,
+  "stereo_correlation": 0.5461442220011502,
+  "stem_master_gain_db": 1.6941626190685457,
+  "integrated_lufs": -15.9,
+  "loudness_range_lu": 6.0,
+  "true_peak_dbfs": -1.9
+}

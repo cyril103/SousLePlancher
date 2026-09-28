@@ -4,7 +4,11 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
-## Livraison autorisée — lot 53 : splashscreen aléatoire
+## Livraison autorisée — lot 54 : thème musical de l’accueil
+
+Composition originale « Une lumière sous les lames », boucle de 80 secondes continue entre splashscreen et accueil, commande de coupure et fondu vers la partie. Version d’écoute, MIDI et sources de production disponibles. Voir [lot 54](gameplay-lot-54.md). Validé par le joueur ; commit et push autorisés.
+
+## Livraison publiée — lot 53 : splashscreen aléatoire (`eafe000`)
 
 Les cinq illustrations retenues apparaissent au lancement, au hasard sans répétition immédiate. Fondu vers l’accueil, passage au clic ou au clavier ; historique indépendant des sauvegardes. Voir [lot 53](gameplay-lot-53.md). Commit et push autorisés par le joueur.
 

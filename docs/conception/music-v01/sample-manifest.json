@@ -1,0 +1,235 @@
+{
+  "sources": {
+    "vsco": "6dd651d55dde97fd4028699be9d4481f26917891",
+    "piano": "3382bf9496bba2486f5ab0de55a264d1dfc38404"
+  },
+  "samples": [
+    {
+      "instrument": "cello",
+      "root": 36,
+      "path": "cello/susvib_C1_v1_1.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Strings/Cello%20Section/susvib/susvib_C1_v1_1.wav",
+      "sha256": "abdcea431f384e135c469b0f3e4ac2a437f282f521dc5bcbe22abc221536e8de"
+    },
+    {
+      "instrument": "cello",
+      "root": 40,
+      "path": "cello/susvib_E1_v1_1.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Strings/Cello%20Section/susvib/susvib_E1_v1_1.wav",
+      "sha256": "de31a61b02d4e1d5a79b8bc432b0f35fe2e434290ad34402cc0f2dd7dc278cde"
+    },
+    {
+      "instrument": "cello",
+      "root": 43,
+      "path": "cello/susvib_G1_v1_1.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Strings/Cello%20Section/susvib/susvib_G1_v1_1.wav",
+      "sha256": "9e5d24e8e28d6c7f650f9bb2b33d43c13e341a8bd33124c64e23881378b181ba"
+    },
+    {
+      "instrument": "cello",
+      "root": 47,
+      "path": "cello/susvib_B1_v1_1.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Strings/Cello%20Section/susvib/susvib_B1_v1_1.wav",
+      "sha256": "4f95c087c4b8d87ee591e9d39c3c9caf085c6f1b9125eac3ca9e4e637da628ee"
+    },
+    {
+      "instrument": "viola",
+      "root": 55,
+      "path": "viola/ViolaEns_susvib_G2_v1_1.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Strings/Viola%20Section/susvib/ViolaEns_susvib_G2_v1_1.wav",
+      "sha256": "557c2e033951015c30765bf18266bce0dd0412e3ca646dd1a225c32422c60662"
+    },
+    {
+      "instrument": "viola",
+      "root": 59,
+      "path": "viola/ViolaEns_susvib_B2_v1_1.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Strings/Viola%20Section/susvib/ViolaEns_susvib_B2_v1_1.wav",
+      "sha256": "ad96d747c5125adec8f069c49091ee3ba937efd4a5b909d3c4938f17e3c8513d"
+    },
+    {
+      "instrument": "violin",
+      "root": 72,
+      "path": "violin/VlnEns_susVib_C4_v1.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Strings/Violin%20Section/susVib/VlnEns_susVib_C4_v1.wav",
+      "sha256": "c07edd5b2119fa1da2207aba996961b50dd616f69bbcf2300ab271bc6c16239f"
+    },
+    {
+      "instrument": "violin",
+      "root": 76,
+      "path": "violin/VlnEns_susVib_E4_v1.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Strings/Violin%20Section/susVib/VlnEns_susVib_E4_v1.wav",
+      "sha256": "787fb4bcfb47d5c88ee1573c8db15f32d345386301be4a8eea6a825847413ae2"
+    },
+    {
+      "instrument": "glock",
+      "root": 79,
+      "path": "glock/glock_medium_G5.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Percussion/Glock/glock_medium_G5.wav",
+      "sha256": "7045c0ef7260e2f1ad11a64406cf7575ed898d1207a91104d33d78caefac63e4"
+    },
+    {
+      "instrument": "glock",
+      "root": 84,
+      "path": "glock/glock_medium_C6.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Percussion/Glock/glock_medium_C6.wav",
+      "sha256": "e942cbf502cf6731df2925945fe3234c876cb63f047d91007b6929887f9e4904"
+    },
+    {
+      "instrument": "glock",
+      "root": 91,
+      "path": "glock/glock_medium_G6.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Percussion/Glock/glock_medium_G6.wav",
+      "sha256": "a2ba94e59119cd5272c1161fc8b8fbfb94c7b44de45a9a6cc5973b1c332103af"
+    },
+    {
+      "instrument": "harp",
+      "root": 69,
+      "path": "harp/KSHarp_A4_mf.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Strings/Harp/KSHarp_A4_mf.wav",
+      "sha256": "3665f3975cad4a33f46784aa4f896f4b4319ba2b7831e892d975bc38c9f09f23"
+    },
+    {
+      "instrument": "harp",
+      "root": 72,
+      "path": "harp/KSHarp_C5_mf.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Strings/Harp/KSHarp_C5_mf.wav",
+      "sha256": "7c8b862f6fd3f1442ed87537af976d84bda8c05a5b4900e8907d570b5202a517"
+    },
+    {
+      "instrument": "harp",
+      "root": 76,
+      "path": "harp/KSHarp_E5_mf.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Strings/Harp/KSHarp_E5_mf.wav",
+      "sha256": "95dd9ddb0bd15bee7687906e00f25aafcaa43020cc9501f0e8b6cabf0e9a53ec"
+    },
+    {
+      "instrument": "harp",
+      "root": 79,
+      "path": "harp/KSHarp_G5_mf.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Strings/Harp/KSHarp_G5_mf.wav",
+      "sha256": "f2004dfc617997fbabc6f849add2af06f4f859361c44a8fca0f993dc7f999540"
+    },
+    {
+      "instrument": "harp",
+      "root": 83,
+      "path": "harp/KSHarp_B5_mf.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Strings/Harp/KSHarp_B5_mf.wav",
+      "sha256": "f2757b674c6b7301bed52e17a1ae3e3d34d628b3f7edc5773ebb25798d2541f7"
+    },
+    {
+      "instrument": "flute",
+      "root": 69,
+      "path": "flute/LDFlute_susvib_A3_v1_1.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Woodwinds/Flute/susvib/LDFlute_susvib_A3_v1_1.wav",
+      "sha256": "4ea04a7a2ba152752e1b475798619a62f2546f54972caa6ddcd88f29a2046c81"
+    },
+    {
+      "instrument": "flute",
+      "root": 72,
+      "path": "flute/LDFlute_susvib_C4_v1_1.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Woodwinds/Flute/susvib/LDFlute_susvib_C4_v1_1.wav",
+      "sha256": "e88a0ff35e6b8c29fd88bc778a4c817d955b2c3a2934def97a7d093b72e2ae97"
+    },
+    {
+      "instrument": "flute",
+      "root": 76,
+      "path": "flute/LDFlute_susvib_E4_v1_1.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Woodwinds/Flute/susvib/LDFlute_susvib_E4_v1_1.wav",
+      "sha256": "83d4eed0c54ebfe25fe9dfb0475fb90a88a43d11777bc2afac879b8b695e494c"
+    },
+    {
+      "instrument": "flute",
+      "root": 81,
+      "path": "flute/LDFlute_susvib_A4_v1_1.wav",
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/Woodwinds/Flute/susvib/LDFlute_susvib_A4_v1_1.wav",
+      "sha256": "cf3c1c30943b8b8ef8b5b9ced89430c014987a037204098d002f86e424391ba9"
+    },
+    {
+      "instrument": "piano",
+      "root": 51,
+      "path": "piano/D#3v4.flac",
+      "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%233v4.flac",
+      "sha256": "cc750a11b5cd63da9367fbe152ae51f18a6cb248364a24e1e76ee6b17d3d4b96"
+    },
+    {
+      "instrument": "piano",
+      "root": 54,
+      "path": "piano/F#3v4.flac",
+      "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%233v4.flac",
+      "sha256": "1d338855b9447cb85efd063d331b97471836967fefbb8eef2b964718b38f26cd"
+    },
+    {
+      "instrument": "piano",
+      "root": 57,
+      "path": "piano/A3v4.flac",
+      "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A3v4.flac",
+      "sha256": "7cfc9b2a18f8728431dfc236ca5c97793d3bdb413fd713eb13198c673982618f"
+    },
+    {
+      "instrument": "piano",
+      "root": 60,
+      "path": "piano/C4v4.flac",
+      "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C4v4.flac",
+      "sha256": "c68ab13a20f4e84361843417a17521d0cf7bd9587a43fbb36c04db56045990ed"
+    },
+    {
+      "instrument": "piano",
+      "root": 63,
+      "path": "piano/D#4v4.flac",
+      "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%234v4.flac",
+      "sha256": "dfd69f142177241a5219427e0c7012a19002b6bc98e11bafe287d7190f847b79"
+    },
+    {
+      "instrument": "piano",
+      "root": 66,
+      "path": "piano/F#4v4.flac",
+      "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%234v4.flac",
+      "sha256": "e024309f6f410365a9dea891a96d6df920e93d0c401a161f642c6e5e33de6ae3"
+    },
+    {
+      "instrument": "piano",
+      "root": 69,
+      "path": "piano/A4v4.flac",
+      "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A4v4.flac",
+      "sha256": "4c6cc00539fef67b2f9540d789f099fb3dd04d779f4d4d385224a4d815918583"
+    },
+    {
+      "instrument": "piano",
+      "root": 72,
+      "path": "piano/C5v4.flac",
+      "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C5v4.flac",
+      "sha256": "0d7c117cdb01b261cb3a303c4a7c9f56ef42015078e3c69ab3aa19dd39287a6c"
+    },
+    {
+      "instrument": "piano",
+      "root": 75,
+      "path": "piano/D#5v4.flac",
+      "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%235v4.flac",
+      "sha256": "c7f25db21896025a0b71832e3e6b859a5e88f270b8230555b9ac4772913bf821"
+    },
+    {
+      "instrument": "piano",
+      "root": 78,
+      "path": "piano/F#5v4.flac",
+      "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%235v4.flac",
+      "sha256": "2a7a898c7e1b1287cc6b79844b24bd7cd39f232573e380f2264e1694a38845c1"
+    },
+    {
+      "instrument": "piano",
+      "root": 81,
+      "path": "piano/A5v4.flac",
+      "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A5v4.flac",
+      "sha256": "36bfb6bd47e8412e842334856c0c7f19005462f69f7cc9e1829bd7bfe0e3fe72"
+    }
+  ],
+  "licenses": [
+    {
+      "url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/6dd651d55dde97fd4028699be9d4481f26917891/LICENSE",
+      "path": "vsco-LICENSE.txt"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/LICENSE",
+      "path": "piano-LICENSE.txt"
+    }
+  ]
+}

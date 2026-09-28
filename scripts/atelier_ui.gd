@@ -569,6 +569,11 @@ func _make_modals() -> void:
 	wrapped(intro, "Quatre habitants. Quelques miettes. Tout à construire.\n\n1. Affectez vos habitants aux ressources.\n2. Faites fabriquer des lits et des cloisons.\n3. Veillez aux réserves de nourriture et d’eau.\nIls mangent, boivent et dorment seuls selon leurs besoins.\n\nLes humains passent entre 68 et 88 secondes de chaque cycle. Rappelez vos habitants avec H avant leur arrivée.", 20)
 	button(intro, "Fonder la colonie", func(): game.start_panel.hide(); game.paused = false; game._show_tray("goals"); refresh()).custom_minimum_size.y = 48
 	continue_button = button(intro, "Reprendre la sauvegarde", ask_load)
+	var music = get_node("/root/MenuMusic")
+	var music_button := button(intro, "Musique : activée" if music.enabled else "Musique : coupée", func(): pass)
+	music_button.pressed.connect(func():
+		music.toggle_enabled()
+		music_button.text = "Musique : activée" if music.enabled else "Musique : coupée")
 	game.end_panel = frame(self, true, true)
 	game.end_panel.custom_minimum_size.x = 560
 	var ending := column(game.end_panel, 24)

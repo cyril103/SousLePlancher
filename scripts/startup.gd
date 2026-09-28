@@ -29,6 +29,7 @@ static func choose_index(previous: int, rng: RandomNumberGenerator) -> int:
 	return choices[rng.randi_range(0, choices.size() - 1)]
 
 func _ready() -> void:
+	get_node("/root/MenuMusic").start_menu()
 	var history := ConfigFile.new()
 	var previous := -1
 	if history.load(history_path) == OK:

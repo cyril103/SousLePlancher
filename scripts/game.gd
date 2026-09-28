@@ -168,6 +168,7 @@ func _ready() -> void:
 	_make_ui()
 	_refresh_ui()
 	if get_meta("restore_mode", false): return
+	get_node("/root/MenuMusic").bind_menu(start_panel)
 	if "--demo-deliveries" in OS.get_cmdline_user_args() or "--demo-navigation" in OS.get_cmdline_user_args():
 		start_panel.hide()
 		paused = false
