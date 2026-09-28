@@ -64,6 +64,10 @@ var torch_picker: OptionButton
 var torch_summary: Label
 var craft_target: SpinBox
 var craft_status: Label
+var craft_order_picker: OptionButton
+var craft_order_status: Label
+var craft_order_cancel: Button
+var craft_order_index := -1
 var refill_target: SpinBox
 var refill_status: Label
 var refill_cancel: Button
@@ -828,7 +832,13 @@ func cancel_load() -> void:
 	refresh()
 
 func _make_torches() -> void:
-	var box := tray("torches", "Éclairage & éclaireurs")
+	var panel := tray("torches", "Éclairage & éclaireurs")
+	var menu := ScrollContainer.new()
+	menu.custom_minimum_size.y = 500
+	menu.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	panel.add_child(menu)
+	var box := column(menu)
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	light_recipe = wrapped(box, "", 16)
 	var recipe_row := row(box)
 	light_kind = OptionButton.new()
@@ -839,6 +849,7 @@ func _make_torches() -> void:
 	light_kind.item_selected.connect(func(_index: int): refresh())
 	button(recipe_row, "Fabriquer", func(): game.torches.request_craft(selected_light()); refresh())
 	button(box, "Entretien des lanternes…", func(): game._show_tray("lantern_service"))
+	button(box, "Fabrications en cours…", func(): game._show_tray("equipment_orders"))
 	torch_picker = OptionButton.new()
 	box.add_child(torch_picker)
 	torch_picker.item_selected.connect(func(index: int): resident_index = index; refresh())
@@ -861,6 +872,7 @@ func _make_torches() -> void:
 	var scroll := ScrollContainer.new()
 	scroll.custom_minimum_size.y = 100
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	box.add_child(scroll)
 	torch_summary = wrapped(scroll, "", 16)
 	torch_summary.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -951,6 +963,7 @@ func _refresh_torches() -> void:
 	if torch_picker == null: return
 	craft_target.set_value_no_signal(game.torches.craft_target)
 	craft_status.text = game.torches.production_summary()
+	_refresh_equipment_orders()
 	refill_target.set_value_no_signal(game.torches.refill_target)
 	refill_status.text = game.torches.refill_summary()
 	refill_cancel.disabled = game.torches.pending_refill() < 0
@@ -1296,6 +1309,7 @@ func _open_construction_entry(index: int) -> void:
 	if index < 0 or index >= entries.size(): return
 	var entry: Dictionary = entries[index]
 	if entry.panel == "rooms" and entry.selection >= 0: game.rooms.selected = entry.selection
+	if entry.panel == "equipment_orders": craft_order_index = entry.selection
 	if entry.panel == "depots" and entry.selection >= 0:
 		_refresh_depots()
 		depot_picker.select(entry.selection)
@@ -1384,5 +1398,39 @@ func _make_lantern_production() -> void:
 	craft_status = wrapped(panel, "", 17)
 	wrapped(panel, "Une fabrication à la fois pour l’automatisme : 4 bois, 3 fibres et 16 s par lanterne. Atelier requis. 0 désactive les prochaines commandes ; le travail engagé se termine.", 15)
 	button(panel, "Suivi des chantiers", func(): game._show_tray("construction_board"))
+	button(panel, "Gérer / annuler les fabrications…", func(): game._show_tray("equipment_orders"))
 	button(panel, "Entretien et réserve pleine", func(): game._show_tray("lantern_service"))
-	wrapped(panel, "Une lanterne vide doit être entretenue : elle n’est pas remplacée. Baisser l’objectif ne détruit rien. Les fabrications manuelles restent possibles au-delà du seuil.", 15)
+	wrapped(panel, "Baisser l’objectif ne détruit rien. Les commandes manuelles peuvent dépasser le seuil.", 15)
+	_make_equipment_orders()
+
+func _make_equipment_orders() -> void:
+	var panel := tray("equipment_orders", "Fabrications en cours")
+	wrapped(panel, "Choisir une commande de torche ou de lanterne. Les équipements terminés ne sont pas concernés.", 16)
+	craft_order_picker = OptionButton.new()
+	panel.add_child(craft_order_picker)
+	craft_order_picker.item_selected.connect(func(index: int): craft_order_index = craft_order_picker.get_item_id(index); refresh())
+	craft_order_status = wrapped(panel, "", 17)
+	craft_order_cancel = button(panel, "Annuler la fabrication", func(): game.torches.cancel_craft(craft_order_index); refresh())
+	wrapped(panel, "Le bois et les fibres livrés restent sur place à récupérer. Les porteurs ramènent leurs charges ; le temps de travail est perdu. Transport doit être autorisé et une place disponible au dépôt.", 15)
+	wrapped(panel, "Annuler une lanterne désactive son objectif de fabrication automatique. Les autres commandes et l’entretien continuent.", 15)
+	button(panel, "Suivi des chantiers et récupération", func(): game._show_tray("construction_board"))
+	button(panel, "Objectif de lanternes", func(): game._show_tray("lantern_production"))
+
+func _refresh_equipment_orders() -> void:
+	if craft_order_picker == null: return
+	craft_order_picker.clear()
+	for i in range(game.torches.orders.size()):
+		var site: Dictionary = game.torches.orders[i]
+		if site.built or site.get("refill", -1) >= 0: continue
+		craft_order_picker.add_item("%s · commande %d" % [game.torches.NAMES[site.kind], i + 1], i)
+	var selected := craft_order_picker.get_item_index(craft_order_index)
+	if selected < 0 and craft_order_picker.item_count > 0: selected = 0
+	craft_order_index = craft_order_picker.get_item_id(selected) if selected >= 0 else -1
+	craft_order_picker.disabled = selected < 0
+	craft_order_cancel.disabled = selected < 0
+	if selected < 0:
+		craft_order_status.text = "Aucune fabrication en cours."
+		return
+	craft_order_picker.select(selected)
+	var site: Dictionary = game.torches.orders[craft_order_index]
+	craft_order_status.text = game.construction.status(site) + "\n" + game.construction.quantities(site)

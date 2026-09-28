@@ -46,6 +46,23 @@ func free_workshop() -> bool:
 		if not busy: return true
 	return false
 
+func cancel_craft(index: int) -> bool:
+	if index < 0 or index >= orders.size(): return false
+	var site: Dictionary = orders[index]
+	if site.built or site.get("refill", -1) >= 0: return false
+	if site.kind == "lantern": craft_target = 0
+	game.construction.cancel_site(site)
+	if site.builder >= 0: recall(game.workers[site.builder].delivery)
+	site.materials = {"wood": 0, "fiber": 0}
+	site.work = 0.0
+	site.built = true
+	site.cancelled = true
+	site.builder = -1
+	site.hauler = -1
+	refresh_site(site)
+	game._news("Fabrication annulée : matériaux livrés à récupérer, charges en retour." + (" Production automatique des lanternes désactivée." if site.kind == "lantern" else ""))
+	return true
+
 func update_production() -> void:
 	if craft_target == 0 or game.hiding or game.pending_save or game.ended: return
 	# Existing, equipped and empty lanterns all count. Maintenance is not production.
@@ -571,7 +588,13 @@ static func valid_refills(runtime: Dictionary, data: Dictionary) -> bool:
 		if not site is Dictionary: return false
 		var target = site.get("refill", -1)
 		if not target is int or target < -1: return false
-		if target < 0: continue
+		if target < 0:
+			if site.has("cancelled") and not site.cancelled is bool: return false
+			if site.get("cancelled", false):
+				if data.version < 25 or not site.has_all(["kind", "built", "work", "materials", "builder", "hauler"]): return false
+				if not RECIPES.has(site.kind) or site.built != true or site.work != 0 or site.materials != {"wood": 0, "fiber": 0} or site.builder != -1 or site.hauler != -1: return false
+				if i in runtime.crafting.values(): return false
+			continue
 		if data.version < 20 or target >= runtime.items.size(): return false
 		if not site.has_all(["kind", "pos", "materials", "work", "required", "built", "builder", "hauler"]): return false
 		if site.kind != "lantern" or not site.pos is Vector3 or not site.built is bool or site.required != REFILL_WORK: return false

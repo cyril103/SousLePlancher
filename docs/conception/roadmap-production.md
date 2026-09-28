@@ -4,7 +4,11 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
-## Livraison autorisée — lot 42 : fabrication automatique des lanternes
+## Livraison autorisée — lot 43 : annulation des fabrications
+
+Liste des commandes de torches et lanternes, annulation ciblée et récupération physique des matériaux, avec reprise sauvegardée. Une lanterne annulée désactive son objectif de production ; les autres commandes restent actives. Format v25, anciennes sauvegardes lisibles. Voir [lot 43](gameplay-lot-43.md). Commit et push autorisés par le joueur.
+
+## Livraison publiée — lot 42 : fabrication automatique des lanternes (`4271887`)
 
 Objectif total de lanternes, fabrication physique séquentielle et entretien distinct. Le chapitre propose le réglage ; le parcours complet est vérifié sans commande manuelle d’équipement, avec reprise sauvegardée. Format v24, anciennes sauvegardes lisibles. Voir [lot 42](gameplay-lot-42.md). Commit et push autorisés par le joueur.
 

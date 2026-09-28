@@ -31,6 +31,8 @@ static func entries(g: Node) -> Array[Dictionary]:
 				panel = "lantern_service"
 				title = "Entretien · Lanterne %d" % (site.refill + 1)
 			else:
+				panel = "equipment_orders"
+				selection = g.torches.orders.find(site)
 				title = "Fabrication · %s %d" % ["Lanterne" if site.kind == "lantern" else "Torche", g.torches.orders.find(site) + 1]
 		var detail: String = g.construction.status(site) + "\n" + g.construction.quantities(site)
 		var owner: int = site.builder if site.builder >= 0 else site.hauler

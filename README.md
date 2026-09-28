@@ -47,6 +47,8 @@ Le **lot 41** intègre la gestion autonome au **premier chapitre [O]** : raccour
 
 Le **lot 42** ajoute la **fabrication automatique des lanternes** : objectif total de 0 à 8, équipements portés et commandes engagées inclus, entretien réglé séparément. Démo `-- --demo-lantern-production`, sauvegarde v24 compatible en lecture avec les anciennes versions ; [règles et parcours vérifié](docs/conception/gameplay-lot-42.md).
 
+Le **lot 43** permet d’**annuler une fabrication de torche ou de lanterne**, avec retour des charges et récupération physique des matériaux. Accès par Éclairage et éclaireurs → Fabrications en cours, ou depuis le suivi des chantiers. Sauvegarde v25 ; [règles et essai](docs/conception/gameplay-lot-43.md).
+
 ## Suite de production
 
 Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une carte d’ensemble, une coupe verticale, neuf fiches de zones et un registre des passages. L’existant, la campagne prévue et les extensions différées y sont distingués. Publication autorisée par le joueur ; les implantations futures restent à éprouver, sans changement de l’ordre de réalisation.
