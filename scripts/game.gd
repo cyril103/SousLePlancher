@@ -224,6 +224,7 @@ func _ready() -> void:
 	if "--demo-inspection" in OS.get_cmdline_user_args(): prepare_inspection_demo()
 	if "--demo-auto-scout" in OS.get_cmdline_user_args(): prepare_auto_scout_demo()
 	if "--demo-alcove-target" in OS.get_cmdline_user_args(): prepare_alcove_target_demo()
+	if "--demo-kitchen-target" in OS.get_cmdline_user_args(): prepare_kitchen_target_demo()
 	if "--demo-alcove" in OS.get_cmdline_user_args(): prepare_alcove_demo()
 	if "--demo-alcove-haul" in OS.get_cmdline_user_args(): prepare_alcove_haul_demo()
 	if "--demo-ant" in OS.get_cmdline_user_args(): prepare_ant_demo()
@@ -1576,6 +1577,14 @@ func prepare_harvest_status_demo() -> void:
 	save_path = "user://saves/harvest_status_demo.json"
 	_show_tray("harvest_targets")
 	_news("Diagnostic · Désignez les miettes, autorisez Récolte pour un habitant, puis Espace. Les raisons d’attente se mettent à jour sans modifier les ordres.")
+
+func prepare_kitchen_target_demo() -> void:
+	prepare_ant_demo()
+	local_harvest.set_target("food", 29)
+	kitchen.designate_food()
+	save_path = "user://saves/kitchen_target_demo.json"
+	_show_tray("kitchen")
+	_news("Réserve alimentaire : viser 29, depuis 24. Les expéditions s’arrêtent au seuil et reprennent après les repas. 0 suspend les nouveaux départs ; les caisses engagées arrivent.")
 
 func prepare_alcove_target_demo() -> void:
 	prepare_designations_demo()

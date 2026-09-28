@@ -56,6 +56,10 @@ static func current(game: Node) -> Dictionary:
 		text += "Prochaine action · " + next[1] + "\n" + next[3]
 		if next[2] == "kitchen":
 			text += "\n" + game.kitchen.status
+			if game.kitchen.built and delivered(game) == 0:
+				text += "\n" + game.kitchen.food_reserve_status()
+				if game.local_harvest.missing("food") == 0:
+					text += "\nPour lancer une nouvelle caisse de cuisine, augmenter l’objectif alimentaire depuis le panneau cuisine, ou choisir −1. Une caisse déjà engagée peut encore arriver."
 			if game.kitchen.amount == 0 and delivered(game) == 0:
 				text += "\nBiscuit épuisé. Si aucune caisse ne revient, reprendre une sauvegarde antérieure pour cet objectif ; la colonie peut continuer avec ses gisements locaux."
 	var support := logistics(game)

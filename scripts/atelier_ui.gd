@@ -1288,6 +1288,8 @@ func _make_kitchen() -> void:
 	kitchen_buttons.append(button(panel, "Commander le pont · 8 bois / 4 fibres", func(): game.kitchen.plan(); refresh()))
 	kitchen_buttons.append(button(panel, "", func(): game.kitchen.toggle_build(); refresh()))
 	kitchen_buttons.append(button(panel, "", func(): game.kitchen.designate_food(); refresh()))
+	button(panel, "Objectif de réserve alimentaire…", func(): game._show_tray("harvest_targets"))
+	wrapped(panel, "L’objectif alimentaire est commun au refuge et à la cuisine. Une baisse laisse finir les caisses engagées. Les repas et la collecte d’urgence restent prioritaires.", 15)
 	button(panel, "Approche : basculer direct / détour ouest", func(): game.ant.toggle_policy(); refresh())
 	button(panel, "Observer la fourmi", func():
 		if game.kitchen.known: game.focus = game.ant.pos; game.zoom = 11; game.fissure.follow = -1; game._update_camera())
@@ -1395,7 +1397,7 @@ func _refresh_local_harvest() -> void:
 
 func _make_harvest_targets() -> void:
 	var panel := tray("harvest_targets", "Objectifs de réserve")
-	wrapped(panel, "Stock visé dans tous les dépôts, charges engagées comprises. Fibres : objectif partagé entre refuge et alcôve. −1 : sans limite ; 0 : aucun nouveau départ automatique.", 15)
+	wrapped(panel, "Stock visé, charges engagées comprises. Fibres : refuge et alcôve. Nourriture : refuge et cuisine. −1 : sans limite ; 0 : aucun nouveau départ automatique.", 15)
 	var scroll := ScrollContainer.new()
 	scroll.custom_minimum_size.y = 310
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED

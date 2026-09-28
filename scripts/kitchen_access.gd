@@ -126,7 +126,10 @@ func try_start(c: WorkerDelivery, priority: String) -> bool:
 				if t.kind == "scout": return false
 			kind = "scout"
 		elif harvest and built and amount > reserved:
-			var choice: Dictionary = game.depots.sink(game.fissure.NEAR, "food", mini(3 + game.workshops, amount - reserved), c.owner)
+			var limit: int = game.local_harvest.missing("food")
+			if limit == 0:
+				return false
+			var choice: Dictionary = game.depots.sink(game.fissure.NEAR, "food", mini(limit, mini(3 + game.workshops, amount - reserved)), c.owner)
 			if choice.is_empty(): status = "Récolte en attente : aucun dépôt accessible avec de la place."; return false
 			kind = "food"
 			resource = "food"
@@ -411,11 +414,20 @@ func description(id: int) -> String:
 	var t: Dictionary = tasks[id]
 	return ("Cuisine · attend la fourmi" if float(t.get("ant_wait", 0)) > 0 else "Cuisine · " + {"scout": "reconnaissance", "supply": "livraison du pont", "build": "construction du pont", "food": "provisions"}[t.kind] + (" · retour" if t.returning else ""))
 
+func food_reserve_status() -> String:
+	var target: int = game.local_harvest.targets.food
+	if target == 0: return "Objectif 0 : nouveaux départs suspendus ; les caisses engagées sont livrées."
+	if target < 0: return "Provisions sans limite de réserve."
+	var text := "Réserve alimentaire : %d / %d, stocks et charges engagées." % [game.local_harvest.expected("food"), target]
+	if game.local_harvest.missing("food") == 0: text += " Objectif couvert ; reprise après consommation."
+	return text
+
 func summary() -> String:
 	var text := "Alcôve → cuisine · détour à vide / pont pour caisses\n"
 	text += "Cuisine reconnue" if known else "Cuisine inconnue : désigner une reconnaissance"
 	text += "\nPont : " + ("Terminé" if built else ("%s · %d/24 s" % ["En chantier" if active else "Suspendu", int(work)] if planned else "À commander après reconnaissance"))
 	text += "\nBois %d/8 · Fibres %d/4\nBiscuit : %s · %d réservées\n%s\n%s" % [materials.wood, materials.fiber, str(amount) + " provisions" if known else "inconnu", reserved, "Récolte désignée" if harvest else "Récolte arrêtée", status]
+	text += "\n" + food_reserve_status()
 	for id in tasks: text += "\nH%d · %s" % [id + 1, description(id)]
 	return text
 

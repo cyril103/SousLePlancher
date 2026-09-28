@@ -55,6 +55,8 @@ Le **lot 45** ajoute la **reconnaissance autonome de l’alcôve** : désigner l
 
 Le **lot 46** relie les **fibres de l’alcôve à l’objectif de réserve commun** : stocks et caisses engagées comptés, dernière caisse partielle et reprise après consommation. Démo `-- --demo-alcove-target`, sauvegarde v27 inchangée ; [règles et essais](docs/conception/gameplay-lot-46.md).
 
+Le **lot 47** relie les **provisions de la cuisine à l’objectif alimentaire commun** : réservations comptées dès la préparation, dernière caisse partielle et reprise après les repas. Démo `-- --demo-kitchen-target`, sauvegarde v27 inchangée ; [règles et essais](docs/conception/gameplay-lot-47.md).
+
 ## Suite de production
 
 Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une carte d’ensemble, une coupe verticale, neuf fiches de zones et un registre des passages. L’existant, la campagne prévue et les extensions différées y sont distingués. Publication autorisée par le joueur ; les implantations futures restent à éprouver, sans changement de l’ordre de réalisation.
