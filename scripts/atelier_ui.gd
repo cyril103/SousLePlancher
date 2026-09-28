@@ -973,7 +973,7 @@ func _refresh_priorities() -> void:
 
 func _make_transfers() -> void:
 	var panel := tray("transfers", "Liaisons de transport")
-	wrapped(panel, "Choisissez une source, une destination et une ressource. Les porteurs répètent le trajet tant que le stock et la place le permettent.", 16)
+	wrapped(panel, "Reliez deux dépôts pour ravitailler automatiquement une ressource, selon les seuils choisis.", 16)
 	var source_line := row(panel)
 	label(source_line, "Source", 16).custom_minimum_size.x = 110
 	transfer_source = OptionButton.new()
@@ -994,7 +994,7 @@ func _make_transfers() -> void:
 	panel.add_child(scroll)
 	transfer_list = column(scroll, 8)
 	transfer_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	wrapped(panel, "Transport dans les priorités individuelles. Deux porteurs par liaison. Les chantiers passent avant ces transferts. Pause termine les trajets ; Arrêter rappelle les charges.", 15)
+	wrapped(panel, "Garder : réserve source. Viser : stock destination (−1 : sans limite). Les caisses en route comptent et terminent leur trajet si un seuil change. Arrêter les rappelle.", 15)
 
 func _refresh_transfers() -> void:
 	if transfer_list == null: return
@@ -1013,13 +1013,31 @@ func _refresh_transfers() -> void:
 		var id := transfer_rows.size()
 		var box := column(transfer_list, 5)
 		var text := wrapped(box, "", 16)
+		var limits := row(box)
+		label(limits, "Garder", 15)
+		var reserve := SpinBox.new()
+		reserve.max_value = 9999
+		reserve.value = game.transfers.orders[id].get("reserve", 0)
+		reserve.custom_minimum_size.x = 95
+		limits.add_child(reserve)
+		label(limits, "Viser", 15)
+		var target := SpinBox.new()
+		target.min_value = -1
+		target.max_value = 9999
+		target.value = game.transfers.orders[id].get("target_stock", -1)
+		target.custom_minimum_size.x = 95
+		limits.add_child(target)
+		reserve.value_changed.connect(func(value: float): game.transfers.set_limits(id, int(value), int(target.value)))
+		target.value_changed.connect(func(value: float): game.transfers.set_limits(id, int(reserve.value), int(value)))
 		var actions := row(box)
 		var toggle := button(actions, "", func(): game.transfers.toggle(id); refresh())
 		button(actions, "Arrêter et rappeler", func(): game.transfers.stop(id); refresh())
-		transfer_rows.append({"box": box, "label": text, "toggle": toggle})
+		transfer_rows.append({"box": box, "label": text, "toggle": toggle, "reserve": reserve, "target": target})
 	for i in range(transfer_rows.size()):
 		transfer_rows[i].label.text = game.transfers.summary(i)
 		transfer_rows[i].toggle.text = "Pause" if game.transfers.orders[i].active else "Reprendre"
+		transfer_rows[i].reserve.set_value_no_signal(game.transfers.orders[i].get("reserve", 0))
+		transfer_rows[i].target.set_value_no_signal(game.transfers.orders[i].get("target_stock", -1))
 
 func _make_fixed_light() -> void:
 	var panel := tray("fixed_light", "Éclairage de la passerelle")

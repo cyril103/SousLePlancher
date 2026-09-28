@@ -29,6 +29,8 @@ Le **lot 32 / étape 11C** commence le parcours guidé : **Objectifs [O]** suit 
 
 Le **lot 33** corrige les rappels pendant une sortie du refuge pour inspection ou équipement. Le chapitre complet est testé depuis une nouvelle partie, avec besoins, passages humains et rechargement d’une expédition chargée : [résultats et essai](docs/conception/gameplay-lot-33.md).
 
+Le **lot 34** ajoute les seuils **Garder / Viser** aux transferts : réserve minimale à la source, objectif à destination et reprise automatique après consommation. Démo `-- --demo-transfer-limits`, sauvegarde v19 compatible en lecture avec les versions précédentes. Voir [les règles et essais](docs/conception/gameplay-lot-34.md).
+
 ## Suite de production
 
 Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une carte d’ensemble, une coupe verticale, neuf fiches de zones et un registre des passages. L’existant, la campagne prévue et les extensions différées y sont distingués. Publication autorisée par le joueur ; les implantations futures restent à éprouver, sans changement de l’ordre de réalisation.

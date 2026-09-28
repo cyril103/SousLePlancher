@@ -4,6 +4,10 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
+## Livraison autorisée — lot 34 : stocks régulés
+
+Après le guidage (lot 32, `879212f`) et la recette depuis zéro (lot 33, `d268d8e`), ajout de seuils aux transferts : réserve source, objectif destination, caisses réservées prises en compte et reprise automatique. Sauvegarde v19 avec migration des anciennes liaisons sans limite. Voir [lot 34](gameplay-lot-34.md). Commit et push autorisés par le joueur.
+
 ## Livraison validée — guidage 11C / lot 32
 
 Le guidage du premier chapitre est validé par le joueur le 28 septembre 2026 : dix objectifs issus de la simulation, prochaine action et accès direct aux commandes. Voir [lot 32](gameplay-lot-32.md). La recette technique du parcours intégral depuis une nouvelle partie est couverte par le [lot 33](gameplay-lot-33.md), dont le commit et le push sont autorisés par le joueur : dix objectifs, besoins et menaces actifs, reprise chargée depuis une sauvegarde. Un blocage de porte pendant les rappels est corrigé. L’appréciation de l’équilibrage reste ouverte ; 11C n’est pas déclarée validée dans son ensemble.
@@ -33,7 +37,7 @@ Bilan du lot 30 validé par le joueur : [fiche accès cuisine](gameplay-lot-30.m
 | Habitants | Modèles Blender animés : marche, travail, caisse, montée/descente et transitions validés | Diversité et finition ultérieures ; aucune refonte nécessaire pour la prochaine étape |
 | Interface | Atelier miniature, désignation de l’alcôve et tableau de priorités 0–3 par habitant | Pas de désignation générique sur toute la carte |
 | Navigation | Terrain 42 × 26 (surface ×4), obstacles, portes, échelle, passerelle, réservations et files | Liens spécialisés ; pas de navigation générale entre secteurs ni de capacité démontrée à 30–50 habitants |
-| Transport | Prise, portage, dépose, annulation, rappel et liaisons récurrentes entre dépôts | Pas de quotas ; missions de l’alcôve encore spécialisées |
+| Transport | Prise, portage, dépose, annulation, rappel et liaisons récurrentes entre dépôts | Seuils par liaison ajoutés au lot 34 local ; missions de l’alcôve encore spécialisées |
 | Besoins | Sommeil, faim et soif autonomes, accès physique à la nourriture et à l’eau | Secours au sol et soin au lit validés ; pas d’humeur, relations ni milieu simulé |
 | Soins (lot 29 validé) | Blessure de scénario, secours autonome, deux fibres livrées, bandage, convalescence et reprise | Sol uniquement, entrée de blessure sur habitant disponible ; pas de combat, décès ou alimentation assistée |
 | Couchages | Lits fabriqués, propriétaire, alcôves ; chambres compactes reconnues, intimité selon porte et occupants | Forme prédéfinie, un lit par chambre ; pas de dortoir multi-lit ni de murs libres |

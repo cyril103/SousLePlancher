@@ -223,6 +223,7 @@ func _ready() -> void:
 	if "--demo-alcove-haul" in OS.get_cmdline_user_args(): prepare_alcove_haul_demo()
 	if "--demo-ant" in OS.get_cmdline_user_args(): prepare_ant_demo()
 	if "--demo-kitchen" in OS.get_cmdline_user_args(): prepare_kitchen_demo()
+	if "--demo-transfer-limits" in OS.get_cmdline_user_args(): prepare_transfer_limits_demo()
 	if "--demo-health" in OS.get_cmdline_user_args(): prepare_health_demo()
 	if "--demo-privacy" in OS.get_cmdline_user_args(): prepare_privacy_demo()
 	if "--demo-room" in OS.get_cmdline_user_args(): prepare_room_demo()
@@ -1365,6 +1366,14 @@ func prepare_transfers_demo() -> void:
 	hud.transfer_target.select(0)
 	hud.transfer_kind.select(Depots.KINDS.find("wood"))
 	_news("7B · Espace : deux porteurs vident les 12 bois du dépôt de l’étage vers le refuge. Essayez Pause, Arrêter et rappeler, puis Reprendre. F5/F9 conserve la liaison et les caisses.")
+
+func prepare_transfer_limits_demo() -> void:
+	prepare_transfers_demo()
+	transfers.set_limits(0, 5, 17)
+	save_path = "user://saves/transfer_limits_demo.json"
+	get_window().title = "Sous le plancher — Stocks régulés"
+	_refresh_ui()
+	_news("Espace : 5 bois vers le refuge. Garder / Viser règle les seuils ; F5/F9 les conserve.")
 
 func prepare_fixed_light_demo() -> void:
 	prepare_transfers_demo()

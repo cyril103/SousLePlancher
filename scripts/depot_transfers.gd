@@ -29,8 +29,26 @@ func add(source: int, target: int, kind: String) -> bool:
 	if cycle(source, target, kind):
 		game._news("Cette liaison créerait une boucle de transport pour la même ressource.")
 		return false
-	orders.append({"source": source, "target": target, "kind": kind, "active": true, "delivered": 0, "status": "Attend un porteur disponible."})
+	orders.append({"source": source, "target": target, "kind": kind, "active": true, "delivered": 0, "status": "Attend un porteur disponible.", "reserve": 0, "target_stock": -1})
 	return true
+
+func set_limits(id: int, reserve: int, target_stock: int) -> bool:
+	if id < 0 or id >= orders.size() or reserve < 0 or reserve > 9999 or target_stock < -1 or target_stock > 9999: return false
+	orders[id].reserve = reserve
+	orders[id].target_stock = target_stock
+	return true
+
+func surplus(order: Dictionary) -> int:
+	return maxi(0, game.depots.available(order.source, order.kind) - int(order.get("reserve", 0)))
+
+func missing(order: Dictionary) -> int:
+	var target: int = order.get("target_stock", -1)
+	if target < 0: return game.depots.free_space(order.target)
+	var expected: int = game.depots.stocks(order.target).get(order.kind, 0)
+	# Include every incoming cargo, including other links, harvests and recalled loads.
+	for claim in game.depots.incoming.values():
+		if claim.id == order.target and claim.kind == order.kind: expected += claim.quantity
+	return maxi(0, target - expected)
 
 func toggle(id: int) -> void:
 	var order: Dictionary = orders[id]
@@ -52,6 +70,8 @@ func blocked(order: Dictionary) -> String:
 		if id > 0 and not game.depots.sites[id].built: return "Attend la construction des dépôts."
 	if not order.kind in game.depots.sites[order.target].filters: return "Filtre de destination fermé."
 	if game.depots.available(order.source, order.kind) <= 0: return "Source vide ou déjà réservée."
+	if surplus(order) <= 0: return "Réserve à la source préservée ; attend un réapprovisionnement."
+	if missing(order) <= 0: return "Objectif de stock atteint ou couvert par les caisses en route."
 	if game.depots.free_space(order.target) <= 0: return "Destination pleine ou places réservées."
 	return ""
 
@@ -72,7 +92,7 @@ func start(c: WorkerDelivery) -> bool:
 		if c.inside_refuge:
 			c.change("leave_home")
 			return true
-		var quantity: int = mini(3 + game.workshops, mini(game.depots.available(order.source, order.kind), game.depots.free_space(order.target)))
+		var quantity: int = mini(3 + game.workshops, mini(surplus(order), mini(missing(order), game.depots.free_space(order.target))))
 		var token := "transfer:%d" % c.owner
 		game.depots.reserve_out(token + ":out", order.source, order.kind, quantity)
 		game.depots.reserve_in(token + ":in", {"id": order.target, "kind": order.kind, "quantity": quantity})
@@ -174,6 +194,7 @@ func summary(id: int) -> String:
 	var order: Dictionary = orders[id]
 	var reason := blocked(order)
 	var text := "%s · %s → %s\n%d livré(s) · %s" % [game.NAMES[order.kind], "Refuge" if order.source == 0 else "Dépôt %d" % order.source, "Refuge" if order.target == 0 else "Dépôt %d" % order.target, order.delivered, reason if not reason.is_empty() else order.status]
+	text += "\nRéserve source : %d · Objectif destination : %s" % [order.get("reserve", 0), "sans limite" if order.get("target_stock", -1) < 0 else str(order.target_stock)]
 	for owner in jobs:
 		if jobs[owner].order == id: text += "\nH%d · %s" % [owner + 1, description(game.workers[owner].delivery)]
 	return text
@@ -183,6 +204,9 @@ func snapshot() -> Dictionary:
 
 func restore(data: Dictionary) -> void:
 	orders = data.get("orders", []).duplicate(true)
+	for order in orders:
+		if not order.has("reserve"): order.reserve = 0
+		if not order.has("target_stock"): order.target_stock = -1
 	jobs = data.get("jobs", {}).duplicate(true)
 	cursor = int(data.get("cursor", 0))
 
@@ -193,6 +217,9 @@ static func valid(value: Variant, runtime: Dictionary, data: Dictionary) -> bool
 	var duplicates := {}
 	for order in value.orders:
 		if not order is Dictionary or not order.has_all(["source", "target", "kind", "active", "delivered", "status"]): return false
+		if data.version >= 19 and not order.has_all(["reserve", "target_stock"]): return false
+		for field in ["reserve", "target_stock"]:
+			if order.has(field) and (not order[field] is int or order[field] < (-1 if field == "target_stock" else 0) or order[field] > 9999): return false
 		for key in ["source", "target"]:
 			if not order[key] is int or order[key] < 0 or order[key] >= data.depots.size(): return false
 		if order.source == order.target or not order.kind in ["food", "water", "wood", "fiber"] or not order.active is bool or not order.delivered is int or order.delivered < 0 or not order.status is String: return false
