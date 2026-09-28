@@ -235,6 +235,7 @@ func _ready() -> void:
 	if "--demo-auto-refills" in OS.get_cmdline_user_args(): prepare_auto_refills_demo()
 	if "--demo-construction-board" in OS.get_cmdline_user_args(): prepare_construction_board_demo()
 	if "--demo-local-harvest" in OS.get_cmdline_user_args(): prepare_local_harvest_demo()
+	if "--demo-harvest-source" in OS.get_cmdline_user_args(): prepare_harvest_source_demo()
 	if "--demo-harvest-targets" in OS.get_cmdline_user_args(): prepare_harvest_targets_demo()
 	if "--demo-harvest-status" in OS.get_cmdline_user_args(): prepare_harvest_status_demo()
 	if "--demo-lantern-production" in OS.get_cmdline_user_args(): prepare_lantern_production_demo()
@@ -591,7 +592,10 @@ func _unhandled_input(event: InputEvent) -> void:
 						var hit = Plane(Vector3.UP, patches[i].pos.y).intersects_ray(camera.project_ray_origin(event.position), camera.project_ray_normal(event.position))
 						if patches[i].discovered and hit != null and hit.distance_to(patches[i].pos) < 1.1:
 							selected = i
-					_show_tray("people" if selected >= 0 else "")
+					if selected in local_harvest.PATCHES:
+						hud.open_harvest_source(selected)
+					else:
+						_show_tray("people" if selected >= 0 else "")
 	if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE):
 		yaw -= event.relative.x * 0.006
 	_update_camera()
@@ -1561,6 +1565,15 @@ func prepare_local_harvest_demo() -> void:
 	paused = true
 	_show_tray("local_harvest")
 	_news("Récoltes · Espace : les habitants libres récoltent bois et fibres. Suspendre laisse terminer les caisses ; H rappelle. F5/F9 conserve les ordres et les charges.")
+
+func prepare_harvest_source_demo() -> void:
+	prepare_local_harvest_demo()
+	local_harvest.set_active(2, false)
+	local_harvest.set_active(4, false)
+	local_harvest.set_target("wood", 17)
+	save_path = "user://saves/harvest_source_demo.json"
+	hud.open_harvest_source(2)
+	_news("Gisements · Cliquez sur le bois, désignez sa récolte puis Espace. Suspendre laisse finir les charges ; le bouton Affectations manuelles conserve la commande individuelle.")
 
 func prepare_harvest_targets_demo() -> void:
 	prepare_local_harvest_demo()

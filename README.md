@@ -59,6 +59,8 @@ Le **lot 47** relie les **provisions de la cuisine à l’objectif alimentaire c
 
 Le **lot 48** ajoute les **diagnostics des expéditions** aux objectifs de réserve : alcôve et cuisine, autonomie des lanternes, accès, habitants et dépôts, avec raccourcis vers les commandes utiles. Démo `-- --demo-remote-harvest-status`, sauvegarde v27 inchangée ; [règles et essais](docs/conception/gameplay-lot-48.md).
 
+Le **lot 49** apporte les **commandes de récolte au clic sur les gisements du refuge** : désigner, suspendre, consulter les réservations et ouvrir les priorités ou les affectations manuelles. Démo `-- --demo-harvest-source`, sauvegarde v27 inchangée ; [règles et essais](docs/conception/gameplay-lot-49.md).
+
 ## Suite de production
 
 Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une carte d’ensemble, une coupe verticale, neuf fiches de zones et un registre des passages. L’existant, la campagne prévue et les extensions différées y sont distingués. Publication autorisée par le joueur ; les implantations futures restent à éprouver, sans changement de l’ordre de réalisation.

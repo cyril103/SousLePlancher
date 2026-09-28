@@ -5,6 +5,8 @@ const RemoteHarvestStatus = preload("res://scripts/remote_harvest_status.gd")
 const ConstructionBoard = preload("res://scripts/construction_board.gd")
 var harvest_target_controls: Array[Dictionary] = []
 var local_harvest_rows: Array[Dictionary] = []
+var source_detail: Label
+var source_toggle: Button
 var construction_list: VBoxContainer
 var construction_note: Label
 var construction_rows: Array[Dictionary] = []
@@ -636,6 +638,7 @@ func refresh() -> void:
 	_refresh_priorities()
 	_refresh_construction_board()
 	_refresh_local_harvest()
+	_refresh_harvest_source()
 	_refresh_harvest_targets()
 	if designation_label != null:
 		designation_label.text = game.designations.summary()
@@ -1369,6 +1372,7 @@ func _open_construction_entry(index: int) -> void:
 	game._show_tray(entry.panel)
 
 func _make_local_harvest() -> void:
+	_make_harvest_source()
 	_make_harvest_targets()
 	var panel := tray("local_harvest", "Récoltes du refuge")
 	wrapped(panel, "Désignez les gisements au sol. Les habitants sans affectation récoltent selon leurs priorités ; besoins et rappel passent avant.", 15)
@@ -1382,6 +1386,7 @@ func _make_local_harvest() -> void:
 		var detail := wrapped(list, "", 15)
 		var actions := row(list, 6)
 		var toggle := button(actions, "", func(): game.local_harvest.set_active(id, not game.patches[id].autoharvest); refresh())
+		button(actions, "Détails", func(): open_harvest_source(id))
 		button(actions, "Centrer", func(): game.fissure.follow = -1; game.focus = game.patches[id].pos; game._update_camera())
 		local_harvest_rows.append({"id": id, "detail": detail, "toggle": toggle})
 	button(panel, "Objectifs de réserve", func(): game._show_tray("harvest_targets"))
@@ -1395,6 +1400,44 @@ func _refresh_local_harvest() -> void:
 		controls.detail.text = game.local_harvest.summary(controls.id)
 		controls.toggle.text = "Suspendre" if p.autoharvest else "Désigner"
 		controls.toggle.disabled = not p.autoharvest and (not p.discovered or p.amount <= 0)
+
+func open_harvest_source(id: int) -> void:
+	if id not in game.local_harvest.PATCHES or not game.patches[id].discovered: return
+	game.selected = id
+	game.hud.assignment_target = -1
+	game._show_tray("harvest_source")
+
+func _make_harvest_source() -> void:
+	var panel := tray("harvest_source", "Gisement du refuge")
+	source_detail = wrapped(panel, "", 16)
+	source_toggle = button(panel, "Désigner la récolte", _toggle_harvest_source)
+	wrapped(panel, "Les habitants sans affectation récoltent selon leurs priorités et l’objectif de réserve. Suspendre empêche les nouveaux départs automatiques ; les caisses engagées sont rapportées.", 15)
+	button(panel, "Objectifs et diagnostics des réserves", func(): game._show_tray("harvest_targets"))
+	button(panel, "Priorités de travail", func(): game._show_tray("priorities"))
+	button(panel, "Affectations manuelles…", func(): game._show_tray("people"))
+	wrapped(panel, "Les affectations manuelles et les récoltes urgentes restent indépendantes de cette désignation. H rappelle les habitants.", 14)
+	button(panel, "Tous les gisements du refuge", func(): game._show_tray("local_harvest"))
+
+func _toggle_harvest_source() -> void:
+	var id: int = game.selected
+	if game.ended or id not in game.local_harvest.PATCHES or not game.patches[id].discovered: return
+	game.local_harvest.set_active(id, not game.patches[id].get("autoharvest", false))
+	refresh()
+
+func _refresh_harvest_source() -> void:
+	if game.active_tray != "harvest_source": return
+	var id: int = game.selected
+	if id not in game.local_harvest.PATCHES or not game.patches[id].discovered:
+		source_detail.text = "Sélectionnez un gisement découvert du refuge."
+		source_toggle.disabled = true
+		return
+	var p: Dictionary = game.patches[id]
+	var assigned := 0
+	for w in game.workers:
+		if w.patch == id: assigned += 1
+	source_detail.text = game.local_harvest.summary(id) + "\n\n%d réservé(s) · %d affectation(s) manuelle(s)." % [p.reserved, assigned]
+	source_toggle.text = "Suspendre la récolte" if p.get("autoharvest", false) else "Désigner la récolte"
+	source_toggle.disabled = game.ended or (p.amount <= 0 and not p.get("autoharvest", false))
 
 func _make_harvest_targets() -> void:
 	var panel := tray("harvest_targets", "Objectifs de réserve")

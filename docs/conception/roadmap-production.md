@@ -4,7 +4,11 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
-## Livraison autorisée — lot 48 : diagnostic des expéditions
+## Livraison autorisée — lot 49 : récoltes depuis la carte
+
+Le clic sur un gisement du refuge ouvre sa désignation autonome, son état et les commandes associées. La suspension laisse finir les charges ; les affectations manuelles restent accessibles. Voir [lot 49](gameplay-lot-49.md). Commit et push autorisés par le joueur.
+
+## Livraison publiée — lot 48 : diagnostic des expéditions (`5938211`)
 
 Les objectifs de réserve distinguent les sources du refuge et les expéditions de l’alcôve ou de la cuisine. Les raisons d’attente proposent un accès aux commandes correspondantes. Lecture seule, sauvegarde v27 inchangée. Voir [lot 48](gameplay-lot-48.md). Commit et push autorisés par le joueur.
 
