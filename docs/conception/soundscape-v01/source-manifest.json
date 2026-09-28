@@ -1,0 +1,488 @@
+{
+  "sources": {
+    "creak": {
+      "page": "https://freesound.org/people/Rudmer_Rotteveel/sounds/502505/",
+      "download": "https://cdn.freesound.org/previews/502/502505_4921277-hq.mp3",
+      "license": "CC0-1.0",
+      "format": "public HQ MP3 preview",
+      "sha256": "6eeb667fa6141151f9c37bd04bd9cbe229944f5e24efea7a9163e8150e9a8bb5"
+    },
+    "saw": {
+      "page": "https://freesound.org/people/Mateusz_Chenc/sounds/519661/",
+      "download": "https://cdn.freesound.org/previews/519/519661_10756146-hq.mp3",
+      "license": "CC0-1.0",
+      "format": "public HQ MP3 preview",
+      "sha256": "e8b533834c438c96cc119c2ffc7d19f17c1e763e022fcfa7ab58135fc23cae2f"
+    },
+    "fire": {
+      "page": "https://freesound.org/people/florianreichelt/sounds/563766/",
+      "download": "https://cdn.freesound.org/previews/563/563766_6253486-hq.mp3",
+      "license": "CC0-1.0",
+      "format": "public HQ MP3 preview",
+      "sha256": "23f8893d6264ea499c6422584ae677fcf4170760669a057fdb0f155f674868b5"
+    },
+    "kenney": {
+      "page": "https://kenney.nl/assets/impact-sounds",
+      "download": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip",
+      "license": "CC0-1.0",
+      "sha256": "029d734af1582474edf3a694d1b0cebc97c1c152f2f39fa34d4c2bafc5de77f8"
+    }
+  },
+  "files": {
+    "giant_00.wav": {
+      "group": "giant",
+      "duration": 0.3935625,
+      "loop": false,
+      "sources": [
+        "kenney",
+        "original body resonance"
+      ],
+      "peak_dbfs": -3.098039388656616,
+      "sha256": "d4762e448aef9e18fe126cce48a22f039031671f0954ae86628b97dc06e6b769"
+    },
+    "step_00.wav": {
+      "group": "step",
+      "duration": 0.11616666666666667,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -9.897001266479492,
+      "sha256": "033d78f1b85edf532be0f8cfa5440e37fbbef12760cb92ff284f34e8b2c575a1"
+    },
+    "hammer_00.wav": {
+      "group": "hammer",
+      "duration": 0.1518125,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -6.020600318908691,
+      "sha256": "ec170f0afa478bf5525ba67ab12c1a6515d8269b2d564537876cd5dcf15144f9"
+    },
+    "crate_00.wav": {
+      "group": "crate",
+      "duration": 0.22208333333333333,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -6.375175476074219,
+      "sha256": "47855ece1f958b08b10b75c3e66b4e599c625d5d87b3f70a82b35f9b4655ba28"
+    },
+    "fiber_00.wav": {
+      "group": "fiber",
+      "duration": 0.1536875,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -10.457573890686035,
+      "sha256": "d70deda9c49f21888a1fa0e278852df092230bb21b2b05ab8d38c9f5050dacba"
+    },
+    "crumb_00.wav": {
+      "group": "crumb",
+      "duration": 0.168375,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -10.457573890686035,
+      "sha256": "25bccefa8d0640fedeab4350740a9e95da16c3e288cfc268d84454bb8d3c5b7b"
+    },
+    "creak_00.wav": {
+      "group": "creak",
+      "duration": 1.11325,
+      "loop": false,
+      "sources": [
+        "creak"
+      ],
+      "peak_dbfs": -6.9357500076293945,
+      "sha256": "223a043faf576b11e48fc89d208dea1df53c650487c792348b47e0fa15711411"
+    },
+    "giant_01.wav": {
+      "group": "giant",
+      "duration": 0.3195208333333333,
+      "loop": false,
+      "sources": [
+        "kenney",
+        "original body resonance"
+      ],
+      "peak_dbfs": -3.098039388656616,
+      "sha256": "aac29d2e2fa3246a64fa4aa10bf983859ce0ef326f0e6564a6b0abc6a971cb31"
+    },
+    "step_01.wav": {
+      "group": "step",
+      "duration": 0.19354166666666667,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -9.897001266479492,
+      "sha256": "b8c9317cbd626ff80db82942f9920b980cd202134b25ba7d24bb6b1aa2c35e25"
+    },
+    "hammer_01.wav": {
+      "group": "hammer",
+      "duration": 0.13152083333333334,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -6.020600318908691,
+      "sha256": "34415dce756ee4fcb6d8947ac8b5bd348e4b2f310f5d8d89ae348f207c2bfe8f"
+    },
+    "crate_01.wav": {
+      "group": "crate",
+      "duration": 0.20885416666666667,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -6.375175476074219,
+      "sha256": "3d0ca8bec7ff52cf8f9d0bc05b977ca48477c67a6779e32ecd3e7e051c53ea22"
+    },
+    "fiber_01.wav": {
+      "group": "fiber",
+      "duration": 0.23110416666666667,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -10.457573890686035,
+      "sha256": "542d9f9ab277d9c719010c203bfcffa512ef771b46327eb69575af35e2fc9086"
+    },
+    "crumb_01.wav": {
+      "group": "crumb",
+      "duration": 0.2335625,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -10.457573890686035,
+      "sha256": "d36d94a45b9097813ed7341ff8b46c49acd612fb32ee5bca26334f38642752ac"
+    },
+    "creak_01.wav": {
+      "group": "creak",
+      "duration": 1.000625,
+      "loop": false,
+      "sources": [
+        "creak"
+      ],
+      "peak_dbfs": -6.9357500076293945,
+      "sha256": "7106fa3dcdfe146b7d74570497d5f77f0b88b9295d2088a4d899b0430082fe73"
+    },
+    "giant_02.wav": {
+      "group": "giant",
+      "duration": 0.39579166666666665,
+      "loop": false,
+      "sources": [
+        "kenney",
+        "original body resonance"
+      ],
+      "peak_dbfs": -3.098039388656616,
+      "sha256": "510e9b1b2c161e514ab265ed35fba18830e885d5ace73eb6732f3c63fbe2d2e1"
+    },
+    "step_02.wav": {
+      "group": "step",
+      "duration": 0.19339583333333332,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -9.897001266479492,
+      "sha256": "a72e650637dd9d960d16a4fc85298ac39fa199de0aabe427f5d8adf1e1a72cac"
+    },
+    "hammer_02.wav": {
+      "group": "hammer",
+      "duration": 0.14764583333333334,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -6.020600318908691,
+      "sha256": "5cf1a217cbf30745a40da1625b91b932e9d515f193a149a959471711eea91d91"
+    },
+    "crate_02.wav": {
+      "group": "crate",
+      "duration": 0.229125,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -6.375175476074219,
+      "sha256": "ccfbb5af99f7d4ef9d55118b335e269a7c67e04229b82b336a5d7ff92e6f98d1"
+    },
+    "fiber_02.wav": {
+      "group": "fiber",
+      "duration": 0.23110416666666667,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -10.457573890686035,
+      "sha256": "eddf31d91b19283842f31f83cf4b657a9366abf02b6f94f201f5b6811c62ae9c"
+    },
+    "crumb_02.wav": {
+      "group": "crumb",
+      "duration": 0.1855625,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -10.457573890686035,
+      "sha256": "cf6c7d4171e1628c6f028609994f0bebb6787d215d775157d669ba553df82400"
+    },
+    "creak_02.wav": {
+      "group": "creak",
+      "duration": 0.9077916666666667,
+      "loop": false,
+      "sources": [
+        "creak"
+      ],
+      "peak_dbfs": -6.9357500076293945,
+      "sha256": "2a9914b734afe539f9c88de76d433743d5b9cfda4e8ed77f3f5304d4b2d61e0c"
+    },
+    "giant_03.wav": {
+      "group": "giant",
+      "duration": 0.39525,
+      "loop": false,
+      "sources": [
+        "kenney",
+        "original body resonance"
+      ],
+      "peak_dbfs": -3.098039388656616,
+      "sha256": "50ad7cdcfa70b8edc27b50fc4aea47dcf11881f0a96e52876df2c3824d922030"
+    },
+    "step_03.wav": {
+      "group": "step",
+      "duration": 0.11547916666666666,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -9.897001266479492,
+      "sha256": "c72a90b8e39536d11856d525cbe63b6556660a8cbfcb1226bb90b3cd0090c149"
+    },
+    "hammer_03.wav": {
+      "group": "hammer",
+      "duration": 0.13152083333333334,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -6.020600318908691,
+      "sha256": "a8a5f607b68c295d991c83e32437fe16009d6d1f436050459d2212f54cb10aed"
+    },
+    "crate_03.wav": {
+      "group": "crate",
+      "duration": 0.22902083333333334,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -6.375175476074219,
+      "sha256": "e387d5e83628b6324d13a08faecbd384f73c149febc0fa129aae6e385a7d8f67"
+    },
+    "fiber_03.wav": {
+      "group": "fiber",
+      "duration": 0.13091666666666665,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -10.457573890686035,
+      "sha256": "633c54c666612181e0dac9f0e766d60b753727881a9de117d093e0e68293438b"
+    },
+    "crumb_03.wav": {
+      "group": "crumb",
+      "duration": 0.19058333333333333,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -10.457573890686035,
+      "sha256": "b52222ce61d4a9e9fc40b70e40c4183f5a1af550646c021cd669402b21f37835"
+    },
+    "creak_03.wav": {
+      "group": "creak",
+      "duration": 0.8314583333333333,
+      "loop": false,
+      "sources": [
+        "creak"
+      ],
+      "peak_dbfs": -6.9357500076293945,
+      "sha256": "7915699705ebd71013ae32886c3688e462acec39ac3e1d7f196b92d32e5bf4b9"
+    },
+    "giant_04.wav": {
+      "group": "giant",
+      "duration": 0.29354166666666665,
+      "loop": false,
+      "sources": [
+        "kenney",
+        "original body resonance"
+      ],
+      "peak_dbfs": -3.098039388656616,
+      "sha256": "4431da8b8cc8c8f75fc4fa6769cf1f9dc9dd11844cdee12d2a37438d0dac65ac"
+    },
+    "step_04.wav": {
+      "group": "step",
+      "duration": 0.11552083333333334,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -9.897001266479492,
+      "sha256": "6dc7fa6943d6fb47a02018509d3447b4060a4877b85584fac5127053597878f4"
+    },
+    "hammer_04.wav": {
+      "group": "hammer",
+      "duration": 0.1311875,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -6.020600318908691,
+      "sha256": "872499b495c233001c5f46f20415a6ff88d3047815eb4a9d0e28c875bc1b430f"
+    },
+    "crate_04.wav": {
+      "group": "crate",
+      "duration": 0.26364583333333336,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -6.3751749992370605,
+      "sha256": "fcd14d8601b4432944b8cd04e75a9fc8a384bd5fd2a48323a79dc8653a671f02"
+    },
+    "fiber_04.wav": {
+      "group": "fiber",
+      "duration": 0.14235416666666667,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -10.457573890686035,
+      "sha256": "26d99ae8bcd7f46387aeef148939ce2342be47a17b64b49e4e724da7053264b0"
+    },
+    "crumb_04.wav": {
+      "group": "crumb",
+      "duration": 0.19741666666666666,
+      "loop": false,
+      "sources": [
+        "kenney"
+      ],
+      "peak_dbfs": -10.457573890686035,
+      "sha256": "8f2b08bfa934a2f5210c54ceaa51db778c8be62f4a96c0f00bc5b861c8510955"
+    },
+    "creak_04.wav": {
+      "group": "creak",
+      "duration": 0.7726041666666666,
+      "loop": false,
+      "sources": [
+        "creak"
+      ],
+      "peak_dbfs": -6.9357500076293945,
+      "sha256": "c528ec93e71e4fbbcff9572a8cd4c566a768767b43f835fc1b945fb7accc2bbe"
+    },
+    "scrape_00.wav": {
+      "group": "scrape",
+      "duration": 0.8,
+      "loop": false,
+      "sources": [
+        "saw"
+      ],
+      "peak_dbfs": -8.873950004577637,
+      "sha256": "b2d84bbdd2cdb02f92710b6a29087a410a47b95a868367786e023307c9428448"
+    },
+    "water_00.wav": {
+      "group": "water",
+      "duration": 0.8075208333333334,
+      "loop": false,
+      "sources": [
+        "original procedural droplets"
+      ],
+      "peak_dbfs": -10.457573890686035,
+      "sha256": "607daaa51b70674756259e63ad45d62f7363e8cd3b7fd21928afa0c2d3deee3e"
+    },
+    "scrape_01.wav": {
+      "group": "scrape",
+      "duration": 0.8,
+      "loop": false,
+      "sources": [
+        "saw"
+      ],
+      "peak_dbfs": -8.873950004577637,
+      "sha256": "eb38ea27530d9d326cdab03ee97622bbb4fd1e66dfad5482552bae943d76ee5f"
+    },
+    "water_01.wav": {
+      "group": "water",
+      "duration": 0.8042916666666666,
+      "loop": false,
+      "sources": [
+        "original procedural droplets"
+      ],
+      "peak_dbfs": -10.457573890686035,
+      "sha256": "2916e747aac46c4b11467623328c2c44463751cca19b3e2a1742670d53c4502c"
+    },
+    "scrape_02.wav": {
+      "group": "scrape",
+      "duration": 0.8,
+      "loop": false,
+      "sources": [
+        "saw"
+      ],
+      "peak_dbfs": -8.873950004577637,
+      "sha256": "6e7f0703c8ccad3d4a50af20858966c2ebdbf6eb5552e5d3fc19a713191be996"
+    },
+    "water_02.wav": {
+      "group": "water",
+      "duration": 0.7998541666666666,
+      "loop": false,
+      "sources": [
+        "original procedural droplets"
+      ],
+      "peak_dbfs": -10.457573890686035,
+      "sha256": "d0636314399209e57e3979219cf3ddd8fef506f2774bf469d5847cdf7c3e0821"
+    },
+    "door_00.wav": {
+      "group": "door",
+      "duration": 0.6064583333333333,
+      "loop": false,
+      "sources": [
+        "creak"
+      ],
+      "peak_dbfs": -10.457573890686035,
+      "sha256": "96952198efb9750378aa37b1f11ac29de297d0c7ef066dbd33e4eb6790d9ccef"
+    },
+    "door_01.wav": {
+      "group": "door",
+      "duration": 0.7163125,
+      "loop": false,
+      "sources": [
+        "creak"
+      ],
+      "peak_dbfs": -10.457573890686035,
+      "sha256": "63bcca3efabbb43a132576d6530ef7966e8dc11407d2678a66e8e10e7f1b71ba"
+    },
+    "fire_00.wav": {
+      "group": "fire",
+      "duration": 23.0,
+      "loop": true,
+      "sources": [
+        "fire"
+      ],
+      "peak_dbfs": -13.151546478271484,
+      "sha256": "0122f0b259220abe7b25217e52413c0b2ff35f55a42eae4e4e1d02e7a8fcbb3e"
+    },
+    "room_00.wav": {
+      "group": "room",
+      "duration": 40.0,
+      "loop": true,
+      "sources": [
+        "original filtered air synthesis"
+      ],
+      "peak_dbfs": -18.41637420654297,
+      "sha256": "24bf893b4c9f0aabaa50dbd81161a1968b2e2ec5d917664da643e06014db8a35"
+    }
+  }
+}

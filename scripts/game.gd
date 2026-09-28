@@ -21,6 +21,7 @@ var fixed_lighting := preload("res://scripts/fixed_lighting.gd").new()
 var transfers := preload("res://scripts/depot_transfers.gd").new()
 var priorities := preload("res://scripts/work_priorities.gd").new()
 var local_harvest := preload("res://scripts/local_harvest.gd").new()
+var soundscape := preload("res://scripts/world_soundscape.gd").new()
 var designations := preload("res://scripts/work_designations.gd").new()
 const HOME := Vector3(-3, 0, 1)
 const COSTS := {"depot": {"wood": 6, "fiber": 4}, "bed": {"wood": 4, "fiber": 3}, "private_bed": {"wood": 6, "fiber": 5}, "shelter": {"wood": 8, "fiber": 4}, "workshop": {"wood": 10, "fiber": 6}}
@@ -99,6 +100,7 @@ var route_mesh: MeshInstance3D
 var route_timer := 0.0
 
 func _ready() -> void:
+	get_tree().auto_accept_quit = false
 	ant.game = self
 	kitchen.game = self
 	health.game = self
@@ -165,10 +167,15 @@ func _ready() -> void:
 	designations.game = self
 	designations.setup()
 	_refresh_save_state()
+	soundscape.game = self
+	add_child(soundscape)
 	_make_ui()
 	_refresh_ui()
 	if get_meta("restore_mode", false): return
 	get_node("/root/MenuMusic").bind_menu(start_panel)
+	if "--demo-soundscape" in OS.get_cmdline_user_args():
+		prepare_soundscape_demo()
+		return
 	if "--demo-deliveries" in OS.get_cmdline_user_args() or "--demo-navigation" in OS.get_cmdline_user_args():
 		start_panel.hide()
 		paused = false
@@ -646,6 +653,10 @@ func _toggle_fullscreen() -> void:
 	else:
 		window.mode = Window.MODE_FULLSCREEN
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST and is_instance_valid(soundscape) and soundscape.is_inside_tree():
+		soundscape.shutdown_and_quit()
+
 func _process(delta: float) -> void:
 	notice_timer = maxf(0, notice_timer - delta)
 	news_label.visible = notice_timer > 0 or build_mode != ""
@@ -670,6 +681,7 @@ func _process(delta: float) -> void:
 	_try_checkpoint()
 	_refresh_ui()
 	_update_routes(delta)
+	soundscape.update(delta)
 
 func simulate(dt: float) -> void:
 	torches.update_production()
@@ -1584,6 +1596,19 @@ func prepare_local_harvest_demo() -> void:
 	paused = true
 	_show_tray("local_harvest")
 	_news("Récoltes · Espace : les habitants libres récoltent bois et fibres. Suspendre laisse terminer les caisses ; H rappelle. F5/F9 conserve les ordres et les charges.")
+
+func prepare_soundscape_demo() -> void:
+	prepare_local_harvest_demo()
+	for i in [2, 3]: workers[i].priorities = {"collect": 0, "transport": 1, "build": 1}
+	_choose_build("bed")
+	_place_build(Vector3(-3, 0, -4))
+	elapsed = 50.0
+	event_index = 0
+	paused = false
+	save_path = "user://saves/soundscape_demo.json"
+	_show_tray("")
+	get_window().title = "Sous le plancher — Ambiance sonore"
+	_news("Écoute · Récolte, livraisons et chantier. Les humains arrivent dans 18 secondes. Espace : pause ; aide [?] : volume des ambiances.")
 
 func prepare_harvest_source_demo() -> void:
 	prepare_local_harvest_demo()

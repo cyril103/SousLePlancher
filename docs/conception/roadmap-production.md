@@ -4,7 +4,11 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
-## Livraison autorisée — lot 54 : thème musical de l’accueil
+## Livraison autorisée — lot 55 : ambiances et bruitages du monde
+
+45 sons en 12 familles, liés aux déplacements, aux charges, au travail et au passage des humains. Spatialisation, variantes, mixage borné et réglages indépendants. Voir [lot 55](gameplay-lot-55.md). Mix renforcé pour les haut-parleurs et validé par le joueur ; commit et push autorisés.
+
+## Livraison publiée — lot 54 : thème musical de l’accueil (`087ad90`)
 
 Composition originale « Une lumière sous les lames », boucle de 80 secondes continue entre splashscreen et accueil, commande de coupure et fondu vers la partie. Version d’écoute, MIDI et sources de production disponibles. Voir [lot 54](gameplay-lot-54.md). Validé par le joueur ; commit et push autorisés.
 

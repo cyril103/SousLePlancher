@@ -71,6 +71,8 @@ Le **lot 53** ajoute un **splashscreen aléatoire au lancement** parmi les cinq 
 
 Le **lot 54** ajoute **Une lumière sous les lames**, thème original de 80 secondes en boucle du splashscreen à l’accueil, avec fondu vers la partie et bouton de coupure. Version d’écoute de 1 min 28, MIDI et sources disponibles ; [écoute et production](docs/conception/music-v01/README.md), [intégration et essais](docs/conception/gameplay-lot-54.md).
 
+Le **lot 55** ajoute **45 sons d’ambiance et bruitages spatialisés** : pas au-dessus du refuge, grincements, déplacements, récoltes, marteau et livraisons, porte et flammes. Volume indépendant dans Aide / F1. Démo `-- --demo-soundscape` ; [écoute et sources](docs/conception/soundscape-v01/README.md), [intégration et essais](docs/conception/gameplay-lot-55.md).
+
 ## Suite de production
 
 Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une carte d’ensemble, une coupe verticale, neuf fiches de zones et un registre des passages. L’existant, la campagne prévue et les extensions différées y sont distingués. Publication autorisée par le joueur ; les implantations futures restent à éprouver, sans changement de l’ordre de réalisation.

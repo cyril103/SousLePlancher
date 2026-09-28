@@ -507,6 +507,20 @@ func _make_trays() -> void:
 		refresh(), "Enregistrer les positions et tâches en cours, puis mettre en pause")
 	load_button = button(goals, "Charger la sauvegarde [F9]", ask_load)
 	var help := tray("help", "Les gestes essentiels")
+	var ambience := button(help, "", game.soundscape.toggle_enabled)
+	var refresh_audio := func(): ambience.text = "Ambiances : activées" if game.soundscape.enabled else "Ambiances : coupées"
+	game.soundscape.settings_changed.connect(refresh_audio)
+	refresh_audio.call()
+	label(help, "Volume des ambiances et bruitages", 16)
+	var sound_volume := HSlider.new()
+	sound_volume.min_value = 0
+	sound_volume.max_value = 100
+	sound_volume.step = 1
+	sound_volume.value = game.soundscape.volume * 100
+	sound_volume.custom_minimum_size = Vector2(230, 30)
+	sound_volume.tooltip_text = "Volume des sons du monde, indépendant de la musique"
+	help.add_child(sound_volume)
+	sound_volume.value_changed.connect(func(value: float): game.soundscape.set_volume(value / 100.0))
 	wrapped(help, "Flèches / WASD : déplacer la caméra\nMolette : zoom · Bouton central : rotation\nB : construire · C : habitants · T : travaux\nI : stocks · O : objectifs · H : au refuge\nN : trajet · V : vue intérieure du refuge\nF5 : sauvegarder sur place · F9 : charger\nEspace : pause · F11 : plein écran\n1 : lit · 2 : atelier · 3 : alcôve individuelle\nÉchap : fermer / annuler · R : recommencer\n\nLes panneaux n’arrêtent pas le temps. Utilisez Espace pour planifier tranquillement.", 17)
 
 func _make_resident() -> void:
@@ -570,10 +584,18 @@ func _make_modals() -> void:
 	button(intro, "Fonder la colonie", func(): game.start_panel.hide(); game.paused = false; game._show_tray("goals"); refresh()).custom_minimum_size.y = 48
 	continue_button = button(intro, "Reprendre la sauvegarde", ask_load)
 	var music = get_node("/root/MenuMusic")
-	var music_button := button(intro, "Musique : activée" if music.enabled else "Musique : coupée", func(): pass)
+	var audio_row := HBoxContainer.new()
+	intro.add_child(audio_row)
+	var music_button := button(audio_row, "Musique : activée" if music.enabled else "Musique : coupée", func(): pass)
+	music_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	music_button.pressed.connect(func():
 		music.toggle_enabled()
 		music_button.text = "Musique : activée" if music.enabled else "Musique : coupée")
+	var ambience_button := button(audio_row, "", game.soundscape.toggle_enabled)
+	ambience_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var refresh_ambience := func(): ambience_button.text = "Ambiances : activées" if game.soundscape.enabled else "Ambiances : coupées"
+	game.soundscape.settings_changed.connect(refresh_ambience)
+	refresh_ambience.call()
 	game.end_panel = frame(self, true, true)
 	game.end_panel.custom_minimum_size.x = 560
 	var ending := column(game.end_panel, 24)
