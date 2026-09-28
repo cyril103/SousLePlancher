@@ -1,5 +1,10 @@
 extends Control
 ## Live workshop HUD; all panels read the simulation, never a baked screenshot.
+const ConstructionBoard = preload("res://scripts/construction_board.gd")
+var construction_list: VBoxContainer
+var construction_note: Label
+var construction_rows: Array[Dictionary] = []
+var construction_keys: Array = []
 const Chapter = preload("res://scripts/first_chapter.gd")
 var chapter_action: Button
 const Frame = preload("res://scripts/atelier_panel.gd")
@@ -398,8 +403,11 @@ func _make_trays() -> void:
 	wrapped(orders, "Le joueur choisit le travail. Les habitants libres préparent l’équipement et transportent les ressources. Besoins et rappel restent prioritaires.", 16)
 	button(orders, "Centrer sur le gisement", func(): game.fissure.follow = -1; game.focus = Vector3(3, 0, 10); game.zoom = 20; game._update_camera())
 	var work := tray("work", "Travaux en cours")
+	var work_overview := row(work, 6)
+	button(work_overview, "Suivi des chantiers", func(): game._show_tray("construction_board"))
+	button(work_overview, "Priorités", func(): game._show_tray("priorities"))
+	_make_construction_board()
 	button(work, "Accès cuisine et pont", func(): game._show_tray("kitchen"))
-	button(work, "Priorités de travail", func(): game._show_tray("priorities"))
 	button(work, "Ordres de récolte autonomes", func(): game._show_tray("designations"))
 	button(work, "Chantiers et attribution des lits", func(): game._show_tray("beds"))
 	button(work, "Éclairage et éclaireurs", func(): game._show_tray("torches"))
@@ -591,6 +599,7 @@ func refresh() -> void:
 	_refresh_fixed_light()
 	_refresh_rooms()
 	_refresh_priorities()
+	_refresh_construction_board()
 	if designation_label != null:
 		designation_label.text = game.designations.summary()
 		designation_start.disabled = game.designations.active or not game.fissure.visited or game.ended
@@ -1215,3 +1224,55 @@ func _refresh_kitchen() -> void:
 	kitchen_buttons[2].text = "Suspendre le chantier" if k.active else "Reprendre le chantier"
 	kitchen_buttons[3].disabled = not k.built or k.amount == 0
 	kitchen_buttons[3].text = "Arrêter la récolte (retour des charges)" if k.harvest else "Désigner la récolte du biscuit"
+
+func _make_construction_board() -> void:
+	var panel := tray("construction_board", "Suivi des chantiers")
+	construction_note = wrapped(panel, "", 16)
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size.y = 280
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	panel.add_child(scroll)
+	construction_list = column(scroll, 10)
+	construction_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button(panel, "Régler les priorités de travail", func(): game._show_tray("priorities"))
+	button(panel, "Accès cuisine et pont", func(): game._show_tray("kitchen"))
+	wrapped(panel, "Chantiers actifs et matériaux récupérables. Le pont cuisine garde son suivi dédié. Les quantités indiquent les matériaux déjà livrés.", 14)
+
+func _refresh_construction_board() -> void:
+	if construction_list == null or game.active_tray != "construction_board": return
+	var entries := ConstructionBoard.entries(game)
+	construction_note.text = ConstructionBoard.summary(game, entries.size())
+	var keys: Array = []
+	for entry in entries: keys.append(entry.key)
+	if keys != construction_keys:
+		for child in construction_list.get_children():
+			construction_list.remove_child(child)
+			child.queue_free()
+		construction_rows.clear()
+		construction_keys = keys
+		for i in range(entries.size()):
+			var card := column(construction_list, 4)
+			var title := wrapped(card, "", 17)
+			var detail := wrapped(card, "", 15)
+			var actions := row(card, 6)
+			button(actions, "Commandes", func(): _open_construction_entry(i))
+			button(actions, "Centrer", func():
+				var current := ConstructionBoard.entries(game)
+				if i >= current.size(): return
+				game.fissure.follow = -1
+				game.focus = current[i].pos
+				game._update_camera())
+			construction_rows.append({"title": title, "detail": detail})
+	for i in range(entries.size()):
+		construction_rows[i].title.text = entries[i].title
+		construction_rows[i].detail.text = entries[i].detail
+
+func _open_construction_entry(index: int) -> void:
+	var entries := ConstructionBoard.entries(game)
+	if index < 0 or index >= entries.size(): return
+	var entry: Dictionary = entries[index]
+	if entry.panel == "rooms" and entry.selection >= 0: game.rooms.selected = entry.selection
+	if entry.panel == "depots" and entry.selection >= 0:
+		_refresh_depots()
+		depot_picker.select(entry.selection)
+	game._show_tray(entry.panel)

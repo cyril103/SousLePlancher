@@ -35,6 +35,8 @@ Le **lot 35** permet de **ravitailler les lanternes rangées** : 2 bois livrés,
 
 Le **lot 36** ajoute une **réserve automatique de lanternes** (0 à 8) et l’annulation des entretiens avec récupération du bois. Réglages dans **Éclairage et éclaireurs → Entretien des lanternes**. Démo `-- --demo-auto-refills`, sauvegarde v21 ; [règles et tests](docs/conception/gameplay-lot-36.md).
 
+Le **lot 37** ajoute **Travaux → Suivi des chantiers** : matériaux livrés, activité des habitants, priorités désactivées et matériaux récupérables après annulation. Accès aux commandes et centrage caméra ; démo `-- --demo-construction-board`. Sauvegarde v21 inchangée ; [périmètre et essai](docs/conception/gameplay-lot-37.md).
+
 ## Suite de production
 
 Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une carte d’ensemble, une coupe verticale, neuf fiches de zones et un registre des passages. L’existant, la campagne prévue et les extensions différées y sont distingués. Publication autorisée par le joueur ; les implantations futures restent à éprouver, sans changement de l’ordre de réalisation.

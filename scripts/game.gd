@@ -226,6 +226,7 @@ func _ready() -> void:
 	if "--demo-transfer-limits" in OS.get_cmdline_user_args(): prepare_transfer_limits_demo()
 	if "--demo-lantern-refill" in OS.get_cmdline_user_args(): prepare_lantern_refill_demo()
 	if "--demo-auto-refills" in OS.get_cmdline_user_args(): prepare_auto_refills_demo()
+	if "--demo-construction-board" in OS.get_cmdline_user_args(): prepare_construction_board_demo()
 	if "--demo-health" in OS.get_cmdline_user_args(): prepare_health_demo()
 	if "--demo-privacy" in OS.get_cmdline_user_args(): prepare_privacy_demo()
 	if "--demo-room" in OS.get_cmdline_user_args(): prepare_room_demo()
@@ -1520,3 +1521,16 @@ func prepare_ant_demo() -> void:
 	_update_camera()
 	_refresh_ui()
 	_news("11B · Pont et lanternes fournis. Espace : observer la fourmi ; désigner la récolte et choisir l’approche. F5/F9 : reprise sur place.")
+
+func prepare_construction_board_demo() -> void:
+	prepare_auto_refills_demo()
+	stock.wood = 10
+	stock.fiber = 3
+	get_window().title = "Sous le plancher — Suivi des chantiers"
+	for w in workers: w.priorities = {"collect": 0, "transport": 0, "build": 0}
+	_choose_build("bed")
+	_place_build(Vector3(-3, 0, -4))
+	save_path = "user://saves/construction_board_demo.json"
+	_show_tray("construction_board")
+	_refresh_ui()
+	_news("Suivi · Activez Transport et Construction dans les priorités, puis Espace pour livrer et fabriquer. H interrompt, F5/F9 reprend sur place.")
