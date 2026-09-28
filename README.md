@@ -51,6 +51,8 @@ Le **lot 43** permet d’**annuler une fabrication de torche ou de lanterne**, a
 
 Le **lot 44** ajoute la **désignation de l’inspection de la fissure** : un habitant disponible prend la tâche selon Construction, avec rappel, annulation et reprise sauvegardée. L’ouverture reste une commande séparée. Démo `-- --demo-inspection`, sauvegarde v26 ; [règles et essai](docs/conception/gameplay-lot-44.md).
 
+Le **lot 45** ajoute la **reconnaissance autonome de l’alcôve** : désigner la sortie après ouverture, puis laisser un habitant prendre une lanterne, explorer et revenir selon sa priorité Récolte. Rappel, annulation et reprise sauvegardée ; démo `-- --demo-auto-scout`, sauvegarde v27. Voir [les règles et essais](docs/conception/gameplay-lot-45.md).
+
 ## Suite de production
 
 Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une carte d’ensemble, une coupe verticale, neuf fiches de zones et un registre des passages. L’existant, la campagne prévue et les extensions différées y sont distingués. Publication autorisée par le joueur ; les implantations futures restent à éprouver, sans changement de l’ordre de réalisation.

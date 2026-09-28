@@ -229,7 +229,7 @@ func reject(message: String) -> bool:
 	game._news(message)
 	return false
 
-func equip(owner: int, kind: String = "torch") -> bool:
+func equip(owner: int, kind: String = "torch", selected_item: int = -1) -> bool:
 	var c: WorkerDelivery = game.workers[owner].delivery
 	if game.hiding or game.pending_save or not available(c) or occupied(owner): return reject("Libérez cet habitant et reprenez les sorties avant de l’équiper.")
 	var from: Vector3 = game.home_position(owner) if c.inside_refuge else c.actor.position
@@ -237,6 +237,7 @@ func equip(owner: int, kind: String = "torch") -> bool:
 	var distance := INF
 	for i in range(items.size()):
 		var item := items[i]
+		if selected_item >= 0 and i != selected_item: continue
 		if item.kind != kind or item.owner >= 0 or item.reserved >= 0 or item.fuel <= 0 or servicing(i): continue
 		var d: float = game.depots.distance(from, item.pos, owner)
 		if d < INF and (best < 0 or item.fuel > items[best].fuel or (is_equal_approx(item.fuel, items[best].fuel) and d < distance)):

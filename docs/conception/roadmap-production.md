@@ -4,7 +4,11 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
-## Livraison autorisée — lot 44 : inspection désignée
+## Livraison autorisée — lot 45 : reconnaissance autonome de l’alcôve
+
+Désignation de la sortie, attribution selon Récolte, prise d’une lanterne adaptée, reconnaissance et retour au refuge. Rappel, annulation et reprise sauvegardée ; ouverture et travaux suivants restent commandés par le joueur. Format v27, anciennes sauvegardes lisibles. Voir [lot 45](gameplay-lot-45.md). Commit et push autorisés par le joueur.
+
+## Livraison publiée — lot 44 : inspection désignée (`296fbdd`)
 
 Inspection de la fissure attribuée à un habitant disponible selon Construction, sans sélection manuelle. Rappel, annulation et sauvegarde intégrés ; le joueur commande toujours séparément l’ouverture et l’exploration. Format v26, anciennes sauvegardes lisibles. Voir [lot 44](gameplay-lot-44.md). Commit et push autorisés par le joueur.
 

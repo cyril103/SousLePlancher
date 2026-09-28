@@ -225,6 +225,11 @@ static func validate(data: Dictionary) -> String:
 		if queued.has(id) or not r.fissure.missions.has(id) or r.fissure.missions[id].phase != "wait": return "File de fissure incohérente."
 		queued[id] = true
 	var owners := {}
+	var scout: int = data.fissure.get("scout_owner", -1)
+	if scout >= 0:
+		if not r.torch_missions.has(scout): return "Éclaireur désigné sans équipement."
+		var mission: Dictionary = r.torch_missions[scout]
+		if not mission.get("item") is int or mission.item < 0 or mission.item >= r.items.size() or r.items[mission.item].kind != "lantern": return "Lanterne d’éclaireur invalide."
 	for i in range(r.items.size()):
 		var item = r.items[i]
 		if not item is Dictionary or not item.has_all(["owner", "reserved", "lit", "fuel", "kind"]) or not is_equal_approx(item.fuel, data.torches.items[i].fuel) or item.kind != data.torches.items[i].kind: return "Équipement incohérent."

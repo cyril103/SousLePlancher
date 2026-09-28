@@ -1,6 +1,6 @@
 extends RefCounted
 ## Versioned colony data and a data-only snapshot of active simulation.
-const VERSION := 26
+const VERSION := 27
 const Live = preload("res://scripts/live_checkpoint.gd")
 const DEFAULT_PATH := "user://saves/colony_v1.json"
 const KINDS := ["food", "food", "wood", "wood", "fiber", "fiber", "wood", "water"]
@@ -197,6 +197,9 @@ static func validate(data: Variant) -> String:
 	if data.version >= 8:
 		if not fields(data, ["fissure"]) or not fields(data.fissure, ["discovered", "visited", "site"]): return "Passage incomplet."
 		var passage: Dictionary = data.fissure
+		if data.version >= 27 or passage.has("scout_requested") or passage.has("scout_owner"):
+			if not passage.get("scout_requested") is bool or not number(passage.get("scout_owner"), -1, data.assignments.size() - 1, true): return "Reconnaissance désignée invalide."
+			if passage.scout_requested and (passage.visited or passage.site.is_empty() or not passage.site.built): return "Reconnaissance désignée sans passage ouvert ou déjà terminée."
 		if data.version >= 26 or passage.has("inspect_requested"):
 			if not passage.get("inspect_requested") is bool: return "Désignation d’inspection invalide."
 			if passage.inspect_requested and passage.discovered: return "Inspection déjà terminée encore désignée."

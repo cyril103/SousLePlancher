@@ -37,6 +37,7 @@ func start(c: WorkerDelivery) -> bool:
 				"transport":
 					if game.construction.start(c) or game.transfers.start(c): return true
 				"collect":
+					if game.fissure.try_scout(c): return true
 					if c.worker.patch >= 0:
 						if c.inside_refuge:
 							c.change("leave_home")

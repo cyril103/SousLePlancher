@@ -11,6 +11,8 @@ const CONTRACT := {"id": "south_fissure", "from": "refuge_south", "to": "alcove_
 var game: Node3D
 var discovered := false
 var inspect_requested := false
+var scout_requested := false
+var scout_owner := -1
 var visited := false
 var site: Dictionary = {}
 var upgrade: Dictionary = {}
@@ -85,6 +87,56 @@ func inspection_summary() -> String:
 
 func occupied(id: int) -> bool:
 	return missions.has(id) or (not work_site().is_empty() and work_site().builder == id)
+
+func designate_scout() -> bool:
+	if not opened() or visited or scout_requested or game.ended: return false
+	scout_requested = true
+	return true
+
+func cancel_scout() -> void:
+	scout_requested = false
+	if scout_owner >= 0: game.torches.recall(game.workers[scout_owner].delivery, "Reconnaissance annulée")
+
+func try_scout(c: WorkerDelivery) -> bool:
+	if not scout_requested or visited or scout_owner >= 0 or not opened(): return false
+	if not game.priorities.available(c) or c.worker.patch >= 0 or not game.designations.healthy(c): return false
+	if not missions.is_empty(): return false
+	var from: Vector3 = game.home_position(c.owner) if c.inside_refuge else c.actor.position
+	# Estimate from each stored lantern, including the belt-lantern return margin.
+	var minimum := required_fuel(c) + 12.0 + 5.0
+	var choice := -1
+	for i in range(game.torches.items.size()):
+		var item: Dictionary = game.torches.items[i]
+		if item.kind != "lantern" or item.owner >= 0 or item.reserved >= 0 or game.torches.servicing(i): continue
+		if game.depots.distance(from, item.pos, c.owner) == INF: continue
+		var required: float = minimum + maxf(0, game.torches.travel_seconds(c, item.pos, NEAR) - game.torches.travel_seconds(c, from, NEAR))
+		if item.fuel >= required and (choice < 0 or item.fuel > game.torches.items[choice].fuel): choice = i
+	if choice < 0: return false
+	if not game.torches.equip(c.owner, "lantern", choice): return false
+	scout_owner = c.owner
+	return true
+
+func update_scout() -> void:
+	if visited: scout_requested = false
+	if scout_owner < 0: return
+	if not game.torches.occupied(scout_owner):
+		scout_owner = -1
+		return
+	var c: WorkerDelivery = game.workers[scout_owner].delivery
+	if game.hiding or game.pending_save or game.ended or not game.designations.healthy(c):
+		game.torches.recall(c, "Besoins ou rappel prioritaires")
+		return
+	if visited or not scout_requested or missions.has(scout_owner): return
+	if not game.torches.can_haul(scout_owner): return
+	if not start(scout_owner): game.torches.recall(c, "Accès ou autonomie insuffisants")
+
+func scout_summary() -> String:
+	if visited: return "Alcôve reconnue. Retour et rangement de la lanterne en cours." if scout_owner >= 0 else "Alcôve reconnue."
+	if scout_owner >= 0: return "H%d · %s" % [scout_owner + 1, game.workers[scout_owner].delivery.description()]
+	if not opened(): return "Inspecter, dégager et étayer la fissure avant de désigner la sortie."
+	if not scout_requested: return "Aucune reconnaissance désignée."
+	if game.hiding or game.pending_save: return "Ordre conservé ; départs suspendus par le rappel ou la sauvegarde."
+	return "Attend un habitant libre et reposé (Récolte autorisée), une lanterne accessible suffisamment chargée et un passage libre."
 
 func sites() -> Array:
 	var result: Array = [] if site.is_empty() else [site]
@@ -382,11 +434,13 @@ func summary() -> String:
 	return text
 
 func snapshot() -> Dictionary:
-	return {"discovered": discovered, "inspect_requested": inspect_requested, "visited": visited, "site": saved_site(site), "upgrade": saved_site(upgrade), "fiber": hauling.amount, "known_fiber": hauling.known}
+	return {"discovered": discovered, "inspect_requested": inspect_requested, "scout_requested": scout_requested, "scout_owner": scout_owner if scout_owner >= 0 and game.torches.occupied(scout_owner) else -1, "visited": visited, "site": saved_site(site), "upgrade": saved_site(upgrade), "fiber": hauling.amount, "known_fiber": hauling.known}
 
 func restore(data: Dictionary) -> void:
 	discovered = data.discovered
 	inspect_requested = data.get("inspect_requested", false)
+	scout_requested = data.get("scout_requested", false)
+	scout_owner = int(data.get("scout_owner", -1))
 	visited = data.visited
 	if not data.site.is_empty():
 		site = {"fissure_site": true, "pos": NEAR, "materials": data.site.materials.duplicate(), "work": float(data.site.work), "built": data.site.built, "required": 24.0, "hauler": -1, "builder": -1}

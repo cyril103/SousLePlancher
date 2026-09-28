@@ -19,7 +19,7 @@ static func steps(game: Node) -> Array:
 		[lantern, "Fabriquer une lanterne", "fissure", "Fabriquer à l’atelier : 4 bois, 3 fibres. Transport et Construction doivent être autorisés pour livrer puis fabriquer."],
 		[game.fissure.discovered, "Inspecter la fissure", "inspection", "Désigner l’inspection. Un habitant libre et reposé, sans affectation de récolte, la prendra selon sa priorité Construction. Aucun éclairage requis."],
 		[game.fissure.opened(), "Dégager et étayer", "fissure", "Commander le passage : 6 bois, 4 fibres. Laisser livrer les matériaux et terminer les travaux."],
-		[game.fissure.visited, "Explorer l’alcôve", "fissure", "Choisir un habitant reposé, Équiper la lanterne, puis Explorer à la lanterne après la prise de l’équipement."],
+		[game.fissure.visited, "Explorer l’alcôve", "scout", "Désigner la reconnaissance. Un habitant libre et reposé prendra une lanterne suffisamment chargée selon sa priorité Récolte, puis explorera et reviendra."],
 		[game.fissure.widened(), "Élargir pour les caisses", "fissure", "Attendre le retour de l’éclaireur, puis commander l’élargissement : 6 bois, 4 fibres."],
 		[game.kitchen.known, "Reconnaître la cuisine", "kitchen", "Désigner la reconnaissance. Un habitant disponible prendra une lanterne suffisamment chargée."],
 		[game.kitchen.built, "Construire le pont", "kitchen", "Commander le pont : 8 bois, 4 fibres. Les porteurs livrent depuis les dépôts ; reprendre le chantier s’il est suspendu."],
