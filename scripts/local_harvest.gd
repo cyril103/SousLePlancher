@@ -4,6 +4,21 @@ const PATCHES := [0, 1, 2, 4, 7]
 var game: Node
 var targets := {"food": -1, "wood": -1, "fiber": -1, "water": -1}
 
+func priority(id: int) -> int:
+	return int(game.patches[id].get("harvest_priority", 2))
+
+func set_priority(id: int, value: int) -> bool:
+	if id not in PATCHES or value < 1 or value > 3: return false
+	game.patches[id].harvest_priority = value
+	return true
+
+func ordered_patches() -> Array[int]:
+	var result: Array[int] = []
+	for rank in range(1, 4):
+		for id in PATCHES:
+			if priority(id) == rank: result.append(id)
+	return result
+
 func set_active(id: int, active: bool) -> bool:
 	if not id in PATCHES or id >= game.patches.size(): return false
 	if active and (not game.patches[id].discovered or game.patches[id].amount <= 0): return false
@@ -44,7 +59,7 @@ func restore_targets(value: Dictionary) -> void:
 
 func try_start(c: WorkerDelivery) -> bool:
 	# Called by priorities only for residents without a manual assignment.
-	for id in PATCHES:
+	for id in ordered_patches():
 		var p: Dictionary = game.patches[id]
 		if not p.get("autoharvest", false) or not p.discovered or p.amount <= p.reserved: continue
 		var limit := missing(p.kind)
@@ -61,7 +76,7 @@ func try_start(c: WorkerDelivery) -> bool:
 
 func summary(id: int) -> String:
 	var p: Dictionary = game.patches[id]
-	var text := "%s · gisement %d · %d restant(s)" % [game.NAMES[p.kind], id + 1, p.amount]
+	var text := "%s · gisement %d · %d restant(s)\nPriorité %d" % [game.NAMES[p.kind], id + 1, p.amount, priority(id)]
 	if not p.get("autoharvest", false): return text + "\nOrdre suspendu ; les charges engagées se terminent."
 	if p.amount <= 0:
 		for job in game.delivery_ledger.jobs.values():

@@ -4,7 +4,11 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
-## Livraison autorisée — lot 51 : pont cuisine dans le suivi des chantiers
+## Livraison autorisée — lot 52 : priorités des gisements du refuge
+
+Chaque gisement du refuge reçoit une priorité 1–3 pour les prochains départs automatiques. Les charges engagées, les besoins et les quotas sont préservés. Sauvegarde v28, migration à priorité normale. Voir [lot 52](gameplay-lot-52.md). Commit et push autorisés par le joueur.
+
+## Livraison publiée — lot 51 : pont cuisine dans le suivi des chantiers (`1f1887f`)
 
 Le tableau commun affiche le pont commandé, même suspendu, avec ses livraisons, réservations, retours et habitants engagés. Il le retire après achèvement et fin des missions de construction. Voir [lot 51](gameplay-lot-51.md). Commit et push autorisés par le joueur.
 

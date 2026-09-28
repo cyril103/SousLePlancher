@@ -238,6 +238,7 @@ func _ready() -> void:
 	if "--demo-harvest-source" in OS.get_cmdline_user_args(): prepare_harvest_source_demo()
 	if "--demo-harvest-markers" in OS.get_cmdline_user_args(): prepare_harvest_markers_demo()
 	if "--demo-kitchen-board" in OS.get_cmdline_user_args(): prepare_kitchen_board_demo()
+	if "--demo-harvest-priority" in OS.get_cmdline_user_args(): prepare_harvest_priority_demo()
 	if "--demo-harvest-targets" in OS.get_cmdline_user_args(): prepare_harvest_targets_demo()
 	if "--demo-harvest-status" in OS.get_cmdline_user_args(): prepare_harvest_status_demo()
 	if "--demo-lantern-production" in OS.get_cmdline_user_args(): prepare_lantern_production_demo()
@@ -353,7 +354,7 @@ func _add_patch(kind: String, pos: Vector3, amount: int) -> void:
 	var node := Art.model(self, "needs_13/condensation" if kind == "water" else kind, pos)
 	var label := Art.caption(node, NAMES[kind], Vector3(0, 1.0, 0), Color("eac37e"))
 	label.pixel_size = 0.0055
-	patches.append({"kind": kind, "pos": pos, "amount": amount, "reserved": 0, "node": node, "label": label, "discovered": true, "autoharvest": false})
+	patches.append({"kind": kind, "pos": pos, "amount": amount, "reserved": 0, "node": node, "label": label, "discovered": true, "autoharvest": false, "harvest_priority": 2})
 
 func _exit_tree() -> void:
 	local_harvest.game = null
@@ -1074,6 +1075,7 @@ func apply_checkpoint(data: Dictionary) -> bool:
 	for i in range(data.patches.size()):
 		patches[i].amount = int(data.patches[i].amount)
 		patches[i].autoharvest = data.patches[i].get("autoharvest", false)
+		patches[i].harvest_priority = int(data.patches[i].get("harvest_priority", 2))
 	if data.version >= 4:
 		for pile in data.recovery:
 			construction.add_recovery(Vector3(pile.pos[0], pile.pos[1], pile.pos[2]), {"wood": int(pile.materials.wood), "fiber": int(pile.materials.fiber)})
@@ -1601,6 +1603,17 @@ func prepare_harvest_markers_demo() -> void:
 	save_path = "user://saves/harvest_markers_demo.json"
 	_show_tray("")
 	_news("Carte · Cliquez sur une étiquette : réserve couverte, objectif 0 ou récolte désignée. Espace reprend ; H rappelle sans effacer les ordres.")
+
+func prepare_harvest_priority_demo() -> void:
+	prepare_local_harvest_demo()
+	local_harvest.set_priority(4, 1)
+	local_harvest.set_priority(2, 3)
+	local_harvest.set_target("fiber", 9)
+	local_harvest.set_target("wood", 15)
+	for id in range(workers.size()): workers[id].priorities.collect = 1 if id == 0 else 0
+	save_path = "user://saves/harvest_priority_demo.json"
+	hud.open_harvest_source(4)
+	_news("Priorités · Espace : un porteur récolte d’abord les fibres, puis le bois après couverture du quota. Modifier une priorité laisse finir la caisse engagée.")
 
 func prepare_harvest_targets_demo() -> void:
 	prepare_local_harvest_demo()

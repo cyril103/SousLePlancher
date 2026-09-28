@@ -7,6 +7,7 @@ var harvest_target_controls: Array[Dictionary] = []
 var local_harvest_rows: Array[Dictionary] = []
 var source_detail: Label
 var source_toggle: Button
+var source_priority: OptionButton
 var construction_list: VBoxContainer
 var construction_note: Label
 var construction_rows: Array[Dictionary] = []
@@ -1392,7 +1393,7 @@ func _make_local_harvest() -> void:
 		local_harvest_rows.append({"id": id, "detail": detail, "toggle": toggle})
 	button(panel, "Objectifs de réserve", func(): game._show_tray("harvest_targets"))
 	button(panel, "Priorités de travail", func(): game._show_tray("priorities"))
-	wrapped(panel, "Suspendre laisse finir les charges engagées. Les affectations manuelles restent indépendantes. Les objectifs limitent les nouveaux départs automatiques. Ordre de choix : numéros des gisements.", 14)
+	wrapped(panel, "Suspendre laisse finir les charges engagées. Choix automatique : priorité du gisement (1 avant 3), puis numéro en cas d’égalité. Les objectifs limitent les nouveaux départs. Régler la priorité dans Détails.", 14)
 
 func _refresh_local_harvest() -> void:
 	if game.active_tray != "local_harvest": return
@@ -1409,10 +1410,24 @@ func open_harvest_source(id: int) -> void:
 	game._show_tray("harvest_source")
 
 func _make_harvest_source() -> void:
-	var panel := tray("harvest_source", "Gisement du refuge")
+	var shell := tray("harvest_source", "Gisement du refuge")
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size.y = 500
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	shell.add_child(scroll)
+	var panel := column(scroll, 10)
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	source_detail = wrapped(panel, "", 16)
 	source_toggle = button(panel, "Désigner la récolte", _toggle_harvest_source)
-	wrapped(panel, "Les habitants sans affectation récoltent selon leurs priorités et l’objectif de réserve. Suspendre empêche les nouveaux départs automatiques ; les caisses engagées sont rapportées.", 15)
+	var line := row(panel, 8)
+	label(line, "Priorité du gisement", 15)
+	source_priority = OptionButton.new()
+	for title in ["1 · Haute", "2 · Normale", "3 · Basse"]: source_priority.add_item(title)
+	line.add_child(source_priority)
+	source_priority.item_selected.connect(func(index: int):
+		if not game.ended: game.local_harvest.set_priority(game.selected, index + 1)
+		refresh())
+	wrapped(panel, "Entre gisements du refuge, 1 passe avant 3 ; à égalité, le numéro départage. Les priorités des habitants et les besoins gardent la main. Changer la priorité ou suspendre laisse finir les charges engagées.", 15)
 	button(panel, "Objectifs et diagnostics des réserves", func(): game._show_tray("harvest_targets"))
 	button(panel, "Priorités de travail", func(): game._show_tray("priorities"))
 	button(panel, "Affectations manuelles…", func(): game._show_tray("people"))
@@ -1431,6 +1446,7 @@ func _refresh_harvest_source() -> void:
 	if id not in game.local_harvest.PATCHES or not game.patches[id].discovered:
 		source_detail.text = "Sélectionnez un gisement découvert du refuge."
 		source_toggle.disabled = true
+		source_priority.disabled = true
 		return
 	var p: Dictionary = game.patches[id]
 	var assigned := 0
@@ -1439,6 +1455,8 @@ func _refresh_harvest_source() -> void:
 	source_detail.text = game.local_harvest.summary(id) + "\n\n%d réservé(s) · %d affectation(s) manuelle(s)." % [p.reserved, assigned]
 	source_toggle.text = "Suspendre la récolte" if p.get("autoharvest", false) else "Désigner la récolte"
 	source_toggle.disabled = game.ended or (p.amount <= 0 and not p.get("autoharvest", false))
+	source_priority.select(game.local_harvest.priority(id) - 1)
+	source_priority.disabled = game.ended
 
 func _make_harvest_targets() -> void:
 	var panel := tray("harvest_targets", "Objectifs de réserve")

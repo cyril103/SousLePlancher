@@ -153,6 +153,8 @@ static func validate(data: Dictionary) -> String:
 			if patch[key] != data.patches[i][key]: return "Source active incohérente."
 		if data.version >= 22 or patch.has("autoharvest") or data.patches[i].has("autoharvest"):
 			if not patch.get("autoharvest") is bool or patch.autoharvest != data.patches[i].get("autoharvest", false): return "Ordre de récolte actif incohérent."
+		if data.version >= 28 or patch.has("harvest_priority") or data.patches[i].has("harvest_priority"):
+			if not patch.get("harvest_priority") is int or patch.harvest_priority != data.patches[i].get("harvest_priority", 2): return "Priorité de gisement active incohérente."
 		if not patch.reserved is int or patch.reserved < 0 or patch.reserved > patch.amount: return "Réservation de source invalide."
 	for i in range(r.beds.size()):
 		var bed = r.beds[i]

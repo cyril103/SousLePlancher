@@ -1,6 +1,6 @@
 extends RefCounted
 ## Versioned colony data and a data-only snapshot of active simulation.
-const VERSION := 27
+const VERSION := 28
 const Live = preload("res://scripts/live_checkpoint.gd")
 const DEFAULT_PATH := "user://saves/colony_v1.json"
 const KINDS := ["food", "food", "wood", "wood", "fiber", "fiber", "wood", "water"]
@@ -10,7 +10,7 @@ static func capture(game: Node) -> Dictionary:
 	for building in game.buildings:
 		if building.kind != "heart": buildings.append({"kind": building.kind, "pos": vector(building.pos)})
 	var patches: Array = []
-	for patch in game.patches: patches.append({"kind": patch.kind, "amount": patch.amount, "discovered": patch.discovered, "autoharvest": patch.get("autoharvest", false)})
+	for patch in game.patches: patches.append({"kind": patch.kind, "amount": patch.amount, "discovered": patch.discovered, "autoharvest": patch.get("autoharvest", false), "harvest_priority": patch.get("harvest_priority", 2)})
 	var assignments: Array = []
 	for worker in game.workers: assignments.append(worker.patch)
 	var needs: Array = []
@@ -74,6 +74,9 @@ static func validate(data: Variant) -> String:
 		if data.version >= 22 or patch.has("autoharvest"):
 			if not patch.get("autoharvest") is bool: return "Ordre de récolte locale invalide."
 			if patch.autoharvest and (not i in preload("res://scripts/local_harvest.gd").PATCHES or not patch.discovered): return "Ordre de récolte hors du refuge."
+		if data.version >= 28 or patch.has("harvest_priority"):
+			if not number(patch.get("harvest_priority"), 1, 3, true): return "Priorité de gisement invalide."
+			if i not in preload("res://scripts/local_harvest.gd").PATCHES and patch.harvest_priority != 2: return "Priorité de gisement hors du refuge."
 		if i < 6 and not patch.discovered: return "Gisement initial manquant."
 		if i == 7 and not patch.discovered: return "Point d’eau initial manquant."
 	if not data.buildings is Array or data.buildings.size() > 64: return "Bâtiments invalides."
