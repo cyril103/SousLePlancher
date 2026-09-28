@@ -1,6 +1,7 @@
 extends Control
 ## Live workshop HUD; all panels read the simulation, never a baked screenshot.
 const ConstructionBoard = preload("res://scripts/construction_board.gd")
+var harvest_target_controls: Array[Dictionary] = []
 var local_harvest_rows: Array[Dictionary] = []
 var construction_list: VBoxContainer
 var construction_note: Label
@@ -612,6 +613,7 @@ func refresh() -> void:
 	_refresh_priorities()
 	_refresh_construction_board()
 	_refresh_local_harvest()
+	_refresh_harvest_targets()
 	if designation_label != null:
 		designation_label.text = game.designations.summary()
 		designation_start.disabled = game.designations.active or not game.fissure.visited or game.ended
@@ -1290,6 +1292,7 @@ func _open_construction_entry(index: int) -> void:
 	game._show_tray(entry.panel)
 
 func _make_local_harvest() -> void:
+	_make_harvest_targets()
 	var panel := tray("local_harvest", "Récoltes du refuge")
 	wrapped(panel, "Désignez les gisements au sol. Les habitants sans affectation récoltent selon leurs priorités ; besoins et rappel passent avant.", 15)
 	var scroll := ScrollContainer.new()
@@ -1304,8 +1307,9 @@ func _make_local_harvest() -> void:
 		var toggle := button(actions, "", func(): game.local_harvest.set_active(id, not game.patches[id].autoharvest); refresh())
 		button(actions, "Centrer", func(): game.fissure.follow = -1; game.focus = game.patches[id].pos; game._update_camera())
 		local_harvest_rows.append({"id": id, "detail": detail, "toggle": toggle})
+	button(panel, "Objectifs de réserve", func(): game._show_tray("harvest_targets"))
 	button(panel, "Priorités de travail", func(): game._show_tray("priorities"))
-	wrapped(panel, "Suspendre laisse finir les charges engagées. Les affectations manuelles restent indépendantes. Sans quota : récolte jusqu’à épuisement ou dépôt plein. Ordre de choix : numéros des gisements.", 14)
+	wrapped(panel, "Suspendre laisse finir les charges engagées. Les affectations manuelles restent indépendantes. Les objectifs limitent les nouveaux départs automatiques. Ordre de choix : numéros des gisements.", 14)
 
 func _refresh_local_harvest() -> void:
 	if game.active_tray != "local_harvest": return
@@ -1314,3 +1318,29 @@ func _refresh_local_harvest() -> void:
 		controls.detail.text = game.local_harvest.summary(controls.id)
 		controls.toggle.text = "Suspendre" if p.autoharvest else "Désigner"
 		controls.toggle.disabled = not p.autoharvest and (not p.discovered or p.amount <= 0)
+
+func _make_harvest_targets() -> void:
+	var panel := tray("harvest_targets", "Objectifs de réserve")
+	wrapped(panel, "Stock visé dans tous les dépôts. Les charges engagées sont comptées. −1 : sans limite ; 0 : aucun nouveau départ automatique.", 15)
+	for kind in game.Depots.KINDS:
+		var line := row(panel, 8)
+		label(line, game.NAMES[kind], 16).custom_minimum_size.x = 80
+		var target := SpinBox.new()
+		target.min_value = -1
+		target.max_value = 9999
+		target.step = 1
+		target.custom_minimum_size.x = 125
+		line.add_child(target)
+		target.value_changed.connect(func(value: float): game.local_harvest.set_target(kind, int(value)); refresh())
+		var detail := wrapped(panel, "", 15)
+		harvest_target_controls.append({"kind": kind, "target": target, "detail": detail})
+	button(panel, "Désigner les gisements", func(): game._show_tray("local_harvest"))
+	wrapped(panel, "Un objectif n’active pas la récolte. Une baisse laisse finir les caisses engagées. Les récoltes manuelles et urgentes restent libres ; les ressources réservées au retour d’un chantier comptent jusqu’à sa dépose.", 14)
+
+func _refresh_harvest_targets() -> void:
+	if game.active_tray != "harvest_targets": return
+	for controls in harvest_target_controls:
+		var goal: int = game.local_harvest.targets[controls.kind]
+		var expected: int = game.local_harvest.expected(controls.kind)
+		controls.target.set_value_no_signal(goal)
+		controls.detail.text = "Stock %d · Prévu %d · %s" % [game.depots.total(controls.kind), expected, "Sans limite" if goal < 0 else "Objectif couvert" if expected >= goal else "%d à récolter" % (goal - expected)]

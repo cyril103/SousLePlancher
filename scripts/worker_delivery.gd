@@ -530,12 +530,14 @@ func advance_bridge(dt: float) -> void:
 		bridge_cancel = false
 		cancel()
 
-func start_harvest(patch_index: int) -> bool:
+func start_harvest(patch_index: int, limit: int = -1) -> bool:
 	var patch: int = patch_index
-	if game.hiding or patch < 0: return false
+	if game.hiding or patch < 0 or limit == 0: return false
 	source_position = game.patches[patch].pos + Vector3(0.9, GROUND_Y, 0.2)
 	if not plan_route(source_position): return false
-	var choice: Dictionary = game.depots.sink(source_position, game.patches[patch].kind, mini(3 + game.workshops, game.patches[patch].amount - game.patches[patch].reserved), owner)
+	var capacity: int = mini(3 + game.workshops, game.patches[patch].amount - game.patches[patch].reserved)
+	if limit >= 0: capacity = mini(capacity, limit)
+	var choice: Dictionary = game.depots.sink(source_position, game.patches[patch].kind, capacity, owner)
 	if choice.is_empty():
 		navigation_issue = "Aucun dépôt accessible n’accepte cette charge ou n’a de place"
 		return false

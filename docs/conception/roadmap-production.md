@@ -4,7 +4,11 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
-## Livraison autorisée — lot 38 : récoltes autonomes du refuge
+## Livraison autorisée — lot 39 : objectifs de réserve
+
+Seuil commun par ressource pour les récoltes autonomes au sol ; stocks et charges engagées pris en compte, transferts internes comptés une fois, caisses partielles et reprise après consommation. Sauvegarde v23. Voir [lot 39](gameplay-lot-39.md). Commit et push autorisés par le joueur.
+
+## Livraison publiée — lot 38 : récoltes autonomes du refuge (`6f7732a`)
 
 Désignations des cinq gisements au sol, attribution aux habitants sans affectation selon leurs priorités, suspension après les charges engagées et sauvegarde v22. Voir [lot 38](gameplay-lot-38.md). Commit et push autorisés par le joueur.
 

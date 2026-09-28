@@ -1,6 +1,6 @@
 extends RefCounted
 ## Versioned colony data and a data-only snapshot of active simulation.
-const VERSION := 22
+const VERSION := 23
 const Live = preload("res://scripts/live_checkpoint.gd")
 const DEFAULT_PATH := "user://saves/colony_v1.json"
 const KINDS := ["food", "food", "wood", "wood", "fiber", "fiber", "wood", "water"]
@@ -25,6 +25,7 @@ static func capture(game: Node) -> Dictionary:
 		"runtime": Live.capture(game),
 		"stock": stocks, "patches": patches, "buildings": buildings,
 		"assignments": assignments, "speed": game.speed,
+		"harvest_targets": game.local_harvest.targets.duplicate(),
 		"needs": needs, "furnishings": game.sleeping.snapshot(),
 		"recovery": game.construction.snapshot(),
 		"depots": game.depots.snapshot(),
@@ -62,6 +63,8 @@ static func validate(data: Variant) -> String:
 	if data.version >= 3:
 		if not data.has("water_source") or not valid_vector(data.water_source) or data.water_source[1] != 0: return "Point d’eau invalide."
 		if absf(data.water_source[0]) > 9 or absf(data.water_source[2]) > 6: return "Point d’eau hors de la carte."
+	if data.version >= 23 or data.has("harvest_targets"):
+		if not preload("res://scripts/local_harvest.gd").valid_targets(data.get("harvest_targets")): return "Objectifs de récolte invalides."
 	var count := 8 if data.version >= 3 else 7
 	if not data.patches is Array or data.patches.size() != count: return "Carte de ressources incompatible."
 	for i in range(count):

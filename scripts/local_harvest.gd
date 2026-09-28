@@ -2,6 +2,7 @@ extends RefCounted
 ## Orders only. Physical jobs remain in the existing delivery ledger.
 const PATCHES := [0, 1, 2, 4, 7]
 var game: Node
+var targets := {"food": -1, "wood": -1, "fiber": -1, "water": -1}
 
 func set_active(id: int, active: bool) -> bool:
 	if not id in PATCHES or id >= game.patches.size(): return false
@@ -9,20 +10,53 @@ func set_active(id: int, active: bool) -> bool:
 	game.patches[id].autoharvest = active
 	return true
 
+func set_target(kind: String, amount: int) -> bool:
+	if not targets.has(kind) or amount < -1 or amount > 9999: return false
+	targets[kind] = amount
+	return true
+
+func expected(kind: String) -> int:
+	var amount: int = game.depots.total(kind)
+	# Transfers reserve both destination and emergency return space. Count their
+	# cargo once after pickup; before pickup it is already in the source stock.
+	var transfer_tokens := {}
+	for job in game.transfers.jobs.values():
+		transfer_tokens[job.token + ":in"] = true
+		transfer_tokens[job.token + ":back"] = true
+		if job.kind == kind and job.collected and not job.deposited: amount += job.quantity
+	for token in game.depots.incoming:
+		var claim: Dictionary = game.depots.incoming[token]
+		if claim.kind == kind and not transfer_tokens.has(token): amount += claim.quantity
+	return amount
+
+func missing(kind: String) -> int:
+	return 999999 if targets[kind] < 0 else maxi(0, int(targets[kind]) - expected(kind))
+
+static func valid_targets(value: Variant) -> bool:
+	if not value is Dictionary or value.size() != 4: return false
+	for kind in ["food", "wood", "fiber", "water"]:
+		if not value.has(kind) or not (value[kind] is int or value[kind] is float): return false
+		if not is_finite(float(value[kind])) or value[kind] < -1 or value[kind] > 9999 or value[kind] != floor(value[kind]): return false
+	return true
+
+func restore_targets(value: Dictionary) -> void:
+	for kind in targets: targets[kind] = int(value.get(kind, -1))
+
 func try_start(c: WorkerDelivery) -> bool:
 	# Called by priorities only for residents without a manual assignment.
 	for id in PATCHES:
 		var p: Dictionary = game.patches[id]
 		if not p.get("autoharvest", false) or not p.discovered or p.amount <= p.reserved: continue
-		if game.delivery_ledger.source_slots.has(id): continue
+		var limit := missing(p.kind)
+		if limit <= 0 or game.delivery_ledger.source_slots.has(id): continue
 		var target: Vector3 = p.pos + Vector3(.9, WorkerDelivery.GROUND_Y, .2)
 		var origin: Vector3 = game.home_position(c.owner) if c.inside_refuge else c.actor.position
 		if game.travel_path(origin, target, c.owner).is_empty(): continue
-		if game.depots.sink(target, p.kind, mini(3 + game.workshops, p.amount - p.reserved), c.owner).is_empty(): continue
+		if game.depots.sink(target, p.kind, mini(limit, mini(3 + game.workshops, p.amount - p.reserved)), c.owner).is_empty(): continue
 		if c.inside_refuge:
 			c.change("leave_home")
 			return true
-		if c.start_harvest(id): return true
+		if c.start_harvest(id, limit): return true
 	return false
 
 func summary(id: int) -> String:
@@ -34,6 +68,7 @@ func summary(id: int) -> String:
 			if job.source == id: return text + "\nGisement épuisé ; dernières charges en retour."
 		return text + "\nRécolte terminée : gisement épuisé."
 	if game.hiding or game.ended or game.pending_save: return text + "\nSuspendu par le rappel ou l’arrêt de la colonie."
+	if missing(p.kind) == 0: return text + "\nObjectif atteint ou couvert par les charges engagées (%d/%d)." % [expected(p.kind), targets[p.kind]]
 	var engaged := 0
 	for job in game.delivery_ledger.jobs.values():
 		if job.source == id: engaged += 1

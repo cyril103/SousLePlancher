@@ -230,6 +230,7 @@ func _ready() -> void:
 	if "--demo-auto-refills" in OS.get_cmdline_user_args(): prepare_auto_refills_demo()
 	if "--demo-construction-board" in OS.get_cmdline_user_args(): prepare_construction_board_demo()
 	if "--demo-local-harvest" in OS.get_cmdline_user_args(): prepare_local_harvest_demo()
+	if "--demo-harvest-targets" in OS.get_cmdline_user_args(): prepare_harvest_targets_demo()
 	if "--demo-health" in OS.get_cmdline_user_args(): prepare_health_demo()
 	if "--demo-privacy" in OS.get_cmdline_user_args(): prepare_privacy_demo()
 	if "--demo-room" in OS.get_cmdline_user_args(): prepare_room_demo()
@@ -1019,6 +1020,7 @@ func apply_checkpoint(data: Dictionary) -> bool:
 	# Called on a fresh candidate scene. The active game is untouched until success.
 	if not Save.validate(data).is_empty(): return false
 	if not needs.restore_water_location(data): return false
+	local_harvest.restore_targets(data.get("harvest_targets", {}))
 	start_panel.hide()
 	stock = {"food": 1000000, "wood": 1000000, "fiber": 1000000, "water": 16}
 	for building in data.buildings:
@@ -1550,3 +1552,11 @@ func prepare_local_harvest_demo() -> void:
 	paused = true
 	_show_tray("local_harvest")
 	_news("Récoltes · Espace : les habitants libres récoltent bois et fibres. Suspendre laisse terminer les caisses ; H rappelle. F5/F9 conserve les ordres et les charges.")
+
+func prepare_harvest_targets_demo() -> void:
+	prepare_local_harvest_demo()
+	local_harvest.set_target("wood", 17)
+	local_harvest.set_target("fiber", 10)
+	save_path = "user://saves/harvest_targets_demo.json"
+	_show_tray("harvest_targets")
+	_news("Objectifs · Espace : récolter 5 bois et 4 fibres. Construire un lit consomme la réserve et relance les récoltes. F5/F9 conserve les objectifs et caisses.")
