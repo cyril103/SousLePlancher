@@ -68,6 +68,9 @@ var craft_order_picker: OptionButton
 var craft_order_status: Label
 var craft_order_cancel: Button
 var craft_order_index := -1
+var inspection_status: Label
+var inspection_start: Button
+var inspection_cancel: Button
 var refill_target: SpinBox
 var refill_status: Label
 var refill_cancel: Button
@@ -906,9 +909,27 @@ func _make_torches() -> void:
 func selected_light() -> String:
 	return "lantern" if light_kind.selected == 1 else "torch"
 
+func _make_inspection() -> void:
+	var panel := tray("inspection", "Inspecter la fissure")
+	wrapped(panel, "Un habitant disponible et reposé inspectera le passage depuis le refuge. Construction doit être autorisée ; les habitants affectés à une récolte restent à leur poste. Aucun matériau ni éclairage requis.", 16)
+	inspection_status = wrapped(panel, "", 17)
+	inspection_start = button(panel, "Désigner l’inspection", func(): game.fissure.designate_inspection(); refresh())
+	inspection_cancel = button(panel, "Annuler l’inspection et rappeler", func(): game.fissure.cancel_inspection(); refresh())
+	wrapped(panel, "H suspend les départs et rappelle l’inspecteur ; l’ordre reprend après le rappel. Annuler retire l’ordre. La reconnaissance n’ouvre pas le passage : les travaux restent votre décision.", 15)
+	button(panel, "Priorités de travail", func(): game._show_tray("priorities"))
+	button(panel, "Passage et commandes manuelles", func(): game._show_tray("fissure"))
+
 func _make_fissure() -> void:
-	var box := tray("fissure", "Fissure du plancher")
+	_make_inspection()
+	var panel := tray("fissure", "Fissure du plancher")
+	var menu := ScrollContainer.new()
+	menu.custom_minimum_size.y = 500
+	menu.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	panel.add_child(menu)
+	var box := column(menu)
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	box.add_theme_constant_override("separation", 8)
+	button(box, "Désigner l’inspection…", func(): game._show_tray("inspection"))
 	var scroll := ScrollContainer.new()
 	scroll.custom_minimum_size.y = 110
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -939,6 +960,9 @@ func _make_fissure() -> void:
 
 func _refresh_fissure() -> void:
 	if fissure_summary == null: return
+	inspection_status.text = game.fissure.inspection_summary()
+	inspection_start.disabled = game.fissure.discovered or game.fissure.inspect_requested or game.ended
+	inspection_cancel.disabled = not game.fissure.inspect_requested
 	if fissure_picker.item_count != game.workers.size():
 		fissure_picker.clear()
 		for i in range(game.workers.size()): fissure_picker.add_item("Habitant %d" % (i + 1))

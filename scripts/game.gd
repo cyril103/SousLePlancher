@@ -221,6 +221,7 @@ func _ready() -> void:
 	if "--demo-torches" in OS.get_cmdline_user_args(): prepare_torches_demo()
 	if "--demo-lanterns" in OS.get_cmdline_user_args(): prepare_lanterns_demo()
 	if "--demo-fissure" in OS.get_cmdline_user_args(): prepare_fissure_demo()
+	if "--demo-inspection" in OS.get_cmdline_user_args(): prepare_inspection_demo()
 	if "--demo-alcove" in OS.get_cmdline_user_args(): prepare_alcove_demo()
 	if "--demo-alcove-haul" in OS.get_cmdline_user_args(): prepare_alcove_haul_demo()
 	if "--demo-ant" in OS.get_cmdline_user_args(): prepare_ant_demo()
@@ -1572,6 +1573,14 @@ func prepare_harvest_status_demo() -> void:
 	save_path = "user://saves/harvest_status_demo.json"
 	_show_tray("harvest_targets")
 	_news("Diagnostic · Désignez les miettes, autorisez Récolte pour un habitant, puis Espace. Les raisons d’attente se mettent à jour sans modifier les ordres.")
+
+func prepare_inspection_demo() -> void:
+	start_panel.hide()
+	fissure.designate_inspection()
+	save_path = "user://saves/inspection_demo.json"
+	paused = true
+	_show_tray("inspection")
+	_news("Inspection désignée · Espace : un habitant part. H suspend et reprend ; Annuler retire l’ordre. Le passage reste fermé après reconnaissance.")
 
 func prepare_lantern_production_demo() -> void:
 	start_panel.hide()

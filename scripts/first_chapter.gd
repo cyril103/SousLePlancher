@@ -17,7 +17,7 @@ static func steps(game: Node) -> Array:
 		[game.sleeping.ready_count() > 0, "Installer un premier lit", "build", "Commander un lit : 4 bois, 3 fibres. Les habitants livrent puis fabriquent le couchage."],
 		[game.workshops > 0, "Construire un atelier", "build", "Prévoir 10 bois et 6 fibres. Désigner le bois et les fibres au sol pour que les habitants libres réapprovisionnent le refuge."],
 		[lantern, "Fabriquer une lanterne", "fissure", "Fabriquer à l’atelier : 4 bois, 3 fibres. Transport et Construction doivent être autorisés pour livrer puis fabriquer."],
-		[game.fissure.discovered, "Inspecter la fissure", "fissure", "Choisir un habitant disponible, sans éclairage équipé, puis Inspecter."],
+		[game.fissure.discovered, "Inspecter la fissure", "inspection", "Désigner l’inspection. Un habitant libre et reposé, sans affectation de récolte, la prendra selon sa priorité Construction. Aucun éclairage requis."],
 		[game.fissure.opened(), "Dégager et étayer", "fissure", "Commander le passage : 6 bois, 4 fibres. Laisser livrer les matériaux et terminer les travaux."],
 		[game.fissure.visited, "Explorer l’alcôve", "fissure", "Choisir un habitant reposé, Équiper la lanterne, puis Explorer à la lanterne après la prise de l’équipement."],
 		[game.fissure.widened(), "Élargir pour les caisses", "fissure", "Attendre le retour de l’éclaireur, puis commander l’élargissement : 6 bois, 4 fibres."],

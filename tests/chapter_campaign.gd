@@ -1,7 +1,8 @@
 extends "res://tests/live_checkpoint.gd"
 const Chapter = preload("res://scripts/first_chapter.gd")
 var resumed := false
-var auto_equipment := "--auto-equipment" in OS.get_cmdline_user_args()
+var auto_inspection := "--auto-inspection" in OS.get_cmdline_user_args()
+var auto_equipment := auto_inspection or "--auto-equipment" in OS.get_cmdline_user_args()
 var autonomous := auto_equipment or "--autonomous" in OS.get_cmdline_user_args()
 var auto_refills := autonomous or "--auto-refills" in OS.get_cmdline_user_args()
 var reuse_lanterns := "--reuse-lanterns" in OS.get_cmdline_user_args()
@@ -57,10 +58,13 @@ func manage(g: Node) -> void:
   else: g.torches.request_craft("lantern")
  if g.torches.items.is_empty(): return
  if not g.fissure.discovered:
-  for id in [2, 3]:
-   if g.torches.available(g.workers[id].delivery):
-    g.fissure.start(id, true)
-    break
+  if auto_inspection:
+   g.fissure.designate_inspection()
+  else:
+   for id in [2, 3]:
+    if g.torches.available(g.workers[id].delivery):
+     g.fissure.start(id, true)
+     break
  elif not g.fissure.opened():
   if g.fissure.site.is_empty(): g.fissure.request_build()
  elif not g.fissure.visited:

@@ -32,6 +32,7 @@ func start(c: WorkerDelivery) -> bool:
 			if game.kitchen.try_start(c, kind): return true
 			match kind:
 				"build":
+					if game.fissure.try_inspection(c): return true
 					if game.rooms.start_work(c) or game.fixed_lighting.start_work(c) or game.torches.start_work(c) or game.fissure.start_work(c) or game.sleeping.start_work(c) or game.depots.start_work(c): return true
 				"transport":
 					if game.construction.start(c) or game.transfers.start(c): return true

@@ -10,6 +10,7 @@ const COST := {"wood": 6, "fiber": 4}
 const CONTRACT := {"id": "south_fissure", "from": "refuge_south", "to": "alcove_north", "width": .85, "height": 2.1, "capacity": 1, "cargo": false, "seconds": 3.0}
 var game: Node3D
 var discovered := false
+var inspect_requested := false
 var visited := false
 var site: Dictionary = {}
 var upgrade: Dictionary = {}
@@ -47,6 +48,41 @@ func setup() -> void:
 func opened() -> bool:
 	return not site.is_empty() and site.built
 
+func designate_inspection() -> bool:
+	if discovered or inspect_requested or game.ended: return false
+	inspect_requested = true
+	refresh()
+	return true
+
+func cancel_inspection() -> void:
+	if not inspect_requested: return
+	inspect_requested = false
+	for id in missions.keys():
+		if missions[id].inspect: cancel(game.workers[id].delivery)
+	refresh()
+
+func try_inspection(c: WorkerDelivery) -> bool:
+	if not inspect_requested or discovered or not game.priorities.available(c): return false
+	if c.worker.patch >= 0 or c.worker.energy <= 35: return false
+	for mission in missions.values():
+		if mission.inspect: return false
+	var from: Vector3 = game.home_position(c.owner) if c.inside_refuge else c.actor.position
+	if game.travel_path(from, NEAR, c.owner).is_empty(): return false
+	return start(c.owner, true)
+
+func inspection_summary() -> String:
+	if discovered: return "Inspection terminée. Passage aménagé." if opened() else "Inspection terminée. Le passage reste fermé jusqu’à votre commande de travaux."
+	if not inspect_requested: return "Aucune inspection désignée."
+	if game.ended: return "Colonie arrêtée."
+	if game.hiding or game.pending_save: return "Ordre conservé ; départs suspendus par le rappel ou la sauvegarde."
+	for id in missions:
+		if missions[id].inspect: return "H%d · %s" % [id + 1, description(game.workers[id].delivery)]
+	var enabled := false
+	for id in range(game.workers.size()):
+		if game.workers[id].patch < 0 and game.priorities.value(id, "build") > 0: enabled = true
+	if not enabled: return "Attend un habitant sans affectation de récolte, avec Construction autorisée."
+	return "Attend un habitant disponible et reposé, et un chemin vers la fissure. Les travaux plus prioritaires peuvent passer avant."
+
 func occupied(id: int) -> bool:
 	return missions.has(id) or (not work_site().is_empty() and work_site().builder == id)
 
@@ -67,6 +103,7 @@ func refresh() -> void:
 	braces.visible = not widened() and not site.is_empty() and site.work >= 8
 	annex.visible = visited or observed()
 	label.text = "Fissure à inspecter" if not discovered else ("Passage ouvert · alcôve" if opened() else "Fissure bloquée")
+	if inspect_requested and not discovered: label.text = "Fissure · inspection désignée"
 	if not site.is_empty() and not site.built:
 		label.text = "Dégagement / étaiement · %d %%" % int(site.work / site.required * 100)
 	var site := work_site()
@@ -261,6 +298,7 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 			m.clock += dt
 			if m.clock >= 5:
 				discovered = true
+				inspect_requested = false
 				refresh()
 				game._news("Fissure inspectée : passage horizontal étroit, 6 bois et 4 fibres pour l’étayer. Caisses interdites.")
 				finish(c)
@@ -344,10 +382,11 @@ func summary() -> String:
 	return text
 
 func snapshot() -> Dictionary:
-	return {"discovered": discovered, "visited": visited, "site": saved_site(site), "upgrade": saved_site(upgrade), "fiber": hauling.amount, "known_fiber": hauling.known}
+	return {"discovered": discovered, "inspect_requested": inspect_requested, "visited": visited, "site": saved_site(site), "upgrade": saved_site(upgrade), "fiber": hauling.amount, "known_fiber": hauling.known}
 
 func restore(data: Dictionary) -> void:
 	discovered = data.discovered
+	inspect_requested = data.get("inspect_requested", false)
 	visited = data.visited
 	if not data.site.is_empty():
 		site = {"fissure_site": true, "pos": NEAR, "materials": data.site.materials.duplicate(), "work": float(data.site.work), "built": data.site.built, "required": 24.0, "hauler": -1, "builder": -1}
