@@ -10,6 +10,7 @@ var construction_rows: Array[Dictionary] = []
 var construction_keys: Array = []
 const Chapter = preload("res://scripts/first_chapter.gd")
 var chapter_action: Button
+var chapter_support: Button
 const Frame = preload("res://scripts/atelier_panel.gd")
 const ICONS = preload("res://assets/ui/atelier/icons.png")
 const PORTRAIT = preload("res://assets/ui/atelier/portrait.png")
@@ -475,6 +476,7 @@ func _make_trays() -> void:
 	game.objective_label = wrapped(chapter_scroll, "", 17)
 	game.objective_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	chapter_action = button(goals, "", func(): game._show_tray(Chapter.current(game).tray))
+	chapter_support = button(goals, "", func(): game._show_tray(Chapter.current(game).support_tray))
 	save_label = wrapped(goals, "", 16, MUTED)
 	save_button = button(goals, "Sauvegarder la situation [F5]", func():
 		if game.pending_save: game.cancel_checkpoint()
@@ -670,6 +672,7 @@ func refresh() -> void:
 	var chapter := Chapter.current(game)
 	game.objective_label.text = chapter.text
 	chapter_action.text = chapter.action + " →"
+	chapter_support.text = chapter.support_action + " →"
 	game.patch_picker.select(game.selected + 1)
 	# Compute first, then apply once: disabling a held button cancels its click.
 	var can_assign := false

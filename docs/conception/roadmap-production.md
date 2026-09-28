@@ -4,7 +4,11 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
-## Livraison autorisée — lot 40 : diagnostic des réserves
+## Livraison autorisée — lot 41 : chapitre et gestion autonome
+
+Le guide du premier chapitre propose les récoltes autonomes, objectifs de réserve et entretien des lanternes sans appliquer les réglages. Recette complète depuis une nouvelle partie sans affectation manuelle de récolteur, avec sauvegarde chargée. Voir [lot 41](gameplay-lot-41.md). Commit et push autorisés par le joueur. L’appréciation humaine de l’équilibrage reste ouverte.
+
+## Livraison publiée — lot 40 : diagnostic des réserves (`33b2b33`)
 
 Les objectifs de réserve indiquent les raisons d’attente et ouvrent les commandes correspondantes. Lecture des conditions de départ, sans lancer de travail ; panneau défilant et sauvegarde v23 inchangée. Voir [lot 40](gameplay-lot-40.md). Commit et push autorisés par le joueur.
 

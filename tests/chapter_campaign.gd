@@ -1,7 +1,8 @@
 extends "res://tests/live_checkpoint.gd"
 const Chapter = preload("res://scripts/first_chapter.gd")
 var resumed := false
-var auto_refills := "--auto-refills" in OS.get_cmdline_user_args()
+var autonomous := "--autonomous" in OS.get_cmdline_user_args()
+var auto_refills := autonomous or "--auto-refills" in OS.get_cmdline_user_args()
 var reuse_lanterns := "--reuse-lanterns" in OS.get_cmdline_user_args()
 var last_progress := -1
 var peak_suspicion := 0.0
@@ -16,15 +17,21 @@ func manage(g: Node) -> void:
  elif g.hiding and phase >= 88:
   g._toggle_hide()
  if g.hiding: return
- # Keep two local gatherers, release their assignments once enough supplies are stored.
- for pair in [[0, 2, "wood", 22], [1, 4, "fiber", 18]]:
-  var w: Dictionary = g.workers[pair[0]]
-  if w.patch >= 0 and g.depots.total(pair[2]) >= pair[3]:
-   g.selected = w.patch
-   g.release_worker()
-  elif w.patch < 0 and g.depots.total(pair[2]) < pair[3] - 6:
-   g.selected = pair[1]
-   g.assign_worker(pair[0])
+ if autonomous:
+  for source in [2, 4]:
+   if not g.patches[source].autoharvest: g.local_harvest.set_active(source, true)
+  g.local_harvest.set_target("wood", 22)
+  g.local_harvest.set_target("fiber", 18)
+ else:
+  # Keep two local gatherers, release their assignments once enough supplies are stored.
+  for pair in [[0, 2, "wood", 22], [1, 4, "fiber", 18]]:
+   var w: Dictionary = g.workers[pair[0]]
+   if w.patch >= 0 and g.depots.total(pair[2]) >= pair[3]:
+    g.selected = w.patch
+    g.release_worker()
+   elif w.patch < 0 and g.depots.total(pair[2]) < pair[3] - 6:
+    g.selected = pair[1]
+    g.assign_worker(pair[0])
  if g.sleeping.beds.is_empty():
   g._choose_build("bed")
   g._place_build(Vector3(-3, 0, -4))
@@ -80,6 +87,8 @@ func run() -> void:
  for i in range(36000):
   if i % 20 == 0: manage(g)
   g.simulate(.05)
+  if autonomous:
+   for w in g.workers: check(w.patch == -1, "Autonomous campaign never manually assigns a gatherer")
   peak_suspicion = maxf(peak_suspicion, g.suspicion)
   var progress: int = Chapter.current(g).completed
   if progress != last_progress:
@@ -92,6 +101,9 @@ func run() -> void:
    if loaded:
     var other := clone(g, "normal campaign loaded provisions")
     if other != null:
+     if autonomous:
+      check(other.patches[2].autoharvest and other.patches[4].autoharvest, "Autonomous designations survive campaign checkpoint")
+      check(other.local_harvest.targets == g.local_harvest.targets and other.torches.refill_target == 2, "Reserve settings survive before scripted player resumes")
      check(Chapter.delivered(other) == 0, "Loaded expedition is not credited before arrival")
      g.queue_free()
      await process_frame
@@ -102,7 +114,7 @@ func run() -> void:
  check(resumed, "Normal campaign resumes from a loaded expedition saved to JSON")
  check(not g.ended, "Ordinary human cycles remain survivable")
  check(Chapter.current(g).completed == 10, "All chapter milestones reached from a normal new game")
- print("EQUIPMENT lanterns=",g.torches.items.size()," maintenance=",reuse_lanterns," automatic=",auto_refills)
+ print("EQUIPMENT lanterns=",g.torches.items.size()," maintenance=",reuse_lanterns," automatic=",auto_refills," autonomous_harvest=",autonomous)
  print("CAMPAIGN END t=", g.elapsed, " peak_suspicion=", peak_suspicion, " recalls=", recalls, " kitchen=", g.kitchen.summary())
  if failures:
   for w in g.workers: print("WORKER ",w.delivery.owner, " ", w.delivery.state, " needs=",w.energy,"/",w.nutrition,"/",w.hydration, " patch=",w.patch)

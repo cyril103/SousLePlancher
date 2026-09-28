@@ -43,6 +43,8 @@ Le **lot 39** ajoute les **objectifs de réserve** aux récoltes autonomes : seu
 
 Le **lot 40** explique les attentes dans **Objectifs de réserve** : désignation, épuisement, priorités, affectations, filtres, capacité et accès, avec raccourcis vers les commandes utiles. Démo `-- --demo-harvest-status`, sauvegarde v23 inchangée ; [périmètre et essais](docs/conception/gameplay-lot-40.md).
 
+Le **lot 41** intègre la gestion autonome au **premier chapitre [O]** : raccourci contextuel vers les récoltes, les objectifs de réserve et l’entretien des lanternes. Le parcours complet est testé sans affectation manuelle de récolteur, avec reprise en expédition. Nouvelle partie ordinaire, sauvegarde v23 inchangée ; [guidage et résultats](docs/conception/gameplay-lot-41.md).
+
 ## Suite de production
 
 Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une carte d’ensemble, une coupe verticale, neuf fiches de zones et un registre des passages. L’existant, la campagne prévue et les extensions différées y sont distingués. Publication autorisée par le joueur ; les implantations futures restent à éprouver, sans changement de l’ordre de réalisation.
