@@ -224,6 +224,7 @@ func _ready() -> void:
 	if "--demo-ant" in OS.get_cmdline_user_args(): prepare_ant_demo()
 	if "--demo-kitchen" in OS.get_cmdline_user_args(): prepare_kitchen_demo()
 	if "--demo-transfer-limits" in OS.get_cmdline_user_args(): prepare_transfer_limits_demo()
+	if "--demo-lantern-refill" in OS.get_cmdline_user_args(): prepare_lantern_refill_demo()
 	if "--demo-health" in OS.get_cmdline_user_args(): prepare_health_demo()
 	if "--demo-privacy" in OS.get_cmdline_user_args(): prepare_privacy_demo()
 	if "--demo-room" in OS.get_cmdline_user_args(): prepare_room_demo()
@@ -1366,6 +1367,20 @@ func prepare_transfers_demo() -> void:
 	hud.transfer_target.select(0)
 	hud.transfer_kind.select(Depots.KINDS.find("wood"))
 	_news("7B · Espace : deux porteurs vident les 12 bois du dépôt de l’étage vers le refuge. Essayez Pause, Arrêter et rappeler, puis Reprendre. F5/F9 conserve la liaison et les caisses.")
+
+func prepare_lantern_refill_demo() -> void:
+	start_panel.hide()
+	build_mode = "workshop"
+	_place_build(Vector3(0, 0, -3))
+	torches.add_item(depots.entry(0), 0, "lantern")
+	torches.request_refill()
+	save_path = "user://saves/lantern_refill_demo.json"
+	get_window().title = "Sous le plancher — Ravitaillement des lanternes"
+	paused = true
+	hud.light_kind.select(1)
+	_show_tray("torches")
+	_refresh_ui()
+	_news("Espace : livrer 2 bois, puis ravitailler la lanterne. H interrompt ; H à nouveau reprend. F5/F9 conserve le travail.")
 
 func prepare_transfer_limits_demo() -> void:
 	prepare_transfers_demo()

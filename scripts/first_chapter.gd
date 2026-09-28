@@ -45,5 +45,5 @@ static func current(game: Node) -> Dictionary:
 			if game.kitchen.amount == 0 and delivered(game) == 0:
 				text += "\nBiscuit épuisé. Si aucune caisse ne revient, reprendre une sauvegarde antérieure pour cet objectif ; la colonie peut continuer avec ses gisements locaux."
 	text += "\n\n" + "\n".join(lines)
-	text += "\n\nBesoins et réserves restent prioritaires. H rappelle les habitants ; H à nouveau reprend les tâches. Une lanterne épuisée doit être remplacée. F5 sauvegarde sur place et met en pause."
+	text += "\n\nBesoins et réserves restent prioritaires. H rappelle les habitants ; H à nouveau reprend les tâches. Ravitailler les lanternes rangées dans Éclairage et éclaireurs : 2 bois par plein. F5 sauvegarde sur place et met en pause."
 	return {"text": text, "tray": "build" if next.is_empty() else next[2], "action": "Développer la colonie" if next.is_empty() else next[1], "completed": completed}

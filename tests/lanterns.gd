@@ -173,5 +173,17 @@ func run() -> void:
 	check(game.torches.items.size() == 1 and game.torches.items[0].kind == "lantern", "Resumed assembly produces one lantern")
 	game.queue_free()
 	await process_frame
+	# An explicit illuminated trip still honors disabled collection priorities.
+	game = fixture()
+	game.discover_east()
+	game.torches.add_item(game.depots.entry(0), 180, "lantern")
+	equip(game)
+	game.priorities.set_priority(0, "collect", 0)
+	var untouched: int = game.patches[6].amount
+	check(game.torches.start_haul(0, 6), "Explicit mission can be submitted")
+	advance(game, 40)
+	check(game.patches[6].amount == untouched and game.workers[0].delivery.job < 0 and not game.torches.occupied(0), "Disabled collection returns lamp without reserving a crate")
+	game.queue_free()
+	await process_frame
 	print("LANTERNS: ", failures, " failure(s)")
 	quit(1 if failures else 0)

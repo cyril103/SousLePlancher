@@ -8,6 +8,8 @@ const RANGE := 4.5
 const RECIPES := {"torch": {"wood": 2, "fiber": 1}, "lantern": {"wood": 4, "fiber": 3}}
 const CAPACITIES := {"torch": 90.0, "lantern": 180.0}
 const WORK := {"torch": 8.0, "lantern": 16.0}
+const REFILL_COST := {"wood": 2, "fiber": 0}
+const REFILL_WORK := 8.0
 const NAMES := {"torch": "Torche", "lantern": "Lanterne"}
 var game: Node3D
 var orders: Array[Dictionary] = []
@@ -17,7 +19,34 @@ var crafting: Dictionary = {}
 var picking := -1
 
 func entrance(site: Dictionary) -> Vector3:
+	if site.get("refill", -1) >= 0: return site.pos
 	return site.pos + Vector3(0, -.0105, 1.15)
+
+func servicing(index: int) -> bool:
+	for order in orders:
+		if not order.built and order.get("refill", -1) == index: return true
+	return false
+
+func refill_candidate() -> int:
+	var best := -1
+	for i in range(items.size()):
+		var item: Dictionary = items[i]
+		if item.kind != "lantern" or item.owner >= 0 or item.reserved >= 0 or item.lit or item.fuel >= CAPACITIES.lantern or servicing(i): continue
+		if best < 0 or item.fuel < items[best].fuel: best = i
+	return best
+
+func request_refill() -> bool:
+	if game.hiding or game.pending_save or game.ended: return reject("Reprenez les sorties avant l’entretien.")
+	if game.workshops == 0: return reject("Construisez un atelier pour entretenir les lanternes.")
+	for order in orders:
+		if not order.built and order.get("refill", -1) >= 0: return reject("Un ravitaillement est déjà commandé ; attendez sa fin.")
+	var index := refill_candidate()
+	if index < 0: return reject("Aucune lanterne rangée à ravitailler. Rappelez d’abord son porteur.")
+	var site := {"torch_site": true, "kind": "lantern", "refill": index, "pos": items[index].pos, "materials": {"wood": 0, "fiber": 0}, "hauler": -1, "builder": -1, "work": 0.0, "required": REFILL_WORK, "built": false}
+	orders.append(site)
+	refresh_site(site)
+	game._news("Plein commandé : 2 bois livrés, puis 8 s d’entretien à la lanterne rangée. Autonomie finale : 180 s.")
+	return true
 
 func request_craft(kind: String = "torch") -> bool:
 	if not RECIPES.has(kind): return false
@@ -40,7 +69,7 @@ func refresh_site(site: Dictionary) -> void:
 	if not site.has("supplies"):
 		var node := Node3D.new()
 		game.add_child(node)
-		node.position = site.pos + Vector3(0, .85, .35)
+		node.position = site.pos + Vector3(0, .05 if site.get("refill", -1) >= 0 else .85, .35)
 		site["supplies"] = node
 	for child in site.supplies.get_children():
 		site.supplies.remove_child(child)
@@ -88,7 +117,7 @@ func equip(owner: int, kind: String = "torch") -> bool:
 	var distance := INF
 	for i in range(items.size()):
 		var item := items[i]
-		if item.kind != kind or item.owner >= 0 or item.reserved >= 0 or item.fuel <= 0: continue
+		if item.kind != kind or item.owner >= 0 or item.reserved >= 0 or item.fuel <= 0 or servicing(i): continue
 		var d: float = game.depots.distance(from, item.pos, owner)
 		if d < INF and (best < 0 or item.fuel > items[best].fuel or (is_equal_approx(item.fuel, items[best].fuel) and d < distance)):
 			distance = d
@@ -313,6 +342,16 @@ func tick(c: WorkerDelivery, dt: float) -> bool:
 			back = travel_seconds(c, c.actor.position, c.destination_position) + travel_seconds(c, c.destination_position, game.HOME + game.Refuge.OUTSIDE) + 4.0
 		if item.fuel <= back + margin(c.owner) or not item.lit: recall(c, "Marge de sécurité atteinte")
 	if m.phase == "haul":
+		# Equipped residents are excluded from autonomous job arbitration. Start
+		# their explicit, single-crate order here, then use normal cargo handling.
+		if c.job < 0 and not m.started and c.state == "idle":
+			if game.priorities.value(c.owner, "collect") == 0:
+				recall(c, "Récolte désactivée dans les priorités")
+			elif c.inside_refuge:
+				c.change("leave_home")
+			elif c.start_harvest(c.worker.patch):
+				m.started = true
+				return true
 		if c.job < 0 and (m.started or not c.navigation_issue.is_empty()):
 			recall(c, "Livraison terminée" if m.started else "Récolte indisponible")
 		else: return false # Normal, reserved harvest and two-handed cargo animations.
@@ -368,10 +407,13 @@ func craft_tick(c: WorkerDelivery, dt: float) -> bool:
 				site.built = true
 				refresh_site(site)
 				site.builder = -1
-				add_item(entrance(site), CAPACITIES[site.kind], site.kind)
+				if site.get("refill", -1) >= 0:
+					items[site.refill].fuel = CAPACITIES.lantern
+				else:
+					add_item(entrance(site), CAPACITIES[site.kind], site.kind)
 				crafting.erase(c.owner)
 				c.change("idle")
-				game._news("%s prête à l’atelier : %.0f s d’autonomie. Travaux → Éclairage et éclaireurs." % [NAMES[site.kind], CAPACITIES[site.kind]])
+				game._news("Lanterne ravitaillée : 180 s d’autonomie, équipement réutilisé." if site.get("refill", -1) >= 0 else "%s prête à l’atelier : %.0f s d’autonomie. Travaux → Éclairage et éclaireurs." % [NAMES[site.kind], CAPACITIES[site.kind]])
 		elif c.move(entrance(site), dt, false):
 			c.actor.rotation.y = PI
 			c.change("torch_work")
@@ -395,7 +437,7 @@ func start_work(c: WorkerDelivery) -> bool:
 	return false
 
 func description(c: WorkerDelivery) -> String:
-	if crafting.has(c.owner): return "Assemble : " + NAMES[orders[crafting[c.owner]].kind].to_lower()
+	if crafting.has(c.owner): return "Ravitaille une lanterne" if orders[crafting[c.owner]].get("refill", -1) >= 0 else "Assemble : " + NAMES[orders[crafting[c.owner]].kind].to_lower()
 	if not missions.has(c.owner): return ""
 	if not c.navigation_issue.is_empty(): return c.navigation_issue
 	var m: Dictionary = missions[c.owner]
@@ -407,12 +449,53 @@ func snapshot() -> Dictionary:
 	for item in items: saved_items.append({"kind": item.kind, "pos": game.Save.vector(item.pos), "fuel": item.fuel})
 	var saved_orders: Array = []
 	for order in orders:
-		if not order.built: saved_orders.append({"kind": order.kind, "pos": game.Save.vector(order.pos), "materials": order.materials.duplicate(), "work": order.work})
+		if not order.built: saved_orders.append({"kind": order.kind, "pos": game.Save.vector(order.pos), "materials": order.materials.duplicate(), "work": order.work, "refill": order.get("refill", -1)})
 	return {"items": saved_items, "orders": saved_orders}
 
 func restore(data: Dictionary) -> void:
 	for item in data.items: add_item(Vector3(item.pos[0], item.pos[1], item.pos[2]), float(item.fuel), item.get("kind", "torch"))
 	for site in data.orders:
 		var kind: String = site.get("kind", "torch")
-		orders.append({"torch_site": true, "kind": kind, "pos": Vector3(site.pos[0], site.pos[1], site.pos[2]), "materials": {"wood": int(site.materials.wood), "fiber": int(site.materials.fiber)}, "hauler": -1, "builder": -1, "work": float(site.work), "required": WORK[kind], "built": false})
+		orders.append({"torch_site": true, "kind": kind, "refill": int(site.get("refill", -1)), "pos": Vector3(site.pos[0], site.pos[1], site.pos[2]), "materials": {"wood": int(site.materials.wood), "fiber": int(site.materials.fiber)}, "hauler": -1, "builder": -1, "work": float(site.work), "required": REFILL_WORK if site.get("refill", -1) >= 0 else WORK[kind], "built": false})
 		refresh_site(orders[-1])
+
+static func valid_refills(runtime: Dictionary, data: Dictionary) -> bool:
+	var active := {}
+	for i in range(runtime.orders.size()):
+		var site = runtime.orders[i]
+		if not site is Dictionary: return false
+		var target = site.get("refill", -1)
+		if not target is int or target < -1: return false
+		if target < 0: continue
+		if data.version < 20 or target >= runtime.items.size(): return false
+		if not site.has_all(["kind", "pos", "materials", "work", "required", "built", "builder", "hauler"]): return false
+		if site.kind != "lantern" or not site.pos is Vector3 or not site.built is bool or site.required != REFILL_WORK: return false
+		if not game_save_number(site.work, 0, REFILL_WORK) or not site.materials is Dictionary or site.materials.get("fiber", -1) != 0: return false
+		if not site.materials.get("wood") is int or site.materials.wood < 0 or site.materials.wood > 2: return false
+		if site.work > 0 and site.materials.wood != 2: return false
+		if site.built != (site.work == REFILL_WORK): return false
+		if site.built: continue
+		if active.has(target): return false
+		active[target] = site
+		var item: Dictionary = runtime.items[target]
+		if item.kind != "lantern" or item.owner != -1 or item.reserved != -1 or item.lit or item.get("pos") != site.pos: return false
+		for key in ["builder", "hauler"]:
+			if not site[key] is int or site[key] < -1 or site[key] >= runtime.workers.size(): return false
+		if site.builder >= 0:
+			if runtime.crafting.get(site.builder, -1) != i: return false
+			if runtime.workers[site.builder].controller.state not in ["torch_work", "torch_work_walk"]: return false
+	var found := 0
+	for saved in data.torches.orders:
+		var target: int = saved.get("refill", -1)
+		if target < 0: continue
+		if not active.has(target): return false
+		var site: Dictionary = active[target]
+		for kind in ["wood", "fiber"]:
+			if saved.materials[kind] != site.materials[kind]: return false
+		if not is_equal_approx(saved.work, site.work): return false
+		if not Vector3(saved.pos[0], saved.pos[1], saved.pos[2]).is_equal_approx(site.pos): return false
+		found += 1
+	return found == active.size()
+
+static func game_save_number(value: Variant, minimum: float, maximum: float) -> bool:
+	return (value is float or value is int) and is_finite(value) and value >= minimum and value <= maximum

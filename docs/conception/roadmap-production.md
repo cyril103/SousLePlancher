@@ -4,7 +4,11 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
-## Livraison autorisée — lot 34 : stocks régulés
+## Livraison autorisée — lot 35 : entretien des lanternes
+
+Ravitaillement physique des lanternes rangées : 2 bois, 8 secondes de travail, autonomie finale de 180 secondes, même équipement. Rappel, priorités et sauvegarde v20 intégrés ; anciens fichiers lisibles. Correction du démarrage des récoltes manuelles avec lanterne. Voir [lot 35](gameplay-lot-35.md). Commit et push autorisés par le joueur.
+
+## Livraison publiée — lot 34 : stocks régulés (`cf34ef9`)
 
 Après le guidage (lot 32, `879212f`) et la recette depuis zéro (lot 33, `d268d8e`), ajout de seuils aux transferts : réserve source, objectif destination, caisses réservées prises en compte et reprise automatique. Sauvegarde v19 avec migration des anciennes liaisons sans limite. Voir [lot 34](gameplay-lot-34.md). Commit et push autorisés par le joueur.
 
@@ -43,7 +47,7 @@ Bilan du lot 30 validé par le joueur : [fiche accès cuisine](gameplay-lot-30.m
 | Couchages | Lits fabriqués, propriétaire, alcôves ; chambres compactes reconnues, intimité selon porte et occupants | Forme prédéfinie, un lit par chambre ; pas de dortoir multi-lit ni de murs libres |
 | Chantiers | Livraisons physiques pour lits, éclairages, fissure, dépôts et étapes de chambre | Ateliers/anciens abris encore au paiement historique ; pont cuisine construit par missions éclairées dédiées au lot 30 ; pas de pont libre sur la carte |
 | Dépôts | Chantiers 6 bois + 4 fibres + 16 s, stocks locaux, filtres, réservations ; casier distant à l’étage | Emplacement distant fixe ; pas de casier dans l’alcôve ni quotas |
-| Éclairage | Torche et lanterne portées ; brasero construit au palier, combustible livré et autonomie | Un emplacement fixe ; protection des nouveaux transferts seulement, pas de couverture lumineuse générale ni recharge des équipements portés |
+| Éclairage | Torche et lanterne portées ; brasero construit au palier, combustible livré et autonomie | Un emplacement fixe ; protection des nouveaux transferts seulement, pas de couverture lumineuse générale ; ravitaillement des lanternes rangées ajouté au lot 35 local |
 | Exploration | Réserve découverte à l’étage ; fissure inspectée, dégagée et étayée | Alcôve adjacente agrandie et reconnue à la lanterne ; décor mémorisé et récolte d’une source finie de fibres |
 | Passage sud | Chantier 6 bois + 4 fibres puis traversée réservée dans les deux sens | Élargissement supplémentaire 6 bois + 4 fibres pour les caisses ; lanterne obligatoire |
 | Sauvegarde | Format v18 local : fourmi, charge et politique d’approche ; pont et missions cuisine, patients et secours actifs, coordonnées étendues, chambres et portes, éclairage fixe, combustible, liaisons et chantiers : positions, tâches, caisses, lumière, réservations et horloge conservées ; migrations antérieures | Rechargement en pause |

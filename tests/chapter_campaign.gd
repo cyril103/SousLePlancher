@@ -1,6 +1,7 @@
 extends "res://tests/live_checkpoint.gd"
 const Chapter = preload("res://scripts/first_chapter.gd")
 var resumed := false
+var reuse_lanterns := "--reuse-lanterns" in OS.get_cmdline_user_args()
 var last_progress := -1
 var peak_suspicion := 0.0
 var recalls := 0
@@ -34,7 +35,13 @@ func manage(g: Node) -> void:
  var fresh := 0
  for item in g.torches.items:
   if item.kind == "lantern" and item.fuel >= 150 and item.owner < 0 and item.reserved < 0: fresh += 1
- if fresh < 2: g.torches.request_craft("lantern")
+ if fresh < 2:
+  var servicing := false
+  for order in g.torches.orders:
+   if not order.built and order.get("refill", -1) >= 0: servicing = true
+  if reuse_lanterns and (servicing or g.torches.refill_candidate() >= 0):
+   if not servicing: g.torches.request_refill()
+  else: g.torches.request_craft("lantern")
  if g.torches.items.is_empty(): return
  if not g.fissure.discovered:
   for id in [2, 3]:
@@ -91,6 +98,7 @@ func run() -> void:
  check(resumed, "Normal campaign resumes from a loaded expedition saved to JSON")
  check(not g.ended, "Ordinary human cycles remain survivable")
  check(Chapter.current(g).completed == 10, "All chapter milestones reached from a normal new game")
+ print("EQUIPMENT lanterns=",g.torches.items.size()," maintenance=",reuse_lanterns)
  print("CAMPAIGN END t=", g.elapsed, " peak_suspicion=", peak_suspicion, " recalls=", recalls, " kitchen=", g.kitchen.summary())
  if failures:
   for w in g.workers: print("WORKER ",w.delivery.owner, " ", w.delivery.state, " needs=",w.energy,"/",w.nutrition,"/",w.hydration, " patch=",w.patch)

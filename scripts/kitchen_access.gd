@@ -151,6 +151,7 @@ func try_start(c: WorkerDelivery, priority: String) -> bool:
 	if kind.is_empty(): return false
 	var usable := false
 	for item in game.torches.items:
+		if game.torches.servicing(game.torches.items.find(item)): continue
 		if item.kind == "lantern" and item.owner < 0 and item.reserved < 0 and item.fuel >= required(c, kind, depot) + 5: usable = true
 	if not usable:
 		status = "En attente : lanterne suffisamment chargée (environ 150 s) et habitant disponible."

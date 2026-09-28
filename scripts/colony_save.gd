@@ -1,6 +1,6 @@
 extends RefCounted
 ## Versioned colony data and a data-only snapshot of active simulation.
-const VERSION := 19
+const VERSION := 20
 const Live = preload("res://scripts/live_checkpoint.gd")
 const DEFAULT_PATH := "user://saves/colony_v1.json"
 const KINDS := ["food", "food", "wood", "wood", "fiber", "fiber", "wood", "water"]
@@ -155,13 +155,24 @@ static func validate(data: Variant) -> String:
 			if building.kind == "workshop": locations.append(building.pos)
 		var active_orders: Array = []
 		for site in data.torches.orders:
-			if not fields(site, ["pos", "materials", "work"]) or not valid_vector(site.pos) or not site.pos in locations or site.pos in active_orders: return "Atelier de torche invalide."
+			if not fields(site, ["pos", "materials", "work"]) or not valid_vector(site.pos) or site.pos in active_orders: return "Atelier de torche invalide."
+			var refill = site.get("refill", -1)
+			if not number(refill, -1, data.torches.items.size() - 1, true): return "Lanterne à ravitailler invalide."
+			if refill >= 0:
+				if data.version < 20 or locations.is_empty(): return "Entretien sans atelier."
+				var lamp = data.torches.items[int(refill)]
+				if not fields(lamp, ["pos", "kind", "fuel"]) or lamp.kind != "lantern" or lamp.pos != site.pos or site.get("kind") != "lantern": return "Lanterne d’entretien incohérente."
+			elif not site.pos in locations: return "Atelier de torche invalide."
 			if data.version >= 7 and not site.has("kind"): return "Type d’éclairage manquant."
 			var kind = site.get("kind", "torch")
 			if not kind is String or not kind in ["torch", "lantern"] or (data.version < 7 and kind != "torch"): return "Type d’éclairage invalide."
 			var wood := 4 if kind == "lantern" else 2
 			var fiber := 3 if kind == "lantern" else 1
 			var duration := 16.0 if kind == "lantern" else 8.0
+			if refill >= 0:
+				wood = 2
+				fiber = 0
+				duration = 8.0
 			active_orders.append(site.pos)
 			if not fields(site.materials, ["wood", "fiber"]) or not number(site.materials.wood, 0, wood, true) or not number(site.materials.fiber, 0, fiber, true) or not number(site.work, 0, duration - .000001): return "Fabrication d’éclairage invalide."
 			if site.work > 0 and (site.materials.wood != wood or site.materials.fiber != fiber): return "Éclairage fabriqué sans matériaux."

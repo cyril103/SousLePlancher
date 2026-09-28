@@ -230,6 +230,7 @@ static func validate(data: Dictionary) -> String:
 		if item.owner >= 0:
 			if owners.has(item.owner) or not r.torch_missions.has(item.owner) or r.torch_missions[item.owner].item != i: return "Équipement dupliqué ou orphelin."
 			owners[item.owner] = true
+	if not preload("res://scripts/carried_torches.gd").valid_refills(r, data): return "Ravitaillement de lanterne incohérent."
 	for token in r.incoming:
 		var claim = r.incoming[token]
 		if not claim is Dictionary or not claim.has_all(["id", "quantity", "kind"]) or not claim.id is int or claim.id < 0 or claim.id >= data.depots.size() or not claim.quantity is int or claim.quantity < 1: return "Réservation de dépôt invalide."

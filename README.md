@@ -31,6 +31,8 @@ Le **lot 33** corrige les rappels pendant une sortie du refuge pour inspection o
 
 Le **lot 34** ajoute les seuils **Garder / Viser** aux transferts : réserve minimale à la source, objectif à destination et reprise automatique après consommation. Démo `-- --demo-transfer-limits`, sauvegarde v19 compatible en lecture avec les versions précédentes. Voir [les règles et essais](docs/conception/gameplay-lot-34.md).
 
+Le **lot 35** permet de **ravitailler les lanternes rangées** : 2 bois livrés, 8 secondes d’entretien, puis 180 secondes d’autonomie sur le même équipement. Atelier requis ; bouton dans Éclairage et éclaireurs. Démo `-- --demo-lantern-refill`, sauvegarde v20 ; [règles et vérifications](docs/conception/gameplay-lot-35.md).
+
 ## Suite de production
 
 Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une carte d’ensemble, une coupe verticale, neuf fiches de zones et un registre des passages. L’existant, la campagne prévue et les extensions différées y sont distingués. Publication autorisée par le joueur ; les implantations futures restent à éprouver, sans changement de l’ordre de réalisation.

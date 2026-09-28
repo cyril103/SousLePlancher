@@ -10,7 +10,7 @@ func cost(bed: Dictionary) -> Dictionary:
 	if bed.get("fixed_site", false): return game.fixed_lighting.REFILL if bed.fuel_site else game.fixed_lighting.COST
 	if bed.get("depot_site", false): return game.depots.COST
 	if bed.get("fissure_site", false): return game.fissure.COST
-	if bed.get("torch_site", false): return game.torches.RECIPES[bed.get("kind", "torch")]
+	if bed.get("torch_site", false): return game.torches.REFILL_COST if bed.get("refill", -1) >= 0 else game.torches.RECIPES[bed.get("kind", "torch")]
 	return game.COSTS["private_bed" if bed.private else "bed"]
 
 func sites() -> Array:

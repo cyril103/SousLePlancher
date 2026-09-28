@@ -92,6 +92,7 @@ func tick(candidate: int = -1) -> void:
 			continue
 		var usable := false
 		for item in game.torches.items:
+			if game.torches.servicing(game.torches.items.find(item)): continue
 			if item.kind != "lantern" or item.owner >= 0 or item.reserved >= 0 or item.fuel < fuel + 5: continue
 			var from: Vector3 = game.home_position(id) if c.inside_refuge else c.actor.position
 			if game.depots.distance(from, item.pos, id) < INF: usable = true

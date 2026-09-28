@@ -806,6 +806,7 @@ func _make_torches() -> void:
 	recipe_row.add_child(light_kind)
 	light_kind.item_selected.connect(func(_index: int): refresh())
 	button(recipe_row, "Fabriquer", func(): game.torches.request_craft(selected_light()); refresh())
+	button(box, "Ravitailler une lanterne · 2 bois", func(): game.torches.request_refill(); refresh(), "Atelier requis. Plein à 180 s après livraison et 8 s d’entretien sur la lanterne rangée la moins chargée.")
 	torch_picker = OptionButton.new()
 	box.add_child(torch_picker)
 	torch_picker.item_selected.connect(func(index: int): resident_index = index; refresh())
@@ -912,7 +913,7 @@ func _refresh_torches() -> void:
 	for item in game.torches.items:
 		if item.kind != kind: continue
 		if item.fuel <= 0: empty += 1
-		elif item.owner < 0 and item.reserved < 0: usable += 1
+		elif item.owner < 0 and item.reserved < 0 and not game.torches.servicing(game.torches.items.find(item)): usable += 1
 	torch_fuel.max_value = game.torches.CAPACITIES[game.torches.items[index].kind if index >= 0 else kind]
 	torch_fuel.value = game.torches.items[index].fuel if index >= 0 else 0
 	torch_summary.text = "%s : %d disponible(s) · %d épuisé(s)\n%s" % [game.torches.NAMES[kind], usable, empty, c.description()]
@@ -921,8 +922,8 @@ func _refresh_torches() -> void:
 		torch_summary.text += "\n%s %s · %.1f / %.0f s" % [game.torches.NAMES[item.kind], "allumée" if item.lit else "éteinte", item.fuel, game.torches.CAPACITIES[item.kind]]
 	for order in game.torches.orders:
 		if order.built: continue
-		var recipe: Dictionary = game.torches.RECIPES[order.kind]
-		torch_summary.text += "\n%s : bois %d/%d · fibres %d/%d · %.0f %%" % [game.torches.NAMES[order.kind], order.materials.wood, recipe.wood, order.materials.fiber, recipe.fiber, order.work / order.required * 100]
+		var recipe: Dictionary = game.construction.cost(order)
+		torch_summary.text += "\n%s : bois %d/%d · fibres %d/%d · %.0f %%" % ["Ravitaillement" if order.get("refill", -1) >= 0 else game.torches.NAMES[order.kind], order.materials.wood, recipe.wood, order.materials.fiber, recipe.fiber, order.work / order.required * 100]
 	torch_equip.disabled = game.torches.occupied(resident_index) or usable == 0 or game.hiding
 	torch_depart.disabled = not game.torches.missions.has(resident_index) or game.torches.missions[resident_index].phase != "ready"
 	lantern_east.disabled = not game.torches.can_haul(resident_index) or game.hiding
