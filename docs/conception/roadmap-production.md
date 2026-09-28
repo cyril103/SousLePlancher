@@ -4,7 +4,11 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
-## Livraison autorisée — lot 37 : suivi des chantiers
+## Livraison autorisée — lot 38 : récoltes autonomes du refuge
+
+Désignations des cinq gisements au sol, attribution aux habitants sans affectation selon leurs priorités, suspension après les charges engagées et sauvegarde v22. Voir [lot 38](gameplay-lot-38.md). Commit et push autorisés par le joueur.
+
+## Livraison publiée — lot 37 : suivi des chantiers (`d1e9456`)
 
 Vue commune des chantiers à livraison physique : matériaux livrés, habitant engagé, priorités désactivées, récupération après annulation et accès aux commandes. Démo et reprise v21, sans nouveau champ sauvegardé. Voir [lot 37](gameplay-lot-37.md). Commit et push autorisés par le joueur.
 

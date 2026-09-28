@@ -1,6 +1,6 @@
 extends RefCounted
 ## Versioned colony data and a data-only snapshot of active simulation.
-const VERSION := 21
+const VERSION := 22
 const Live = preload("res://scripts/live_checkpoint.gd")
 const DEFAULT_PATH := "user://saves/colony_v1.json"
 const KINDS := ["food", "food", "wood", "wood", "fiber", "fiber", "wood", "water"]
@@ -10,7 +10,7 @@ static func capture(game: Node) -> Dictionary:
 	for building in game.buildings:
 		if building.kind != "heart": buildings.append({"kind": building.kind, "pos": vector(building.pos)})
 	var patches: Array = []
-	for patch in game.patches: patches.append({"kind": patch.kind, "amount": patch.amount, "discovered": patch.discovered})
+	for patch in game.patches: patches.append({"kind": patch.kind, "amount": patch.amount, "discovered": patch.discovered, "autoharvest": patch.get("autoharvest", false)})
 	var assignments: Array = []
 	for worker in game.workers: assignments.append(worker.patch)
 	var needs: Array = []
@@ -68,6 +68,9 @@ static func validate(data: Variant) -> String:
 		var patch = data.patches[i]
 		if not fields(patch, ["kind", "amount", "discovered"]): return "Gisement incomplet."
 		if patch.kind != KINDS[i] or not number(patch.amount, 0, 100000000, true) or not patch.discovered is bool: return "Gisement invalide."
+		if data.version >= 22 or patch.has("autoharvest"):
+			if not patch.get("autoharvest") is bool: return "Ordre de récolte locale invalide."
+			if patch.autoharvest and (not i in preload("res://scripts/local_harvest.gd").PATCHES or not patch.discovered): return "Ordre de récolte hors du refuge."
 		if i < 6 and not patch.discovered: return "Gisement initial manquant."
 		if i == 7 and not patch.discovered: return "Point d’eau initial manquant."
 	if not data.buildings is Array or data.buildings.size() > 64: return "Bâtiments invalides."

@@ -20,6 +20,7 @@ var rooms := preload("res://scripts/constructed_rooms.gd").new()
 var fixed_lighting := preload("res://scripts/fixed_lighting.gd").new()
 var transfers := preload("res://scripts/depot_transfers.gd").new()
 var priorities := preload("res://scripts/work_priorities.gd").new()
+var local_harvest := preload("res://scripts/local_harvest.gd").new()
 var designations := preload("res://scripts/work_designations.gd").new()
 const HOME := Vector3(-3, 0, 1)
 const COSTS := {"depot": {"wood": 6, "fiber": 4}, "bed": {"wood": 4, "fiber": 3}, "private_bed": {"wood": 6, "fiber": 5}, "shelter": {"wood": 8, "fiber": 4}, "workshop": {"wood": 10, "fiber": 6}}
@@ -105,6 +106,7 @@ func _ready() -> void:
 	fixed_lighting.game = self
 	transfers.game = self
 	priorities.game = self
+	local_harvest.game = self
 	fissure.game = self
 	torches.game = self
 	depots.game = self
@@ -227,6 +229,7 @@ func _ready() -> void:
 	if "--demo-lantern-refill" in OS.get_cmdline_user_args(): prepare_lantern_refill_demo()
 	if "--demo-auto-refills" in OS.get_cmdline_user_args(): prepare_auto_refills_demo()
 	if "--demo-construction-board" in OS.get_cmdline_user_args(): prepare_construction_board_demo()
+	if "--demo-local-harvest" in OS.get_cmdline_user_args(): prepare_local_harvest_demo()
 	if "--demo-health" in OS.get_cmdline_user_args(): prepare_health_demo()
 	if "--demo-privacy" in OS.get_cmdline_user_args(): prepare_privacy_demo()
 	if "--demo-room" in OS.get_cmdline_user_args(): prepare_room_demo()
@@ -339,9 +342,10 @@ func _add_patch(kind: String, pos: Vector3, amount: int) -> void:
 	var node := Art.model(self, "needs_13/condensation" if kind == "water" else kind, pos)
 	var label := Art.caption(node, NAMES[kind], Vector3(0, 1.0, 0), Color("eac37e"))
 	label.pixel_size = 0.0055
-	patches.append({"kind": kind, "pos": pos, "amount": amount, "reserved": 0, "node": node, "label": label, "discovered": true})
+	patches.append({"kind": kind, "pos": pos, "amount": amount, "reserved": 0, "node": node, "label": label, "discovered": true, "autoharvest": false})
 
 func _exit_tree() -> void:
+	local_harvest.game = null
 	ant.game = null
 	kitchen.game = null
 	health.game = null
@@ -1045,7 +1049,9 @@ func apply_checkpoint(data: Dictionary) -> bool:
 		for i in range(workers.size()):
 			for key in ["energy", "comfort", "privacy", "sleep_requested"]: workers[i][key] = data.needs[i][key]
 			for key in ["nutrition", "hydration"]: workers[i][key] = float(data.needs[i].get(key, 100.0))
-	for i in range(data.patches.size()): patches[i].amount = int(data.patches[i].amount)
+	for i in range(data.patches.size()):
+		patches[i].amount = int(data.patches[i].amount)
+		patches[i].autoharvest = data.patches[i].get("autoharvest", false)
 	if data.version >= 4:
 		for pile in data.recovery:
 			construction.add_recovery(Vector3(pile.pos[0], pile.pos[1], pile.pos[2]), {"wood": int(pile.materials.wood), "fiber": int(pile.materials.fiber)})
@@ -1534,3 +1540,13 @@ func prepare_construction_board_demo() -> void:
 	_show_tray("construction_board")
 	_refresh_ui()
 	_news("Suivi · Activez Transport et Construction dans les priorités, puis Espace pour livrer et fabriquer. H interrompt, F5/F9 reprend sur place.")
+
+func prepare_local_harvest_demo() -> void:
+	start_panel.hide()
+	for w in workers: w.priorities = {"collect": 1, "transport": 2, "build": 2}
+	local_harvest.set_active(2, true)
+	local_harvest.set_active(4, true)
+	save_path = "user://saves/local_harvest_demo.json"
+	paused = true
+	_show_tray("local_harvest")
+	_news("Récoltes · Espace : les habitants libres récoltent bois et fibres. Suspendre laisse terminer les caisses ; H rappelle. F5/F9 conserve les ordres et les charges.")

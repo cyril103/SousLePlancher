@@ -37,6 +37,8 @@ Le **lot 36** ajoute une **réserve automatique de lanternes** (0 à 8) et l’a
 
 Le **lot 37** ajoute **Travaux → Suivi des chantiers** : matériaux livrés, activité des habitants, priorités désactivées et matériaux récupérables après annulation. Accès aux commandes et centrage caméra ; démo `-- --demo-construction-board`. Sauvegarde v21 inchangée ; [périmètre et essai](docs/conception/gameplay-lot-37.md).
 
+Le **lot 38** ajoute les **récoltes autonomes du refuge** : désigner les cinq gisements au sol, laisser les habitants libres récolter selon leurs priorités, puis suspendre sans perdre les charges. Accès par Travaux ou Habitants. Démo `-- --demo-local-harvest`, sauvegarde v22 ; [règles et vérifications](docs/conception/gameplay-lot-38.md).
+
 ## Suite de production
 
 Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une carte d’ensemble, une coupe verticale, neuf fiches de zones et un registre des passages. L’existant, la campagne prévue et les extensions différées y sont distingués. Publication autorisée par le joueur ; les implantations futures restent à éprouver, sans changement de l’ordre de réalisation.

@@ -37,7 +37,7 @@ func start(c: WorkerDelivery) -> bool:
 							c.change("leave_home")
 							return true
 						if c.start_harvest(c.worker.patch): return true
-					elif game.designations.try_start(c): return true
+					elif game.designations.try_start(c) or game.local_harvest.try_start(c): return true
 	return false
 
 func summary() -> String:

@@ -1,6 +1,7 @@
 extends Control
 ## Live workshop HUD; all panels read the simulation, never a baked screenshot.
 const ConstructionBoard = preload("res://scripts/construction_board.gd")
+var local_harvest_rows: Array[Dictionary] = []
 var construction_list: VBoxContainer
 var construction_note: Label
 var construction_rows: Array[Dictionary] = []
@@ -370,7 +371,9 @@ func _make_trays() -> void:
 	_make_kitchen()
 	_make_health()
 	_make_priorities()
+	_make_local_harvest()
 	var people := tray("people", "Habitants & affectations")
+	button(people, "Récoltes autonomes du refuge", func(): game._show_tray("local_harvest"))
 	button(people, "Santé et secours", func(): game._show_tray("health"))
 	button(people, "Priorités de travail", func(): game._show_tray("priorities"))
 	game.patch_picker = OptionButton.new()
@@ -402,13 +405,21 @@ func _make_trays() -> void:
 	designation_cancel = button(orders, "Annuler l’ordre et rappeler les porteurs", func(): game.designations.cancel(); refresh())
 	wrapped(orders, "Le joueur choisit le travail. Les habitants libres préparent l’équipement et transportent les ressources. Besoins et rappel restent prioritaires.", 16)
 	button(orders, "Centrer sur le gisement", func(): game.fissure.follow = -1; game.focus = Vector3(3, 0, 10); game.zoom = 20; game._update_camera())
-	var work := tray("work", "Travaux en cours")
+	var work_panel := tray("work", "Travaux en cours")
+	var work_menu := ScrollContainer.new()
+	work_menu.custom_minimum_size.y = 500
+	work_menu.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	work_panel.add_child(work_menu)
+	var work := column(work_menu, 12)
+	work.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var work_overview := row(work, 6)
 	button(work_overview, "Suivi des chantiers", func(): game._show_tray("construction_board"))
 	button(work_overview, "Priorités", func(): game._show_tray("priorities"))
 	_make_construction_board()
 	button(work, "Accès cuisine et pont", func(): game._show_tray("kitchen"))
-	button(work, "Ordres de récolte autonomes", func(): game._show_tray("designations"))
+	var harvest_actions := row(work, 6)
+	button(harvest_actions, "Récoltes du refuge", func(): game._show_tray("local_harvest"))
+	button(harvest_actions, "Fibres de l’alcôve", func(): game._show_tray("designations"))
 	button(work, "Chantiers et attribution des lits", func(): game._show_tray("beds"))
 	button(work, "Éclairage et éclaireurs", func(): game._show_tray("torches"))
 	_make_torches()
@@ -417,7 +428,7 @@ func _make_trays() -> void:
 	button(work, "Fissure et passage", func(): game._show_tray("fissure"))
 	_make_fissure()
 	var work_scroll := ScrollContainer.new()
-	work_scroll.custom_minimum_size.y = 225
+	work_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	work_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	work.add_child(work_scroll)
 	work_label = wrapped(work_scroll, "", 16)
@@ -600,6 +611,7 @@ func refresh() -> void:
 	_refresh_rooms()
 	_refresh_priorities()
 	_refresh_construction_board()
+	_refresh_local_harvest()
 	if designation_label != null:
 		designation_label.text = game.designations.summary()
 		designation_start.disabled = game.designations.active or not game.fissure.visited or game.ended
@@ -735,7 +747,7 @@ func refresh() -> void:
 		var patch: Dictionary = game.patches[i]
 		game.patch_picker.set_item_disabled(i + 1, not patch.discovered)
 		if i == 6: game.patch_picker.set_item_text(i + 1, "Réserve de l’Est · Bois" if patch.discovered else "Réserve inexplorée")
-		patch.label.text = ("▸ " if i == game.selected else "") + game.NAMES[patch.kind] + " · %d" % patch.amount + (" · Palier" if patch.pos.y > 1 else "")
+		patch.label.text = ("▸ " if i == game.selected else "") + game.NAMES[patch.kind] + " · %d" % patch.amount + (" · Palier" if patch.pos.y > 1 else "") + (" · Récolte désignée" if patch.get("autoharvest", false) else "")
 		patch.label.modulate = Color("fff1c8") if i == game.selected else Color("eac37e")
 
 func _refresh_depots() -> void:
@@ -1276,3 +1288,29 @@ func _open_construction_entry(index: int) -> void:
 		_refresh_depots()
 		depot_picker.select(entry.selection)
 	game._show_tray(entry.panel)
+
+func _make_local_harvest() -> void:
+	var panel := tray("local_harvest", "Récoltes du refuge")
+	wrapped(panel, "Désignez les gisements au sol. Les habitants sans affectation récoltent selon leurs priorités ; besoins et rappel passent avant.", 15)
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size.y = 280
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	panel.add_child(scroll)
+	var list := column(scroll, 10)
+	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	for id in game.local_harvest.PATCHES:
+		var detail := wrapped(list, "", 15)
+		var actions := row(list, 6)
+		var toggle := button(actions, "", func(): game.local_harvest.set_active(id, not game.patches[id].autoharvest); refresh())
+		button(actions, "Centrer", func(): game.fissure.follow = -1; game.focus = game.patches[id].pos; game._update_camera())
+		local_harvest_rows.append({"id": id, "detail": detail, "toggle": toggle})
+	button(panel, "Priorités de travail", func(): game._show_tray("priorities"))
+	wrapped(panel, "Suspendre laisse finir les charges engagées. Les affectations manuelles restent indépendantes. Sans quota : récolte jusqu’à épuisement ou dépôt plein. Ordre de choix : numéros des gisements.", 14)
+
+func _refresh_local_harvest() -> void:
+	if game.active_tray != "local_harvest": return
+	for controls in local_harvest_rows:
+		var p: Dictionary = game.patches[controls.id]
+		controls.detail.text = game.local_harvest.summary(controls.id)
+		controls.toggle.text = "Suspendre" if p.autoharvest else "Désigner"
+		controls.toggle.disabled = not p.autoharvest and (not p.discovered or p.amount <= 0)

@@ -151,6 +151,8 @@ static func validate(data: Dictionary) -> String:
 		if not patch is Dictionary or not patch.has_all(["kind", "amount", "discovered", "reserved"]): return "Source active incomplète."
 		for key in ["kind", "amount", "discovered"]:
 			if patch[key] != data.patches[i][key]: return "Source active incohérente."
+		if data.version >= 22 or patch.has("autoharvest") or data.patches[i].has("autoharvest"):
+			if not patch.get("autoharvest") is bool or patch.autoharvest != data.patches[i].get("autoharvest", false): return "Ordre de récolte actif incohérent."
 		if not patch.reserved is int or patch.reserved < 0 or patch.reserved > patch.amount: return "Réservation de source invalide."
 	for i in range(r.beds.size()):
 		var bed = r.beds[i]
