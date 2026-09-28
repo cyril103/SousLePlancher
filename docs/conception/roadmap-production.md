@@ -6,7 +6,7 @@ Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [d
 
 ## Livraison validée — guidage 11C / lot 32
 
-Le guidage du premier chapitre est validé par le joueur le 28 septembre 2026 : dix objectifs issus de la simulation, prochaine action et accès direct aux commandes. Voir [lot 32](gameplay-lot-32.md). Le parcours intégral depuis une nouvelle partie et son équilibrage restent à valider ; 11C n’est pas déclarée terminée.
+Le guidage du premier chapitre est validé par le joueur le 28 septembre 2026 : dix objectifs issus de la simulation, prochaine action et accès direct aux commandes. Voir [lot 32](gameplay-lot-32.md). La recette technique du parcours intégral depuis une nouvelle partie est couverte par le [lot 33](gameplay-lot-33.md), dont le commit et le push sont autorisés par le joueur : dix objectifs, besoins et menaces actifs, reprise chargée depuis une sauvegarde. Un blocage de porte pendant les rappels est corrigé. L’appréciation de l’équilibrage reste ouverte ; 11C n’est pas déclarée validée dans son ensemble.
 
 ## Cap immédiat
 

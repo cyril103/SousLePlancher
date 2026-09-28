@@ -27,6 +27,8 @@ Le **lot 13** ajoute les besoins autonomes de faim et de soif au sommeil : trois
 
 Le **lot 32 / étape 11C** commence le parcours guidé : **Objectifs [O]** suit dix étapes du premier lit au retour des provisions, avec un accès direct aux commandes. Le panneau s’ouvre à la fondation de la colonie. La progression se reconstruit depuis les sauvegardes v18 existantes. Voir [le périmètre et les vérifications](docs/conception/gameplay-lot-32.md).
 
+Le **lot 33** corrige les rappels pendant une sortie du refuge pour inspection ou équipement. Le chapitre complet est testé depuis une nouvelle partie, avec besoins, passages humains et rechargement d’une expédition chargée : [résultats et essai](docs/conception/gameplay-lot-33.md).
+
 ## Suite de production
 
 Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une carte d’ensemble, une coupe verticale, neuf fiches de zones et un registre des passages. L’existant, la campagne prévue et les extensions différées y sont distingués. Publication autorisée par le joueur ; les implantations futures restent à éprouver, sans changement de l’ordre de réalisation.

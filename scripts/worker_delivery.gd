@@ -469,7 +469,9 @@ func begin_door(entering: bool) -> void:
 	else:
 		door_route = PackedVector3Array([aisle, inner, outer])
 		door_route.append_array(game.navigation.path(outer, game.home_position(owner)))
-	route = door_route
+	# Task cancellation clears the navigation route. Keep the committed door
+	# crossing independent so recall cannot strand a resident inside the wall.
+	route = door_route.duplicate()
 	route_index = 0
 	game.refuge.set_cutaway(true)
 
