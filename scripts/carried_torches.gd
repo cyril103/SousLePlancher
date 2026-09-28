@@ -18,6 +18,57 @@ var missions: Dictionary = {}
 var crafting: Dictionary = {}
 var picking := -1
 var refill_target := 0
+var craft_target := 0
+
+func set_craft_target(count: int) -> bool:
+	if count < 0 or count > 8: return false
+	craft_target = count
+	return true
+
+func total_lanterns() -> int:
+	var count := 0
+	for item in items:
+		if item.kind == "lantern": count += 1
+	return count
+
+func pending_lanterns() -> int:
+	var count := 0
+	for order in orders:
+		if not order.built and order.kind == "lantern" and order.get("refill", -1) < 0: count += 1
+	return count
+
+func free_workshop() -> bool:
+	for building in game.buildings:
+		if building.kind != "workshop": continue
+		var busy := false
+		for order in orders:
+			if not order.built and order.pos == building.pos: busy = true
+		if not busy: return true
+	return false
+
+func update_production() -> void:
+	if craft_target == 0 or game.hiding or game.pending_save or game.ended: return
+	# Existing, equipped and empty lanterns all count. Maintenance is not production.
+	if total_lanterns() + pending_lanterns() >= craft_target: return
+	if pending_lanterns() > 0 or items.size() >= 4096 or not free_workshop(): return
+	request_craft("lantern")
+
+func production_summary() -> String:
+	var owned := total_lanterns()
+	var pending := pending_lanterns()
+	var text := "Possédées : %d · En fabrication : %d.\n" % [owned, pending]
+	text += "Fabrication automatique désactivée." if craft_target == 0 else "Objectif total : %d." % craft_target
+	for order in orders:
+		if not order.built and order.kind == "lantern" and order.get("refill", -1) < 0:
+			return text + "\nCommande engagée : " + game.construction.status(order) + "."
+	if craft_target == 0: return text
+	if owned >= craft_target: return text + "\nNombre de lanternes suffisant."
+	if game.ended: return text + "\nColonie arrêtée."
+	if game.hiding or game.pending_save: return text + "\nDéparts suspendus par le rappel ou la sauvegarde."
+	if items.size() >= 4096: return text + "\nCapacité d’équipement atteinte."
+	if game.workshops == 0: return text + "\nConstruire un atelier."
+	if not free_workshop(): return text + "\nAttend un atelier libre."
+	return text + "\nCommande au prochain pas de simulation."
 
 func set_refill_target(count: int) -> bool:
 	if count < 0 or count > 8: return false
@@ -502,10 +553,11 @@ func snapshot() -> Dictionary:
 	var saved_orders: Array = []
 	for order in orders:
 		if not order.built: saved_orders.append({"kind": order.kind, "pos": game.Save.vector(order.pos), "materials": order.materials.duplicate(), "work": order.work, "refill": order.get("refill", -1)})
-	return {"items": saved_items, "orders": saved_orders, "refill_target": refill_target}
+	return {"items": saved_items, "orders": saved_orders, "refill_target": refill_target, "craft_target": craft_target}
 
 func restore(data: Dictionary) -> void:
 	refill_target = int(data.get("refill_target", 0))
+	craft_target = int(data.get("craft_target", 0))
 	for item in data.items: add_item(Vector3(item.pos[0], item.pos[1], item.pos[2]), float(item.fuel), item.get("kind", "torch"))
 	for site in data.orders:
 		var kind: String = site.get("kind", "torch")

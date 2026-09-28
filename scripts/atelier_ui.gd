@@ -62,6 +62,8 @@ var routes_button: Button
 var stocks_label: Label
 var torch_picker: OptionButton
 var torch_summary: Label
+var craft_target: SpinBox
+var craft_status: Label
 var refill_target: SpinBox
 var refill_status: Label
 var refill_cancel: Button
@@ -881,10 +883,12 @@ func _make_torches() -> void:
 	refill_target.custom_minimum_size.x = 100
 	goal.add_child(refill_target)
 	refill_target.value_changed.connect(func(value: float): game.torches.set_refill_target(int(value)); refresh())
-	wrapped(service, "0 désactive les prochains entretiens ; le travail engagé se termine. Les lanternes portées ne comptent pas dans la réserve. Aucune fabrication automatique.", 15)
+	wrapped(service, "0 désactive les prochains entretiens ; le travail engagé se termine. Les lanternes portées ne comptent pas dans la réserve. La fabrication se règle séparément.", 15)
 	refill_status = wrapped(service, "", 17)
 	button(service, "Commander un plein · 2 bois", func(): game.torches.request_refill(); refresh())
 	refill_cancel = button(service, "Annuler l’entretien et désactiver l’auto", func(): game.torches.cancel_refill(); refresh())
+	button(service, "Fabrication automatique…", func(): game._show_tray("lantern_production"))
+	_make_lantern_production()
 	button(service, "Équipement et sorties", func(): game._show_tray("torches"))
 
 func selected_light() -> String:
@@ -945,6 +949,8 @@ func _refresh_fissure() -> void:
 
 func _refresh_torches() -> void:
 	if torch_picker == null: return
+	craft_target.set_value_no_signal(game.torches.craft_target)
+	craft_status.text = game.torches.production_summary()
 	refill_target.set_value_no_signal(game.torches.refill_target)
 	refill_status.text = game.torches.refill_summary()
 	refill_cancel.disabled = game.torches.pending_refill() < 0
@@ -1364,3 +1370,19 @@ func _refresh_harvest_targets() -> void:
 func _open_harvest_diagnostic(kind: String) -> void:
 	var state := HarvestStatus.inspect(game, kind)
 	if not state.panel.is_empty(): game._show_tray(state.panel)
+
+func _make_lantern_production() -> void:
+	var panel := tray("lantern_production", "Fabriquer des lanternes")
+	wrapped(panel, "Nombre total à posséder, de 0 à 8. Les lanternes portées, vides et en entretien comptent ; les commandes en cours aussi.", 16)
+	var goal := row(panel)
+	label(goal, "Objectif total", 17)
+	craft_target = SpinBox.new()
+	craft_target.max_value = 8
+	craft_target.custom_minimum_size.x = 100
+	goal.add_child(craft_target)
+	craft_target.value_changed.connect(func(value: float): game.torches.set_craft_target(int(value)); refresh())
+	craft_status = wrapped(panel, "", 17)
+	wrapped(panel, "Une fabrication à la fois pour l’automatisme : 4 bois, 3 fibres et 16 s par lanterne. Atelier requis. 0 désactive les prochaines commandes ; le travail engagé se termine.", 15)
+	button(panel, "Suivi des chantiers", func(): game._show_tray("construction_board"))
+	button(panel, "Entretien et réserve pleine", func(): game._show_tray("lantern_service"))
+	wrapped(panel, "Une lanterne vide doit être entretenue : elle n’est pas remplacée. Baisser l’objectif ne détruit rien. Les fabrications manuelles restent possibles au-delà du seuil.", 15)

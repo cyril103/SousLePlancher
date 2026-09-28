@@ -1,7 +1,8 @@
 extends "res://tests/live_checkpoint.gd"
 const Chapter = preload("res://scripts/first_chapter.gd")
 var resumed := false
-var autonomous := "--autonomous" in OS.get_cmdline_user_args()
+var auto_equipment := "--auto-equipment" in OS.get_cmdline_user_args()
+var autonomous := auto_equipment or "--autonomous" in OS.get_cmdline_user_args()
 var auto_refills := autonomous or "--auto-refills" in OS.get_cmdline_user_args()
 var reuse_lanterns := "--reuse-lanterns" in OS.get_cmdline_user_args()
 var last_progress := -1
@@ -44,7 +45,8 @@ func manage(g: Node) -> void:
  for item in g.torches.items:
   if item.kind == "lantern" and item.fuel >= 150 and item.owner < 0 and item.reserved < 0: fresh += 1
  if auto_refills: g.torches.set_refill_target(2)
- if fresh < 2:
+ if auto_equipment: g.torches.set_craft_target(2)
+ if fresh < 2 and not auto_equipment:
   var servicing := false
   for order in g.torches.orders:
    if not order.built and order.get("refill", -1) >= 0: servicing = true
@@ -104,6 +106,7 @@ func run() -> void:
      if autonomous:
       check(other.patches[2].autoharvest and other.patches[4].autoharvest, "Autonomous designations survive campaign checkpoint")
       check(other.local_harvest.targets == g.local_harvest.targets and other.torches.refill_target == 2, "Reserve settings survive before scripted player resumes")
+     if auto_equipment: check(other.torches.craft_target == 2, "Production target survives before scripted player resumes")
      check(Chapter.delivered(other) == 0, "Loaded expedition is not credited before arrival")
      g.queue_free()
      await process_frame
@@ -114,7 +117,7 @@ func run() -> void:
  check(resumed, "Normal campaign resumes from a loaded expedition saved to JSON")
  check(not g.ended, "Ordinary human cycles remain survivable")
  check(Chapter.current(g).completed == 10, "All chapter milestones reached from a normal new game")
- print("EQUIPMENT lanterns=",g.torches.items.size()," maintenance=",reuse_lanterns," automatic=",auto_refills," autonomous_harvest=",autonomous)
+ print("EQUIPMENT lanterns=",g.torches.items.size()," maintenance=",reuse_lanterns," automatic=",auto_refills," autonomous_harvest=",autonomous," auto_equipment=",auto_equipment)
  print("CAMPAIGN END t=", g.elapsed, " peak_suspicion=", peak_suspicion, " recalls=", recalls, " kitchen=", g.kitchen.summary())
  if failures:
   for w in g.workers: print("WORKER ",w.delivery.owner, " ", w.delivery.state, " needs=",w.energy,"/",w.nutrition,"/",w.hydration, " patch=",w.patch)

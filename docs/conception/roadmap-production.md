@@ -4,7 +4,11 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
-## Livraison autorisée — lot 41 : chapitre et gestion autonome
+## Livraison autorisée — lot 42 : fabrication automatique des lanternes
+
+Objectif total de lanternes, fabrication physique séquentielle et entretien distinct. Le chapitre propose le réglage ; le parcours complet est vérifié sans commande manuelle d’équipement, avec reprise sauvegardée. Format v24, anciennes sauvegardes lisibles. Voir [lot 42](gameplay-lot-42.md). Commit et push autorisés par le joueur.
+
+## Livraison publiée — lot 41 : chapitre et gestion autonome (`75a9622`)
 
 Le guide du premier chapitre propose les récoltes autonomes, objectifs de réserve et entretien des lanternes sans appliquer les réglages. Recette complète depuis une nouvelle partie sans affectation manuelle de récolteur, avec sauvegarde chargée. Voir [lot 41](gameplay-lot-41.md). Commit et push autorisés par le joueur. L’appréciation humaine de l’équilibrage reste ouverte.
 

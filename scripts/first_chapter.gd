@@ -31,6 +31,8 @@ static func logistics(game: Node) -> Dictionary:
 		return {"tray": "local_harvest", "action": "Organiser les récoltes", "text": "Désigner le bois et les fibres du refuge : les habitants sans affectation prennent les tâches à leur priorité Récolte. Les affectations manuelles restent utilisables."}
 	if game.local_harvest.targets.wood < 0 or game.local_harvest.targets.fiber < 0:
 		return {"tray": "harvest_targets", "action": "Régler les réserves", "text": "Pour ce parcours, viser 22 bois et 18 fibres constitue un point de départ. Les charges engagées comptent ; les récoltes reprennent après consommation. Les objectifs n’ajoutent pas de capacité aux dépôts."}
+	if game.workshops > 0 and game.torches.total_lanterns() < 2 and game.torches.craft_target == 0:
+		return {"tray": "lantern_production", "action": "Préparer les lanternes", "text": "Viser 2 lanternes au total permet leur fabrication automatique : 4 bois et 3 fibres par équipement. Les commandes déjà engagées comptent. L’entretien des lanternes vides se règle séparément."}
 	var lantern := false
 	for item in game.torches.items:
 		if item.kind == "lantern": lantern = true

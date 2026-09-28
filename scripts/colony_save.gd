@@ -1,6 +1,6 @@
 extends RefCounted
 ## Versioned colony data and a data-only snapshot of active simulation.
-const VERSION := 23
+const VERSION := 24
 const Live = preload("res://scripts/live_checkpoint.gd")
 const DEFAULT_PATH := "user://saves/colony_v1.json"
 const KINDS := ["food", "food", "wood", "wood", "fiber", "fiber", "wood", "water"]
@@ -156,6 +156,7 @@ static func validate(data: Variant) -> String:
 	if data.version >= 6:
 		if not fields(data, ["torches"]) or not fields(data.torches, ["items", "orders"]): return "Équipement manquant."
 		if (data.version >= 21 or data.torches.has("refill_target")) and (not data.torches.has("refill_target") or not number(data.torches.refill_target, 0, 8, true)): return "Objectif de lanternes invalide."
+		if (data.version >= 24 or data.torches.has("craft_target")) and (not data.torches.has("craft_target") or not number(data.torches.craft_target, 0, 8, true)): return "Objectif de fabrication de lanternes invalide."
 		if not data.torches.items is Array or data.torches.items.size() > 4096 or not data.torches.orders is Array or data.torches.orders.size() > 64: return "Équipement invalide."
 		var locations: Array = []
 		for building in data.buildings:

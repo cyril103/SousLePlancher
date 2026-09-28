@@ -28,6 +28,13 @@ func run() -> void:
 	g._show_tray("goals")
 	g.hud.chapter_support.pressed.emit()
 	check(g.active_tray == "harvest_targets", "Configured logistics leads to reserve diagnostics")
+	g._choose_build("workshop")
+	g._place_build(Vector3(0, 0, -3))
+	g._show_tray("goals")
+	g.hud.chapter_support.pressed.emit()
+	check(g.active_tray == "lantern_production" and g.torches.craft_target == 0, "Workshop offers production guidance without changing target")
+	g.torches.set_craft_target(1)
+	check(Chapter.logistics(g).tray == "harvest_targets", "Custom equipment target is respected")
 	var copy := clone(g, "chapter logistics support")
 	if copy != null:
 		check(Chapter.current(copy) == Chapter.current(g), "Support derives identically from restored simulation")

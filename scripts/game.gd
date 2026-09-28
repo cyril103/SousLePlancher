@@ -232,6 +232,7 @@ func _ready() -> void:
 	if "--demo-local-harvest" in OS.get_cmdline_user_args(): prepare_local_harvest_demo()
 	if "--demo-harvest-targets" in OS.get_cmdline_user_args(): prepare_harvest_targets_demo()
 	if "--demo-harvest-status" in OS.get_cmdline_user_args(): prepare_harvest_status_demo()
+	if "--demo-lantern-production" in OS.get_cmdline_user_args(): prepare_lantern_production_demo()
 	if "--demo-health" in OS.get_cmdline_user_args(): prepare_health_demo()
 	if "--demo-privacy" in OS.get_cmdline_user_args(): prepare_privacy_demo()
 	if "--demo-room" in OS.get_cmdline_user_args(): prepare_room_demo()
@@ -653,6 +654,7 @@ func _process(delta: float) -> void:
 	_update_routes(delta)
 
 func simulate(dt: float) -> void:
+	torches.update_production()
 	torches.update_refills()
 	ant.update(dt)
 	rooms.update(dt)
@@ -1570,3 +1572,16 @@ func prepare_harvest_status_demo() -> void:
 	save_path = "user://saves/harvest_status_demo.json"
 	_show_tray("harvest_targets")
 	_news("Diagnostic · Désignez les miettes, autorisez Récolte pour un habitant, puis Espace. Les raisons d’attente se mettent à jour sans modifier les ordres.")
+
+func prepare_lantern_production_demo() -> void:
+	start_panel.hide()
+	_choose_build("workshop")
+	_place_build(Vector3(0, 0, -3))
+	stock.wood = 10
+	stock.fiber = 6
+	torches.set_craft_target(2)
+	torches.set_refill_target(2)
+	save_path = "user://saves/lantern_production_demo.json"
+	paused = true
+	_show_tray("lantern_production")
+	_news("Fabrication · Espace : livrer et fabriquer deux lanternes. Objectif 0 termine la commande engagée. Les lanternes portées comptent ; l’entretien se règle séparément.")
