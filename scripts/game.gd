@@ -657,6 +657,8 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST and is_instance_valid(soundscape) and soundscape.is_inside_tree():
 		soundscape.shutdown_and_quit()
 
+var ui_refresh_remaining := 0.0
+
 func _process(delta: float) -> void:
 	notice_timer = maxf(0, notice_timer - delta)
 	news_label.visible = notice_timer > 0 or build_mode != ""
@@ -679,7 +681,10 @@ func _process(delta: float) -> void:
 	if not paused and not ended:
 		simulate(delta * speed)
 	_try_checkpoint()
-	_refresh_ui()
+	ui_refresh_remaining -= delta
+	if ui_refresh_remaining <= 0:
+		ui_refresh_remaining = .1
+		_refresh_ui()
 	_update_routes(delta)
 	soundscape.update(delta)
 

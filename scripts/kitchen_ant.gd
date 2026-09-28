@@ -25,6 +25,9 @@ var cover: Node3D
 var label: Label3D
 var player: AnimationPlayer
 var clips := {}
+var sampled_time := -INF
+var sampled_clip := ""
+var sampled_clock := -INF
 
 func setup() -> void:
 	actor = game.Art.model(game, "ant_31/ant", pos)
@@ -34,6 +37,7 @@ func setup() -> void:
 	label.pixel_size = .0045
 	player = actor.find_child("AnimationPlayer", true, false) as AnimationPlayer
 	if player != null:
+		if not actor.visible: return
 		for clip in player.get_animation_list():
 			for key in ["search", "walk", "carry", "alert"]:
 				if str(clip).to_lower().ends_with(key): clips[key] = clip
@@ -164,7 +168,14 @@ func refresh() -> void:
 		var moving := state in ["search", "carry", "retreat"]
 		var key := "alert" if state == "alert" else (("carry" if carrying > 0 else "walk") if moving else "search")
 		if clips.has(key):
-			player.play(clips[key])
+			var pixels := preload("res://scripts/visual_budget.gd").pixel_height(actor, 1.0)
+			var interval := 0.0 if pixels >= 90 else (1.0 / 30.0 if pixels > 0 else .25)
+			var render_clock := Time.get_ticks_usec() / 1000000.0
+			if game.is_processing() and not game.paused and key == sampled_clip and animation_time >= sampled_time and render_clock - sampled_clock < interval: return
+			sampled_time = animation_time
+			sampled_clock = render_clock
+			sampled_clip = key
+			if player.current_animation != clips[key]: player.play(clips[key])
 			player.seek(fposmod(animation_time, player.get_animation(clips[key]).length), true)
 
 func summary() -> String:

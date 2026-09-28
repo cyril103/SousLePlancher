@@ -149,7 +149,7 @@ Le décor comporte un bord de plancher supérieur en coupe, des poutres, des fon
 
 `scripts/atmosphere.gd` gère la lumière ambiante faible, trois ouvertures de lumière, la poussière en suspension et les torches animées. Les bâtiments anciens reçoivent une torche ; les lits et cloisons n’en ajoutent pas. Le passage des humains atténue momentanément l'éclairage venant du dessus.
 
-Les shaders de `shaders/` produisent l'usure et la saleté du bois, les rais de lumière, les flammes et la poussière. Le plafond est ouvert au-dessus de la zone jouable pour conserver la visibilité. Les faisceaux utilisent une intégration volumétrique locale de 24 échantillons par pixel, limitée par la profondeur de la scène. Leur densité varie avec un bruit 3D lent ; chaque ouverture possède sa largeur, son inclinaison, sa diffusion et son intensité. Les anciens plans croisés et bandes lumineuses au sol sont supprimés. Le rendu reste compatible avec Compatibility.
+Les shaders de `shaders/` produisent l'usure et la saleté du bois, les rais de lumière, les flammes et la poussière. Le plafond est ouvert au-dessus de la zone jouable pour conserver la visibilité. Les faisceaux utilisent une intégration volumétrique locale de 8 échantillons par pixel, limitée par la profondeur de la scène. Leur densité varie avec un bruit 3D lent ; chaque ouverture possède sa largeur, son inclinaison, sa diffusion et son intensité. Les anciens plans croisés et bandes lumineuses au sol sont supprimés. Le rendu reste compatible avec Compatibility.
 
 Les poussières sont des particules douces orientées vers la caméra, distribuées le long de chaque faisceau. Les toiles sont des réseaux de courbes Blender sur des points irréguliers, avec affaissement, déchirures et fils libres. Les graines aléatoires sont fixes pour conserver une composition stable. Les courbes éditables sont conservées dans `art_source/cobweb_73.blend` et `art_source/cobweb_181.blend` ; les maillages assemblés sont inclus dans `underfloor.glb`. Le matériau de soie varie légèrement en intensité et bouge doucement. Le MSAA 4× améliore la lecture des fils fins.
 
@@ -172,3 +172,5 @@ Prototype jouable : habitants animés, livraisons, navigation autour des bâtime
 
 
 Étape 11B / lot 31, validé par le joueur : première fourmi dans la cuisine, approche prudente et sauvegarde v18. Démo `-- --demo-ant`. Voir [la fiche du lot 31](docs/conception/gameplay-lot-31.md).
+
+Optimisation du rendu : LOD selon la taille à l’écran, animations espacées à distance et budget de quatre sources d’ombres. Mesures et compromis : [rapport de performance](docs/performance.md).

@@ -6,6 +6,7 @@ static func model(root: Node3D, name: String, pos: Vector3) -> Node3D:
 	var node := scene.instantiate() as Node3D
 	root.add_child(node)
 	node.position = pos
+	preload("res://scripts/visual_budget.gd").configure_meshes(node)
 	preload("res://scripts/atmosphere.gd").age_materials(node)
 	return node
 

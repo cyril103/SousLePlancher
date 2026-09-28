@@ -9,6 +9,7 @@ var torches: Array[OmniLight3D] = []
 var daylight: Array[SpotLight3D] = []
 var sector_effects: Dictionary = {}
 var clock := 0.0
+var budget_timer := 0.0
 static var materials: Dictionary = {}
 
 static func cached_material(key: String, shader: Shader) -> ShaderMaterial:
@@ -210,6 +211,10 @@ func add_dust(pos: Vector3, extents: Vector3, amount: int, bright: bool, embers:
 func _process(delta: float) -> void:
 	clock += delta
 	update_sector_visibility()
+	budget_timer -= delta
+	if budget_timer <= 0:
+		budget_timer = .25
+		update_shadow_budget()
 	for i in range(torches.size()):
 		torches[i].light_energy = 2.2 + sin(clock*8.0+i*2)*0.16 + sin(clock*13.7+i)*0.10
 	# Passing humans briefly interrupt daylight through the cracks.
@@ -219,5 +224,34 @@ func _process(delta: float) -> void:
 	for light in daylight:
 		light.light_energy = float(light.get_meta("base_energy")) * occlusion
 		(light.get_meta("volume_material") as ShaderMaterial).set_shader_parameter("daylight", occlusion)
+
+func update_shadow_budget() -> void:
+	var camera := get_viewport().get_camera_3d()
+	if camera == null: return
+	# All lamps still illuminate. Shadow budget: four spots or two omni lamps.
+	# In Compatibility each shadowed omni light renders the scene several more times.
+	var candidates: Array[Light3D] = []
+	var lamps: Array[Light3D] = []
+	for node in get_parent().find_children("*", "Light3D", true, false):
+		if node is DirectionalLight3D: continue
+		lamps.append(node)
+		if not node.is_visible_in_tree(): continue
+		var point: Vector3 = node.global_position
+		if node is SpotLight3D: point += -node.global_basis.z * 4.0
+		if camera.is_position_behind(point): continue
+		if not get_viewport().get_visible_rect().grow(100).has_point(camera.unproject_position(point)): continue
+		candidates.append(node)
+	var focus: Vector3 = get_parent().focus
+	candidates.sort_custom(func(a: Light3D, b: Light3D): return a.global_position.distance_squared_to(focus) < b.global_position.distance_squared_to(focus))
+	var chosen: Array[Light3D] = []
+	var remaining := 4
+	for lamp in candidates:
+		var cost := 2 if lamp is OmniLight3D else 1
+		if cost > remaining: continue
+		chosen.append(lamp)
+		remaining -= cost
+	for lamp in lamps:
+		var enabled := lamp in chosen
+		if lamp.shadow_enabled != enabled: lamp.shadow_enabled = enabled
 
 

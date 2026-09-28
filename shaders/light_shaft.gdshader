@@ -55,10 +55,11 @@ void fragment() {
     vec4 scene=INV_VIEW_MATRIX*INV_PROJECTION_MATRIX*vec4(ndc,1);
     scene.xyz/=scene.w;
     far_t=min(far_t,dot(scene.xyz-origin,direction));
-    float step_size=max(0.0,far_t-near_t)/24.0;
+    if(far_t <= near_t) { discard; }
+    float step_size=(far_t-near_t)/8.0;
     float integrated=0.0;
     float jitter=hash(vec3(FRAGCOORD.xy,seed));
-    for(int i=0;i<24;i++) {
+    for(int i=0;i<8;i++) {
         vec3 p=origin+direction*(near_t+(float(i)+jitter)*step_size);
         integrated+=density(p)*step_size;
     }

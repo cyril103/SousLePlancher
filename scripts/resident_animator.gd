@@ -21,6 +21,22 @@ var lantern_light: OmniLight3D
 var lantern_flame: MeshInstance3D
 var lantern_material: ShaderMaterial
 var current := "idle"
+var visual_sample_time := -INF
+var visual_sample_clip := ""
+var visual_sample_clock := -INF
+
+func should_sample(clip: String, time: float, render_clock: float = -1.0) -> bool:
+	# Exact contact poses and explicit tests/restores always remain synchronous.
+	var pixels := preload("res://scripts/visual_budget.gd").pixel_height(self, 1.2)
+	var interval := 0.0 if pixels >= 90 else (1.0 / 30.0 if pixels >= 35 else 1.0 / 15.0)
+	if pixels == 0 or not is_visible_in_tree(): interval = .25
+	var force := clip != visual_sample_clip or time < visual_sample_time or clip in ONE_SHOTS
+	var clock := time if render_clock < 0 else render_clock
+	if not force and clock - visual_sample_clock < interval: return false
+	visual_sample_time = time
+	visual_sample_clock = clock
+	visual_sample_clip = clip
+	return true
 
 func _ready() -> void:
 	var model := preload("res://assets/models/animations_03/resident_animated.glb").instantiate()
@@ -118,6 +134,7 @@ func _ready() -> void:
 	lantern_light.shadow_bias = .03
 	lantern.add_child(lantern_light)
 	lantern_light.hide()
+	preload("res://scripts/visual_budget.gd").configure_meshes(self)
 	set_action("idle", 0.0)
 
 func attach(bone: String, path: String) -> Node3D:

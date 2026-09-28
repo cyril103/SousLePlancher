@@ -81,6 +81,7 @@ func setup(world: Node3D, data: Dictionary, index: int, transactions: DeliveryLe
 
 func pose(clip: String, time: float) -> void:
 	if game.torches.hands_occupied(owner) and clip in ["idle", "walk"]: clip = "torch_" + clip
+	if game.is_processing() and not game.paused and not actor.should_sample(clip, time, Time.get_ticks_usec() / 1000000.0): return
 	if actor.current != clip: actor.set_action(clip, 0.0)
 	actor.player.seek(time, true)
 	actor.player.advance(0)
