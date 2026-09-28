@@ -4,7 +4,11 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
-## Livraison autorisée — lot 45 : reconnaissance autonome de l’alcôve
+## Livraison autorisée — lot 46 : fibres de l’alcôve régulées
+
+La récolte désignée de l’alcôve partage l’objectif de fibres du refuge : charges engagées incluses, caisse finale partielle et reprise après consommation. Les voyages manuels restent libres. Format v27 inchangé. Voir [lot 46](gameplay-lot-46.md). Commit et push autorisés par le joueur.
+
+## Livraison publiée — lot 45 : reconnaissance autonome de l’alcôve (`90e0620`)
 
 Désignation de la sortie, attribution selon Récolte, prise d’une lanterne adaptée, reconnaissance et retour au refuge. Rappel, annulation et reprise sauvegardée ; ouverture et travaux suivants restent commandés par le joueur. Format v27, anciennes sauvegardes lisibles. Voir [lot 45](gameplay-lot-45.md). Commit et push autorisés par le joueur.
 

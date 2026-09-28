@@ -53,6 +53,8 @@ Le **lot 44** ajoute la **désignation de l’inspection de la fissure** : un ha
 
 Le **lot 45** ajoute la **reconnaissance autonome de l’alcôve** : désigner la sortie après ouverture, puis laisser un habitant prendre une lanterne, explorer et revenir selon sa priorité Récolte. Rappel, annulation et reprise sauvegardée ; démo `-- --demo-auto-scout`, sauvegarde v27. Voir [les règles et essais](docs/conception/gameplay-lot-45.md).
 
+Le **lot 46** relie les **fibres de l’alcôve à l’objectif de réserve commun** : stocks et caisses engagées comptés, dernière caisse partielle et reprise après consommation. Démo `-- --demo-alcove-target`, sauvegarde v27 inchangée ; [règles et essais](docs/conception/gameplay-lot-46.md).
+
 ## Suite de production
 
 Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une carte d’ensemble, une coupe verticale, neuf fiches de zones et un registre des passages. L’existant, la campagne prévue et les extensions différées y sont distingués. Publication autorisée par le joueur ; les implantations futures restent à éprouver, sans changement de l’ordre de réalisation.

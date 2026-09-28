@@ -415,10 +415,17 @@ func _make_trays() -> void:
 	people_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	wrapped(people, "Cliquez sur un habitant pour l’inspecter. [H] rappelle toute la colonie en conservant ses tâches.", 16, MUTED)
 	var orders := tray("designations", "Ordre · Fibres de l’alcôve")
-	designation_label = wrapped(orders, "", 16)
+	var order_scroll := ScrollContainer.new()
+	order_scroll.custom_minimum_size.y = 200
+	order_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	orders.add_child(order_scroll)
+	designation_label = wrapped(order_scroll, "", 16)
+	designation_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	designation_start = button(orders, "Désigner la récolte", func(): game.designations.designate(); refresh())
 	designation_cancel = button(orders, "Annuler l’ordre et rappeler les porteurs", func(): game.designations.cancel(); refresh())
-	wrapped(orders, "Le joueur choisit le travail. Les habitants libres préparent l’équipement et transportent les ressources. Besoins et rappel restent prioritaires.", 16)
+	button(orders, "Objectif commun de fibres…", func(): game._show_tray("harvest_targets"))
+	wrapped(orders, "L’objectif de fibres est partagé avec les récoltes du refuge. 0 suspend les nouveaux départs ; -1 récolte sans limite. Les caisses déjà engagées sont livrées. Les trajets commandés manuellement restent libres.", 15)
+	wrapped(orders, "Besoins et rappel restent prioritaires.", 16)
 	button(orders, "Centrer sur le gisement", func(): game.fissure.follow = -1; game.focus = Vector3(3, 0, 10); game.zoom = 20; game._update_camera())
 	var work_panel := tray("work", "Travaux en cours")
 	var work_menu := ScrollContainer.new()
@@ -1388,7 +1395,7 @@ func _refresh_local_harvest() -> void:
 
 func _make_harvest_targets() -> void:
 	var panel := tray("harvest_targets", "Objectifs de réserve")
-	wrapped(panel, "Stock visé dans tous les dépôts. Les charges engagées sont comptées. −1 : sans limite ; 0 : aucun nouveau départ automatique.", 15)
+	wrapped(panel, "Stock visé dans tous les dépôts, charges engagées comprises. Fibres : objectif partagé entre refuge et alcôve. −1 : sans limite ; 0 : aucun nouveau départ automatique.", 15)
 	var scroll := ScrollContainer.new()
 	scroll.custom_minimum_size.y = 310
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED

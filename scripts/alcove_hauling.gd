@@ -21,13 +21,16 @@ func summary() -> String:
 	if not game.fissure.visited: return "Ressources à reconnaître"
 	return "Fibres : %s · %d réservées" % [str(known) + " vues" if known >= 0 else "inconnues", reserved]
 
-func start(id: int) -> bool:
+func start(id: int, limit: int = -1) -> bool:
 	var p = game.fissure
+	if limit == 0: return false
 	if not p.visited: return p.reject("Reconnaissez d’abord l’alcôve à la lanterne.")
 	if not p.widened(): return p.reject("Élargissez le passage avant de rapporter une caisse.")
 	if amount <= reserved: return p.reject("Les fibres sont épuisées ou déjà réservées.")
 	var c: WorkerDelivery = game.workers[id].delivery
-	var choice: Dictionary = game.depots.sink(p.NEAR, "fiber", mini(3 + game.workshops, amount - reserved), id)
+	var quantity := mini(3 + game.workshops, amount - reserved)
+	if limit >= 0: quantity = mini(quantity, limit)
+	var choice: Dictionary = game.depots.sink(p.NEAR, "fiber", quantity, id)
 	if choice.is_empty(): return p.reject("Aucun dépôt accessible n’a de place pour les fibres.")
 	var index: int = game.torches.held(id)
 	if index < 0 or not game.torches.can_haul(id): return p.reject("Équipez une lanterne de ceinture et attendez sa récupération.")

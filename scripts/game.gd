@@ -223,6 +223,7 @@ func _ready() -> void:
 	if "--demo-fissure" in OS.get_cmdline_user_args(): prepare_fissure_demo()
 	if "--demo-inspection" in OS.get_cmdline_user_args(): prepare_inspection_demo()
 	if "--demo-auto-scout" in OS.get_cmdline_user_args(): prepare_auto_scout_demo()
+	if "--demo-alcove-target" in OS.get_cmdline_user_args(): prepare_alcove_target_demo()
 	if "--demo-alcove" in OS.get_cmdline_user_args(): prepare_alcove_demo()
 	if "--demo-alcove-haul" in OS.get_cmdline_user_args(): prepare_alcove_haul_demo()
 	if "--demo-ant" in OS.get_cmdline_user_args(): prepare_ant_demo()
@@ -1575,6 +1576,14 @@ func prepare_harvest_status_demo() -> void:
 	save_path = "user://saves/harvest_status_demo.json"
 	_show_tray("harvest_targets")
 	_news("Diagnostic · Désignez les miettes, autorisez Récolte pour un habitant, puis Espace. Les raisons d’attente se mettent à jour sans modifier les ordres.")
+
+func prepare_alcove_target_demo() -> void:
+	prepare_designations_demo()
+	local_harvest.set_target("fiber", 5)
+	designations.designate()
+	save_path = "user://saves/alcove_target_demo.json"
+	_show_tray("designations")
+	_news("Objectif : 5 fibres en réserve. Les livraisons au lit relancent la récolte ; 0 suspend les nouveaux départs sans perdre les caisses engagées.")
 
 func prepare_auto_scout_demo() -> void:
 	prepare_alcove_demo()

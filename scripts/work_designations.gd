@@ -68,6 +68,12 @@ func tick(candidate: int = -1) -> void:
 		return
 	if candidate >= 0 or not owners.is_empty():
 		status = "Récolte en cours." if owners.size() >= 2 else "En attente : habitants disponibles et reposés."
+	if game.local_harvest.missing("fiber") == 0:
+		status = "Objectif de fibres couvert : %d / %d, stocks et charges engagées. Reprise après consommation." % [game.local_harvest.expected("fiber"), game.local_harvest.targets.fiber]
+		if game.local_harvest.targets.fiber == 0: status = "Objectif 0 : nouveaux départs suspendus ; les caisses engagées sont livrées."
+		for id in owners:
+			if game.torches.can_haul(id): game.torches.recall(game.workers[id].delivery, "Objectif de fibres couvert")
+		return
 	for id in range(game.workers.size()):
 		var c: WorkerDelivery = game.workers[id].delivery
 		if owners.has(id):
@@ -78,7 +84,11 @@ func tick(candidate: int = -1) -> void:
 			status = "Toutes les fibres restantes sont réservées."
 			if owners.has(id): game.torches.recall(c, "Récolte déjà réservée")
 			continue
-		var choice: Dictionary = game.depots.sink(game.fissure.NEAR, "fiber", mini(3 + game.workshops, game.fissure.hauling.amount - game.fissure.hauling.reserved), id)
+		var limit: int = game.local_harvest.missing("fiber")
+		if limit == 0:
+			if owners.has(id): game.torches.recall(c, "Objectif de fibres couvert")
+			continue
+		var choice: Dictionary = game.depots.sink(game.fissure.NEAR, "fiber", mini(limit, mini(3 + game.workshops, game.fissure.hauling.amount - game.fissure.hauling.reserved)), id)
 		if choice.is_empty():
 			status = "En attente : aucun dépôt accessible avec de la place pour les fibres."
 			if owners.has(id): game.torches.recall(c, "Dépôt indisponible")
@@ -87,7 +97,7 @@ func tick(candidate: int = -1) -> void:
 		if owners.has(id):
 			if game.torches.items[game.torches.held(id)].fuel < fuel:
 				game.torches.recall(c, "Autonomie insuffisante pour la récolte")
-			elif not game.fissure.hauling.start(id):
+			elif not game.fissure.hauling.start(id, limit):
 				game.torches.recall(c, "Accès à la récolte indisponible")
 			continue
 		var usable := false
@@ -102,7 +112,9 @@ func tick(candidate: int = -1) -> void:
 		if game.torches.equip(id, "lantern"): owners[id] = true
 
 func summary() -> String:
-	var text := "Récolter les fibres de l’alcôve jusqu’à épuisement.\nDeux habitants au maximum ; lanternes récupérées automatiquement.\n\n" + ("%d habitant(s) engagé(s).\n" % owners.size() if not owners.is_empty() else "") + status
+	var target: int = game.local_harvest.targets.fiber
+	var rule := "Sans limite : jusqu’à épuisement." if target < 0 else "Objectif commun : %d fibres · %d en stock ou engagées." % [target, game.local_harvest.expected("fiber")]
+	var text := rule + "\nDeux habitants au maximum ; lanternes récupérées automatiquement.\n\n" + ("%d habitant(s) engagé(s).\n" % owners.size() if not owners.is_empty() else "") + status
 	for id in owners:
 		text += "\nH%d · %s" % [id + 1, game.workers[id].delivery.description()]
 	return text
