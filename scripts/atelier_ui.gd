@@ -53,6 +53,9 @@ var routes_button: Button
 var stocks_label: Label
 var torch_picker: OptionButton
 var torch_summary: Label
+var refill_target: SpinBox
+var refill_status: Label
+var refill_cancel: Button
 var torch_fuel: ProgressBar
 var torch_equip: Button
 var torch_depart: Button
@@ -806,7 +809,7 @@ func _make_torches() -> void:
 	recipe_row.add_child(light_kind)
 	light_kind.item_selected.connect(func(_index: int): refresh())
 	button(recipe_row, "Fabriquer", func(): game.torches.request_craft(selected_light()); refresh())
-	button(box, "Ravitailler une lanterne · 2 bois", func(): game.torches.request_refill(); refresh(), "Atelier requis. Plein à 180 s après livraison et 8 s d’entretien sur la lanterne rangée la moins chargée.")
+	button(box, "Entretien des lanternes…", func(): game._show_tray("lantern_service"))
 	torch_picker = OptionButton.new()
 	box.add_child(torch_picker)
 	torch_picker.item_selected.connect(func(index: int): resident_index = index; refresh())
@@ -840,6 +843,22 @@ func _make_torches() -> void:
 	lantern_haul = button(reserve_actions, "Rapporter du bois", func(): game.torches.start_haul(resident_index, 6); refresh())
 	button(box, "Rappeler / ranger au refuge", func(): game.torches.recall(game.workers[resident_index].delivery); refresh())
 	wrapped(box, "Lanterne : échelle et caisse autorisées. Torche : sol uniquement, mains occupées. Retour automatique selon les besoins et le combustible.", 15)
+
+
+	var service := tray("lantern_service", "Entretien des lanternes")
+	wrapped(service, "Maintenir des lanternes rangées à 180 s. Chaque plein : 2 bois livrés et 8 s de travail. Atelier requis.", 17)
+	var goal := row(service)
+	label(goal, "Réserve souhaitée", 17)
+	refill_target = SpinBox.new()
+	refill_target.max_value = 8
+	refill_target.custom_minimum_size.x = 100
+	goal.add_child(refill_target)
+	refill_target.value_changed.connect(func(value: float): game.torches.set_refill_target(int(value)); refresh())
+	wrapped(service, "0 désactive les prochains entretiens ; le travail engagé se termine. Les lanternes portées ne comptent pas dans la réserve. Aucune fabrication automatique.", 15)
+	refill_status = wrapped(service, "", 17)
+	button(service, "Commander un plein · 2 bois", func(): game.torches.request_refill(); refresh())
+	refill_cancel = button(service, "Annuler l’entretien et désactiver l’auto", func(): game.torches.cancel_refill(); refresh())
+	button(service, "Équipement et sorties", func(): game._show_tray("torches"))
 
 func selected_light() -> String:
 	return "lantern" if light_kind.selected == 1 else "torch"
@@ -899,6 +918,9 @@ func _refresh_fissure() -> void:
 
 func _refresh_torches() -> void:
 	if torch_picker == null: return
+	refill_target.set_value_no_signal(game.torches.refill_target)
+	refill_status.text = game.torches.refill_summary()
+	refill_cancel.disabled = game.torches.pending_refill() < 0
 	if torch_picker.item_count != game.workers.size():
 		torch_picker.clear()
 		for i in range(game.workers.size()): torch_picker.add_item("Habitant %d" % (i + 1))

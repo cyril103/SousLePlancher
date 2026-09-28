@@ -17,6 +17,58 @@ var items: Array[Dictionary] = []
 var missions: Dictionary = {}
 var crafting: Dictionary = {}
 var picking := -1
+var refill_target := 0
+
+func set_refill_target(count: int) -> bool:
+	if count < 0 or count > 8: return false
+	refill_target = count
+	return true
+
+func pending_refill() -> int:
+	for i in range(orders.size()):
+		if not orders[i].built and orders[i].get("refill", -1) >= 0: return i
+	return -1
+
+func ready_lanterns() -> int:
+	var count := 0
+	for i in range(items.size()):
+		var item: Dictionary = items[i]
+		if item.kind == "lantern" and item.owner < 0 and item.reserved < 0 and not item.lit and item.fuel >= CAPACITIES.lantern and not servicing(i): count += 1
+	return count
+
+func update_refills() -> void:
+	if refill_target == 0 or game.hiding or game.pending_save or game.ended or game.workshops == 0: return
+	if pending_refill() >= 0 or ready_lanterns() >= refill_target or refill_candidate() < 0: return
+	request_refill()
+
+func refill_summary() -> String:
+	var text := "Réserve prête : %d lanterne(s) à 180 s. " % ready_lanterns()
+	text += "Entretien automatique désactivé. " if refill_target == 0 else "Objectif : %d. " % refill_target
+	if game.hiding: return text + "Suspendu par le rappel."
+	if pending_refill() >= 0: return text + "Entretien : " + game.construction.status(orders[pending_refill()]) + "."
+	if refill_target == 0: return text
+	if ready_lanterns() >= refill_target: return text + "Réserve suffisante."
+	if game.workshops == 0: return text + "Construire un atelier."
+	if refill_candidate() < 0: return text + "Attend le retour d’une lanterne ; fabriquer si nécessaire."
+	return text + "Prochain entretien au prochain pas de simulation."
+
+func cancel_refill() -> bool:
+	var index := pending_refill()
+	if index < 0: return false
+	# Cancellation also disables automation, so it cannot recreate the order.
+	refill_target = 0
+	var site: Dictionary = orders[index]
+	game.construction.cancel_site(site)
+	if site.builder >= 0: recall(game.workers[site.builder].delivery)
+	site.materials = {"wood": 0, "fiber": 0}
+	site.work = 0.0
+	site.built = true
+	site.cancelled = true
+	site.builder = -1
+	site.hauler = -1
+	refresh_site(site)
+	game._news("Entretien annulé, automatique désactivé. Bois livré à récupérer ; charges en retour et lanterne libérée.")
+	return true
 
 func entrance(site: Dictionary) -> Vector3:
 	if site.get("refill", -1) >= 0: return site.pos
@@ -450,9 +502,10 @@ func snapshot() -> Dictionary:
 	var saved_orders: Array = []
 	for order in orders:
 		if not order.built: saved_orders.append({"kind": order.kind, "pos": game.Save.vector(order.pos), "materials": order.materials.duplicate(), "work": order.work, "refill": order.get("refill", -1)})
-	return {"items": saved_items, "orders": saved_orders}
+	return {"items": saved_items, "orders": saved_orders, "refill_target": refill_target}
 
 func restore(data: Dictionary) -> void:
+	refill_target = int(data.get("refill_target", 0))
 	for item in data.items: add_item(Vector3(item.pos[0], item.pos[1], item.pos[2]), float(item.fuel), item.get("kind", "torch"))
 	for site in data.orders:
 		var kind: String = site.get("kind", "torch")
@@ -470,6 +523,10 @@ static func valid_refills(runtime: Dictionary, data: Dictionary) -> bool:
 		if data.version < 20 or target >= runtime.items.size(): return false
 		if not site.has_all(["kind", "pos", "materials", "work", "required", "built", "builder", "hauler"]): return false
 		if site.kind != "lantern" or not site.pos is Vector3 or not site.built is bool or site.required != REFILL_WORK: return false
+		if site.has("cancelled") and not site.cancelled is bool: return false
+		if site.get("cancelled", false):
+			if data.version < 21 or not site.built or site.work != 0 or site.materials != {"wood": 0, "fiber": 0} or site.builder != -1 or site.hauler != -1: return false
+			continue
 		if not game_save_number(site.work, 0, REFILL_WORK) or not site.materials is Dictionary or site.materials.get("fiber", -1) != 0: return false
 		if not site.materials.get("wood") is int or site.materials.wood < 0 or site.materials.wood > 2: return false
 		if site.work > 0 and site.materials.wood != 2: return false

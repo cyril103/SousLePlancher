@@ -33,6 +33,8 @@ Le **lot 34** ajoute les seuils **Garder / Viser** aux transferts : réserve min
 
 Le **lot 35** permet de **ravitailler les lanternes rangées** : 2 bois livrés, 8 secondes d’entretien, puis 180 secondes d’autonomie sur le même équipement. Atelier requis ; bouton dans Éclairage et éclaireurs. Démo `-- --demo-lantern-refill`, sauvegarde v20 ; [règles et vérifications](docs/conception/gameplay-lot-35.md).
 
+Le **lot 36** ajoute une **réserve automatique de lanternes** (0 à 8) et l’annulation des entretiens avec récupération du bois. Réglages dans **Éclairage et éclaireurs → Entretien des lanternes**. Démo `-- --demo-auto-refills`, sauvegarde v21 ; [règles et tests](docs/conception/gameplay-lot-36.md).
+
 ## Suite de production
 
 Le [plan du monde et des secteurs](docs/atlas-monde-v01/index.html) propose une carte d’ensemble, une coupe verticale, neuf fiches de zones et un registre des passages. L’existant, la campagne prévue et les extensions différées y sont distingués. Publication autorisée par le joueur ; les implantations futures restent à éprouver, sans changement de l’ordre de réalisation.

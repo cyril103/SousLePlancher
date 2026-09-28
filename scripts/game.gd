@@ -225,6 +225,7 @@ func _ready() -> void:
 	if "--demo-kitchen" in OS.get_cmdline_user_args(): prepare_kitchen_demo()
 	if "--demo-transfer-limits" in OS.get_cmdline_user_args(): prepare_transfer_limits_demo()
 	if "--demo-lantern-refill" in OS.get_cmdline_user_args(): prepare_lantern_refill_demo()
+	if "--demo-auto-refills" in OS.get_cmdline_user_args(): prepare_auto_refills_demo()
 	if "--demo-health" in OS.get_cmdline_user_args(): prepare_health_demo()
 	if "--demo-privacy" in OS.get_cmdline_user_args(): prepare_privacy_demo()
 	if "--demo-room" in OS.get_cmdline_user_args(): prepare_room_demo()
@@ -645,6 +646,7 @@ func _process(delta: float) -> void:
 	_update_routes(delta)
 
 func simulate(dt: float) -> void:
+	torches.update_refills()
 	ant.update(dt)
 	rooms.update(dt)
 	fixed_lighting.update(dt)
@@ -1381,6 +1383,17 @@ func prepare_lantern_refill_demo() -> void:
 	_show_tray("torches")
 	_refresh_ui()
 	_news("Espace : livrer 2 bois, puis ravitailler la lanterne. H interrompt ; H à nouveau reprend. F5/F9 conserve le travail.")
+
+func prepare_auto_refills_demo() -> void:
+	prepare_lantern_refill_demo()
+	stock.wood = 6
+	torches.add_item(depots.entry(0), 40, "lantern")
+	torches.set_refill_target(2)
+	save_path = "user://saves/auto_refills_demo.json"
+	get_window().title = "Sous le plancher — Réserve de lanternes"
+	_show_tray("lantern_service")
+	_refresh_ui()
+	_news("Espace : préparer deux lanternes. Objectif 0 termine le plein engagé ; Annuler restitue le bois.")
 
 func prepare_transfer_limits_demo() -> void:
 	prepare_transfers_demo()

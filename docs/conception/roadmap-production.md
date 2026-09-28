@@ -4,7 +4,11 @@ Révision du 27 septembre 2026. **Lot 19 / 6A publié : `8fd7b93`. Lot 20 / 6B p
 
 Le [cahier des charges](cahier-des-charges.md) définit la vision cible ; les [décisions de l’entretien](retours-et-decisions.md) conservent les choix du joueur. **Ce document fixe l’état actuel et l’ordre opérationnel.** Les mentions « prochaine étape » des fiches de lots restent historiques.
 
-## Livraison autorisée — lot 35 : entretien des lanternes
+## Livraison autorisée — lot 36 : réserve de lanternes
+
+Objectif de 0 à 8 lanternes rangées et pleines, ravitaillement automatique des équipements existants et annulation avec récupération du bois. Panneau dédié et sauvegarde v21, automatisme désactivé pour les anciennes parties. Voir [lot 36](gameplay-lot-36.md). Commit et push autorisés par le joueur.
+
+## Livraison publiée — lot 35 : entretien des lanternes (`2ef4909`)
 
 Ravitaillement physique des lanternes rangées : 2 bois, 8 secondes de travail, autonomie finale de 180 secondes, même équipement. Rappel, priorités et sauvegarde v20 intégrés ; anciens fichiers lisibles. Correction du démarrage des récoltes manuelles avec lanterne. Voir [lot 35](gameplay-lot-35.md). Commit et push autorisés par le joueur.
 
