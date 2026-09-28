@@ -776,7 +776,8 @@ func refresh() -> void:
 		var patch: Dictionary = game.patches[i]
 		game.patch_picker.set_item_disabled(i + 1, not patch.discovered)
 		if i == 6: game.patch_picker.set_item_text(i + 1, "Réserve de l’Est · Bois" if patch.discovered else "Réserve inexplorée")
-		patch.label.text = ("▸ " if i == game.selected else "") + game.NAMES[patch.kind] + " · %d" % patch.amount + (" · Palier" if patch.pos.y > 1 else "") + (" · Récolte désignée" if patch.get("autoharvest", false) else "")
+		var caption: String = game.local_harvest.marker_text(i) if i in game.local_harvest.PATCHES else game.NAMES[patch.kind] + " · %d" % patch.amount + (" · Palier" if patch.pos.y > 1 else "")
+		patch.label.text = ("▸ " if i == game.selected else "") + caption
 		patch.label.modulate = Color("fff1c8") if i == game.selected else Color("eac37e")
 
 func _refresh_depots() -> void:

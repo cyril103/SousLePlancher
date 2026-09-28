@@ -78,3 +78,47 @@ func summary(id: int) -> String:
 		if game.workers[i].patch < 0 and game.priorities.value(i, "collect") > 0: allowed = true
 	if not allowed: return text + "\nAucun habitant sans affectation autorisé à récolter."
 	return text + "\nAttend un habitant disponible, un accès et une place au dépôt."
+
+func marker_text(id: int) -> String:
+	var p: Dictionary = game.patches[id]
+	var title := "%s · %d" % [game.NAMES[p.kind], p.amount]
+	var state := "Sans ordre"
+	if p.amount <= 0: state = "Épuisé"
+	elif p.get("autoharvest", false):
+		if game.ended: state = "Colonie arrêtée"
+		elif game.hiding: state = "Rappel"
+		elif game.pending_save: state = "Sauvegarde"
+		elif targets[p.kind] == 0: state = "Auto suspendu · objectif 0"
+		elif missing(p.kind) == 0: state = "Réserve couverte"
+		else: state = "Récolte désignée"
+	var engaged := 0
+	for job in game.delivery_ledger.jobs.values():
+		if job.source == id: engaged += 1
+	if engaged > 0: state += " · %d porteur(s)" % engaged
+	return title + "\n" + state
+
+func marker_rect(id: int) -> Rect2:
+	if id not in PATCHES or not game.patches[id].discovered: return Rect2()
+	var label: Label3D = game.patches[id].label
+	if not label.is_visible_in_tree() or game.camera.is_position_behind(label.global_position): return Rect2()
+	var font: Font = label.font if label.font != null else ThemeDB.fallback_font
+	var extent := Vector2.ZERO
+	var lines := label.text.split("\n")
+	for line in lines: extent.x = maxf(extent.x, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, label.font_size).x)
+	extent.y = font.get_height(label.font_size) * lines.size() + label.line_spacing * (lines.size() - 1)
+	var center: Vector2 = game.camera.unproject_position(label.global_position)
+	var unit: float = game.camera.unproject_position(label.global_position + game.camera.global_basis.x).distance_to(center)
+	var size := (extent + Vector2.ONE * label.outline_size * 2) * label.pixel_size * unit
+	return Rect2(center - size * .5, size).grow(4)
+
+func hit_marker(screen: Vector2) -> int:
+	var chosen := -1
+	var nearest := INF
+	for id in PATCHES:
+		var rect := marker_rect(id)
+		if rect.has_area() and rect.has_point(screen):
+			var distance := screen.distance_squared_to(rect.get_center())
+			if distance < nearest:
+				chosen = id
+				nearest = distance
+	return chosen

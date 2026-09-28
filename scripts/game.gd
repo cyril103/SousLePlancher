@@ -236,6 +236,7 @@ func _ready() -> void:
 	if "--demo-construction-board" in OS.get_cmdline_user_args(): prepare_construction_board_demo()
 	if "--demo-local-harvest" in OS.get_cmdline_user_args(): prepare_local_harvest_demo()
 	if "--demo-harvest-source" in OS.get_cmdline_user_args(): prepare_harvest_source_demo()
+	if "--demo-harvest-markers" in OS.get_cmdline_user_args(): prepare_harvest_markers_demo()
 	if "--demo-harvest-targets" in OS.get_cmdline_user_args(): prepare_harvest_targets_demo()
 	if "--demo-harvest-status" in OS.get_cmdline_user_args(): prepare_harvest_status_demo()
 	if "--demo-lantern-production" in OS.get_cmdline_user_args(): prepare_lantern_production_demo()
@@ -558,6 +559,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			if build_mode.is_empty() and torches.picking < 0 and designations.hit(event.position):
 				_show_tray("designations")
 				return
+			if build_mode.is_empty() and torches.picking < 0:
+				var source := local_harvest.hit_marker(event.position)
+				if source >= 0:
+					hud.open_harvest_source(source)
+					return
 			if torches.picking >= 0:
 				var destination = destination_point(event.position)
 				if destination != null:
@@ -1574,6 +1580,17 @@ func prepare_harvest_source_demo() -> void:
 	save_path = "user://saves/harvest_source_demo.json"
 	hud.open_harvest_source(2)
 	_news("Gisements · Cliquez sur le bois, désignez sa récolte puis Espace. Suspendre laisse finir les charges ; le bouton Affectations manuelles conserve la commande individuelle.")
+
+func prepare_harvest_markers_demo() -> void:
+	prepare_local_harvest_demo()
+	local_harvest.set_target("wood", 12)
+	local_harvest.set_target("fiber", 10)
+	local_harvest.set_active(7, true)
+	local_harvest.set_target("water", 0)
+	selected = -1
+	save_path = "user://saves/harvest_markers_demo.json"
+	_show_tray("")
+	_news("Carte · Cliquez sur une étiquette : réserve couverte, objectif 0 ou récolte désignée. Espace reprend ; H rappelle sans effacer les ordres.")
 
 func prepare_harvest_targets_demo() -> void:
 	prepare_local_harvest_demo()
